@@ -346,7 +346,7 @@
     }
     .all-animals-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
       width: min(380px, 90vw);
       padding: 0.5rem;
@@ -607,6 +607,7 @@
       <span class="parade-animal">🐱</span>
       <span class="parade-animal">🐕</span>
       <span class="parade-animal">🐑</span>
+      <span class="parade-animal">🐟</span>
       <span class="parade-animal">👨‍👩‍👧‍👦</span>
     </div>
     <div class="rainbow-rule"></div>
@@ -667,6 +668,7 @@ const animals = [
   { name: 'Purple Cat',  img: 'assets/purple-cat.png',  emoji: '🐱', color: '#6A1B9A', bg: '#E1BEE7' },
   { name: 'White Dog',   img: 'assets/white-dog.png',   emoji: '🐕', color: '#5D4037', bg: '#EFEBE9' },
   { name: 'Black Sheep', img: 'assets/black-sheep.png', emoji: '🐑', color: '#37474F', bg: '#CFD8DC' },
+  { name: 'Goldfish',    img: 'assets/goldfish.png',    emoji: '🐟', color: '#E65100', bg: '#FFE0B2' },
   { name: 'Our Family',  img: 'assets/family-portrait.png', emoji: '👨‍👩‍👧‍👦', color: '#E91E63', bg: '#FCE4EC' },
 ];
 const total = animals.length;
