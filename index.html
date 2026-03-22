@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Brown Bear, Brown Bear — Remi & Scout Turn One!</title>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
   <style>
@@ -16,9 +16,6 @@
       --orange: #E17055;
       --paper: #FFF8F0;
       --dark: #2D3436;
-      --grass-dark: #388E3C;
-      --grass-mid: #43A047;
-      --grass-light: #66BB6A;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -27,6 +24,8 @@
       min-height: 100vh;
       overflow-x: hidden;
       cursor: default;
+      -webkit-user-select: none;
+      user-select: none;
     }
     body::after {
       content: '';
@@ -43,34 +42,27 @@
       align-items: center;
       justify-content: center;
       padding: 1.5rem;
-      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
     }
     .screen.active { display: flex; }
-    @keyframes screenIn {
-      from { opacity: 0; transform: scale(0.95) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
+
     /* ─── INTRO ─── */
     #intro {
-      background: linear-gradient(175deg, #87CEEB 0%, #B3E5FC 45%, #66BB6A 45%, #388E3C 100%);
+      background: linear-gradient(175deg, #87CEEB 0%, #B3E5FC 40%, #66BB6A 40%, #388E3C 100%);
       position: relative;
       overflow: hidden;
+      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
     }
     #intro::before {
       content: '';
       position: absolute;
       bottom: 0; left: 0; right: 0;
       height: 48%;
-      background: repeating-linear-gradient(
-        90deg,
-        #388E3C 0px, #43A047 12px,
-        #2E7D32 12px, #388E3C 24px
-      );
+      background: repeating-linear-gradient(90deg, #388E3C 0px, #43A047 12px, #2E7D32 12px, #388E3C 24px);
       opacity: 0.4;
     }
     .clouds {
       position: absolute;
-      top: 5%; left: 0; right: 0;
+      top: 3%; left: 0; right: 0;
       display: flex;
       justify-content: space-around;
       pointer-events: none;
@@ -96,13 +88,37 @@
     .cloud-3 { width: 70px; height: 24px; --d: 7s; animation-delay: -1.5s; }
     .cloud-3::before { width: 38px; height: 36px; top: -20px; left: 10px; }
     .cloud-3::after  { width: 28px; height: 28px; top: -14px; left: 34px; }
-    @keyframes cloudDrift {
-      from { transform: translateX(-8px); }
-      to   { transform: translateX(8px); }
+    @keyframes cloudDrift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
+    @keyframes screenIn {
+      from { opacity: 0; transform: scale(0.95) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
     }
+
+    .intro-portrait {
+      position: relative;
+      z-index: 3;
+      width: clamp(200px, 55vw, 280px);
+      height: clamp(200px, 55vw, 280px);
+      border-radius: 50%;
+      overflow: hidden;
+      border: 5px solid white;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.2);
+      animation: portraitFloat 3s ease-in-out infinite;
+      margin-bottom: 0.6rem;
+    }
+    .intro-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    @keyframes portraitFloat {
+      0%,100% { transform: translateY(0) rotate(-1deg); }
+      50%     { transform: translateY(-10px) rotate(1deg); }
+    }
+
     .intro-title {
       font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2.4rem, 10vw, 5.5rem);
+      font-size: clamp(2rem, 8vw, 4rem);
       color: white;
       text-shadow: 4px 5px 0 rgba(80,40,10,0.35);
       line-height: 1.05;
@@ -110,33 +126,30 @@
       text-align: center;
       position: relative;
       z-index: 2;
-      margin-top: 0.5rem;
+    }
+    .intro-names {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(2.6rem, 11vw, 5rem);
+      text-align: center;
+      line-height: 1;
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(120deg, #FFD700 0%, #FFF9C4 30%, #FFD700 60%, #FFA000 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(3px 4px 0 rgba(80,40,10,0.4));
+      margin: 0.1rem 0;
     }
     .intro-subtitle {
       font-family: 'Caveat', cursive;
-      font-size: clamp(1.2rem, 4vw, 1.8rem);
-      color: #FFF9C4;
+      font-size: clamp(1.3rem, 4.5vw, 2rem);
+      color: #FFFDE7;
       text-align: center;
       position: relative;
       z-index: 2;
-      margin: 0.3rem 0 0.5rem;
       text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
-    }
-    .bear-wrap {
-      position: relative;
-      z-index: 3;
-      animation: bearFloat 2.5s ease-in-out infinite;
       margin: 0.2rem 0 0.8rem;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25));
-    }
-    .bear-wrap img {
-      width: 180px;
-      height: auto;
-      display: block;
-    }
-    @keyframes bearFloat {
-      0%,100% { transform: translateY(0) rotate(-1deg); }
-      50%      { transform: translateY(-14px) rotate(1deg); }
     }
     .start-btn {
       background: var(--red);
@@ -153,24 +166,27 @@
       transition: transform 0.1s, box-shadow 0.1s;
       position: relative;
       z-index: 3;
+      animation: btnPulse 2s ease-in-out infinite;
     }
     .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #8B0000, 0 14px 28px rgba(0,0,0,0.25); }
     .start-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #8B0000; }
-    /* ─── PEEKABOO ─── */
+    @keyframes btnPulse {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* ─── PEEKABOO (Fruit Ninja Style) ─── */
     #peekaboo {
-      background: linear-gradient(180deg,
-        #B3E5FC 0%, #81D4FA 35%,
-        #A5D6A7 35%, #4CAF50 70%,
-        #388E3C 70%, #2E7D32 100%
-      );
-      gap: 0.6rem;
-      padding-bottom: 2rem;
+      background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 40%, #A5D6A7 40%, #2E7D32 100%);
+      gap: 0.5rem;
+      padding: 1rem 1rem 2rem;
       justify-content: flex-start;
-      padding-top: 1.5rem;
+      padding-top: 1rem;
+      touch-action: none;
     }
     .peek-title {
       font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
       color: white;
       text-shadow: 3px 4px 0 rgba(0,0,0,0.2);
       text-align: center;
@@ -183,8 +199,8 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
     }
     .progress-bar-wrap {
-      width: min(380px, 90vw);
-      height: 16px;
+      width: min(340px, 85vw);
+      height: 14px;
       background: rgba(255,255,255,0.3);
       border-radius: 10px;
       overflow: hidden;
@@ -199,196 +215,192 @@
     }
     .counter-text {
       font-family: 'Luckiest Guy', cursive;
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: white;
       text-shadow: 1px 2px 0 rgba(0,0,0,0.2);
       transition: transform 0.15s, color 0.15s;
     }
-    .counter-text.pop {
-      transform: scale(1.3);
-      color: #FDCB6E;
-    }
-    .animals-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.6rem;
-      width: min(520px, 96vw);
-    }
-    .animal-spot {
+    .counter-text.pop { transform: scale(1.3); color: #FDCB6E; }
+
+    /* ─── NINJA ARENA ─── */
+    .ninja-arena {
       position: relative;
-      height: 140px;
-      cursor: grab;
-      border-radius: 16px;
+      width: min(380px, 92vw);
+      height: min(380px, 70vh);
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: transform 0.15s;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-user-select: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.08) 100%);
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.1), 0 8px 32px rgba(0,0,0,0.15);
+      cursor: crosshair;
       touch-action: none;
     }
-    .animal-spot:not(.revealed):hover { transform: scale(1.04); }
-    .animal-spot:not(.revealed):active { cursor: grabbing; }
-    .animal-spot.revealed { cursor: default; }
-    .spot-bg {
+
+    /* Slash trail canvas */
+    .slash-canvas {
       position: absolute;
       inset: 0;
-      border-radius: 14px;
+      z-index: 50;
+      pointer-events: none;
     }
-    .animal-name-badge {
+
+    /* Single animal card shown in arena */
+    .ninja-card {
       position: absolute;
-      top: 7px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255,255,255,0.92);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: 0.62rem;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.3s 0.35s;
-      z-index: 20;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-    }
-    .animal-spot.revealed .animal-name-badge { opacity: 1; }
-    .animal-figure {
-      position: absolute;
-      bottom: 52px;
-      left: 50%;
-      transform: translateX(-50%) translateY(200px);
-      transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1);
-      z-index: 8;
-    }
-    .animal-figure img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-    }
-    .animal-spot.revealed .animal-figure {
-      transform: translateX(-50%) translateY(0);
-    }
-    /* ─── SWIPE PROGRESS PAWS ─── */
-    .swipe-paws {
-      position: absolute;
-      bottom: 6px;
-      left: 50%;
-      transform: translateX(-50%);
+      inset: 0;
       display: flex;
-      gap: 4px;
-      z-index: 22;
-      transition: opacity 0.3s;
-    }
-    .animal-spot.revealed .swipe-paws { opacity: 0; }
-    .swipe-paw {
-      font-size: 0.7rem;
-      opacity: 0.35;
-      transition: opacity 0.2s, transform 0.2s;
-      filter: grayscale(1);
-    }
-    .swipe-paw.cleared {
-      opacity: 1;
-      filter: grayscale(0);
-      transform: scale(1.25);
-    }
-    /* ─── THREE GRASS LAYERS ─── */
-    .grass-layer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 100%;
-      z-index: 15;
-      pointer-events: none;
-      transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1),
-                  opacity 0.35s ease-out;
-    }
-    .grass-layer.swept {
+      align-items: center;
+      justify-content: center;
       opacity: 0;
+      pointer-events: none;
+      z-index: 10;
     }
-    .grass-layer.swept.sweep-left {
-      transform: translateX(-110%) rotate(-12deg);
+    .ninja-card.active {
+      opacity: 1;
+      pointer-events: auto;
+      animation: origamiUnfold 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
     }
-    .grass-layer.swept.sweep-right {
-      transform: translateX(110%) rotate(12deg);
+    .ninja-card.slashed {
+      animation: slashReveal 0.5s ease-out both;
+      pointer-events: none;
     }
-    .grass-layer.swept.sweep-up {
-      transform: translateY(-110%) rotate(5deg);
+    .ninja-card.exiting {
+      animation: origamiFold 0.4s ease-in both;
+      pointer-events: none;
     }
-    /* Layer 1: tall grass in front */
-    .grass-layer-1 { z-index: 17; }
-    /* Layer 2: medium grass */
-    .grass-layer-2 { z-index: 16; }
-    /* Layer 3: short grass + leaves */
-    .grass-layer-3 { z-index: 15; }
-    .grass-wiggle { animation: gWiggle var(--gd, 2s) ease-in-out infinite; }
-    @keyframes gWiggle {
-      0%,100% { transform: rotate(0); }
-      30%  { transform: rotate(-2.5deg) translateY(-2px); }
-      70%  { transform: rotate(2.5deg) translateY(-2px); }
+
+    @keyframes origamiUnfold {
+      0%   { opacity: 0; transform: scale(0.3) rotateY(90deg); }
+      40%  { opacity: 1; transform: scale(1.05) rotateY(-8deg); }
+      70%  { transform: scale(0.98) rotateY(3deg); }
+      100% { transform: scale(1) rotateY(0); }
     }
-    /* Leaf burst particles */
-    .leaf-burst {
+    @keyframes origamiFold {
+      0%   { opacity: 1; transform: scale(1) rotateY(0); }
+      100% { opacity: 0; transform: scale(0.3) rotateY(-90deg) translateX(100px); }
+    }
+    @keyframes slashReveal {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .ninja-animal-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ninja-animal-wrap img {
+      width: clamp(160px, 45vw, 240px);
+      height: clamp(160px, 45vw, 240px);
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+      transition: filter 0.3s;
+    }
+    .ninja-card.active .ninja-animal-wrap img {
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3)) brightness(0) saturate(0);
+      transition: filter 0.4s;
+    }
+    .ninja-card.slashed .ninja-animal-wrap img {
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3)) brightness(1) saturate(1);
+    }
+
+    /* Grass/cover overlay on the animal before slashing */
+    .ninja-cover {
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      z-index: 24;
-      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 12;
+      transition: opacity 0.4s, transform 0.4s;
     }
-    .leaf {
-      position: absolute;
-      font-size: 1rem;
+    .ninja-card.slashed .ninja-cover {
       opacity: 0;
+      transform: scale(1.2);
     }
-    .leaf.fly {
-      animation: leafFly 0.7s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+    .ninja-cover svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
     }
-    @keyframes leafFly {
-      0%   { opacity: 1; transform: translate(0,0) rotate(0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--lx), var(--ly)) rotate(var(--lr)) scale(0.4); }
+
+    /* Name badge - BELOW the image */
+    .ninja-name {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1.1rem, 4vw, 1.6rem);
+      color: white;
+      text-shadow: 2px 3px 0 rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+      text-align: center;
     }
-    .found-star {
+    .ninja-card.slashed .ninja-name {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Swipe instruction */
+    .swipe-instruction {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.8);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      z-index: 30;
+      white-space: nowrap;
+      animation: swipeInstructPulse 2s ease-in-out infinite;
+    }
+    @keyframes swipeInstructPulse {
+      0%,100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    .ninja-card.slashed ~ .swipe-instruction { display: none; }
+
+    /* Slash particles */
+    .slash-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 55;
+      font-size: 1.2rem;
+      animation: particleBurst 0.6s ease-out forwards;
+    }
+    @keyframes particleBurst {
+      0%   { opacity: 1; transform: translate(0,0) scale(1) rotate(0); }
+      100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0.3) rotate(var(--pr)); }
+    }
+
+    /* Star burst on reveal */
+    .star-burst {
       position: absolute;
       top: 50%; left: 50%;
-      font-size: 2.5rem;
-      transform: translate(-50%,-50%) scale(0);
-      z-index: 25;
-      animation: none;
+      transform: translate(-50%,-50%);
+      z-index: 20;
       pointer-events: none;
     }
-    .animal-spot.revealed .found-star {
-      animation: starPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
-    }
-    @keyframes starPop {
-      0%   { transform: translate(-50%,-50%) scale(0); opacity:1; }
-      60%  { transform: translate(-50%,-50%) scale(1.3); opacity:1; }
-      100% { transform: translate(-50%,-80%) scale(0.7); opacity:0; }
-    }
-    /* Swipe hint animation on first spot */
-    .swipe-hand {
+    .star-burst span {
       position: absolute;
-      top: 50%;
-      left: 20%;
       font-size: 1.6rem;
-      z-index: 23;
-      pointer-events: none;
+      animation: starExplode 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
       opacity: 0;
-      animation: swipeHint 2s ease-in-out 1s infinite;
     }
-    .animal-spot.revealed .swipe-hand,
-    .animal-spot.swiping .swipe-hand { display: none; }
-    @keyframes swipeHint {
-      0%   { opacity: 0; transform: translate(0, -50%); }
-      15%  { opacity: 1; }
-      50%  { opacity: 1; transform: translate(60px, -50%); }
-      65%  { opacity: 0; transform: translate(70px, -50%); }
-      100% { opacity: 0; transform: translate(0, -50%); }
+    @keyframes starExplode {
+      0%   { opacity: 1; transform: translate(0,0) scale(0); }
+      50%  { opacity: 1; transform: translate(var(--sx), var(--sy)) scale(1.3); }
+      100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.5); }
     }
+
     /* ─── PARTY DETAILS ─── */
     #details {
       background: linear-gradient(160deg, #FFF8F0 0%, #FFF3E0 100%);
       gap: 1rem;
       padding: 2rem 1.5rem;
+      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
     }
     .confetti-layer {
       position: fixed;
@@ -414,9 +426,7 @@
       padding: 1.8rem 1.6rem 1.6rem;
       max-width: 420px;
       width: 100%;
-      box-shadow:
-        0 0 0 3px var(--brown),
-        0 12px 40px rgba(139,94,60,0.18);
+      box-shadow: 0 0 0 3px var(--brown), 0 12px 40px rgba(139,94,60,0.18);
       position: relative;
       overflow: visible;
       animation: cardBounceIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
@@ -432,10 +442,7 @@
       transform: translateX(-50%);
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
     }
-    .card-bear img {
-      width: 72px;
-      height: auto;
-    }
+    .card-bear img { width: 72px; height: auto; }
     .party-eyebrow {
       font-family: 'Caveat', cursive;
       font-size: 1.2rem;
@@ -455,15 +462,7 @@
       font-size: clamp(2.4rem, 10vw, 4rem);
       text-align: center;
       line-height: 1;
-      background: linear-gradient(
-        120deg,
-        var(--red)    0%,
-        var(--orange) 20%,
-        var(--yellow) 40%,
-        var(--green)  60%,
-        var(--blue)   80%,
-        var(--purple) 100%
-      );
+      background: linear-gradient(120deg, var(--red) 0%, var(--orange) 20%, var(--yellow) 40%, var(--green) 60%, var(--blue) 80%, var(--purple) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -471,10 +470,7 @@
     }
     .rainbow-rule {
       height: 4px;
-      background: linear-gradient(90deg,
-        var(--red), var(--orange), var(--yellow),
-        var(--green), var(--blue), var(--purple)
-      );
+      background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple));
       border-radius: 4px;
       margin: 0.8rem 0 1rem;
     }
@@ -486,31 +482,10 @@
       border-bottom: 2px dashed #F0E6D6;
     }
     .detail-row:last-of-type { border-bottom: none; }
-    .detail-icon {
-      font-size: 1.8rem;
-      flex-shrink: 0;
-      width: 40px;
-      text-align: center;
-      line-height: 1.3;
-    }
-    .detail-label {
-      font-family: 'Caveat', cursive;
-      font-size: 0.78rem;
-      color: #bbb;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-    .detail-value {
-      font-size: 1.05rem;
-      font-weight: 900;
-      color: var(--dark);
-      line-height: 1.3;
-    }
-    .detail-sub {
-      font-size: 0.88rem;
-      font-weight: 400;
-      color: #888;
-    }
+    .detail-icon { font-size: 1.8rem; flex-shrink: 0; width: 40px; text-align: center; line-height: 1.3; }
+    .detail-label { font-family: 'Caveat', cursive; font-size: 0.78rem; color: #bbb; letter-spacing: 1.5px; text-transform: uppercase; }
+    .detail-value { font-size: 1.05rem; font-weight: 900; color: var(--dark); line-height: 1.3; }
+    .detail-sub { font-size: 0.88rem; font-weight: 400; color: #888; }
     .book-quote {
       background: linear-gradient(135deg, #FFF9C4, #FFFDE7);
       border: 2.5px solid #FDCB6E;
@@ -565,34 +540,29 @@
       0%,60%,100% { transform: translateY(0); }
       30% { transform: translateY(-8px); }
     }
-    /* ─── DECORATIVE CHARACTERS ─── */
-    .detail-characters {
+
+    /* Family portrait at bottom of details */
+    .family-portrait-wrap {
       display: flex;
-      justify-content: center;
-      gap: 1.2rem;
+      flex-direction: column;
+      align-items: center;
       margin-top: 1.2rem;
-      flex-wrap: wrap;
+      gap: 0.4rem;
     }
-    .detail-character {
-      text-align: center;
+    .family-portrait-wrap img {
+      width: clamp(180px, 60vw, 260px);
+      height: auto;
+      border-radius: 20px;
+      border: 4px solid var(--yellow);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
     }
-    .detail-character img {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-      border-radius: 50%;
-      border: 3px solid var(--yellow);
-      background: #FFF9C4;
-      padding: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .detail-character-label {
+    .family-portrait-label {
       font-family: 'Caveat', cursive;
-      font-size: 0.85rem;
+      font-size: 1rem;
       color: #aaa;
-      margin-top: 0.3rem;
     }
-    /* ─── BACK BEAR WATERMARK ─── */
+
+    /* Bear watermark */
     .bear-watermark {
       position: fixed;
       bottom: -30px;
@@ -602,29 +572,14 @@
       pointer-events: none;
       z-index: 0;
     }
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 400px) {
-      .animals-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-      }
-      .animal-spot {
-        height: 160px;
-      }
-      .animal-figure img {
-        width: 90px;
-        height: 90px;
-      }
-    }
   </style>
 </head>
 <body>
 
-<!-- Bear watermark -->
 <img src="assets/brown-bear-back.png" alt="" class="bear-watermark">
 
 <!-- ═══════════════════════════════════════════
-     SCREEN 1 · INTRO
+     SCREEN 1 · INTRO  (Remi & Scout Portrait)
 ══════════════════════════════════════════════ -->
 <div id="intro" class="screen active">
   <div class="clouds">
@@ -632,347 +587,36 @@
     <div class="cloud cloud-2" style="margin-top:30px"></div>
     <div class="cloud cloud-3" style="margin-top:8px"></div>
   </div>
-  <div class="intro-title">BROWN BEAR,<br>BROWN BEAR,</div>
-  <div class="intro-subtitle">What do you see? 👀</div>
-  <div class="bear-wrap">
-    <img src="assets/brown-bear-front.png" alt="Brown Bear">
+
+  <div class="intro-portrait">
+    <img src="assets/remi-scout-portrait.png" alt="Remi & Scout">
   </div>
-  <div style="font-family:'Caveat',cursive;font-size:1.4rem;color:#FFFDE7;text-shadow:1px 2px 4px rgba(0,0,0,0.3);text-align:center;position:relative;z-index:3">
-    We see a birthday party looking at us! 🎉
-  </div>
-  <div style="font-family:'Nunito',sans-serif;font-size:0.95rem;color:rgba(255,255,255,0.85);margin:0.4rem 0 1rem;text-align:center;position:relative;z-index:3">
-    Swipe the grass to find all 8 animals! ✨
-  </div>
-  <button class="start-btn" onclick="showScreen('peekaboo')">
-    🐾 TAP TO PLAY!
+
+  <div class="intro-title">HAPPY 1ST BIRTHDAY</div>
+  <div class="intro-names">Remi & Scout!</div>
+  <div class="intro-subtitle">Brown Bear, Brown Bear, what do you see? 👀<br>We see a party looking at us! 🎉</div>
+
+  <button class="start-btn" onclick="showScreen('peekaboo'); startGame();">
+    🐾 TAP TO REVEAL THE PARTY!
   </button>
 </div>
 
 <!-- ═══════════════════════════════════════════
-     SCREEN 2 · PEEKABOO GAME
+     SCREEN 2 · FRUIT NINJA PEEKABOO
 ══════════════════════════════════════════════ -->
 <div id="peekaboo" class="screen">
   <div class="peek-title">🌿 PEEK-A-BOO! 🌿</div>
-  <div class="peek-hint">Swipe across the grass 3 times to find each animal!</div>
+  <div class="peek-hint">Swipe across each animal to reveal it!</div>
   <div class="progress-bar-wrap">
     <div class="progress-bar-fill" id="progressFill"></div>
   </div>
   <div class="counter-text" id="counterText">Found: 0 / 8</div>
-  <div class="animals-grid">
 
-    <!-- 1. RED BIRD -->
-    <div class="animal-spot" data-name="🐦 Red Bird" style="--gd:2.1s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#FFCDD2 0%,#FFEBEE 100%)"></div>
-      <div class="animal-name-badge" style="color:#C62828">🐦 Red Bird</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/red-bird.png" alt="Red Bird">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="swipe-hand">👆</div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:0s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="10"  cy="70" rx="10" ry="50" fill="#388E3C" transform="rotate(-8 10 70)"/>
-          <ellipse cx="30"  cy="60" rx="11" ry="58" fill="#2E7D32" transform="rotate(5 30 60)"/>
-          <ellipse cx="55"  cy="65" rx="10" ry="54" fill="#388E3C" transform="rotate(-4 55 65)"/>
-          <ellipse cx="80"  cy="58" rx="11" ry="60" fill="#2E7D32" transform="rotate(7 80 58)"/>
-          <ellipse cx="100" cy="64" rx="10" ry="55" fill="#388E3C" transform="rotate(-6 100 64)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.4s;animation-delay:-0.6s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#388E3C"/>
-          <ellipse cx="15"  cy="80" rx="9"  ry="44" fill="#43A047" transform="rotate(6 15 80)"/>
-          <ellipse cx="40"  cy="74" rx="10" ry="48" fill="#388E3C" transform="rotate(-5 40 74)"/>
-          <ellipse cx="65"  cy="78" rx="9"  ry="45" fill="#4CAF50" transform="rotate(4 65 78)"/>
-          <ellipse cx="90"  cy="72" rx="10" ry="50" fill="#43A047" transform="rotate(-7 90 72)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:1.8s;animation-delay:-1.2s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#4CAF50"/>
-          <ellipse cx="20"  cy="95" rx="8"  ry="35" fill="#66BB6A" transform="rotate(-3 20 95)"/>
-          <ellipse cx="50"  cy="90" rx="9"  ry="38" fill="#4CAF50" transform="rotate(5 50 90)"/>
-          <ellipse cx="85"  cy="94" rx="8"  ry="34" fill="#66BB6A" transform="rotate(-4 85 94)"/>
-        </svg>
-      </div>
-    </div>
+  <div class="ninja-arena" id="ninjaArena">
+    <canvas class="slash-canvas" id="slashCanvas"></canvas>
 
-    <!-- 2. YELLOW DUCK -->
-    <div class="animal-spot" data-name="🦆 Yellow Duck" style="--gd:1.8s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#FFF9C4 0%,#FFFDE7 100%)"></div>
-      <div class="animal-name-badge" style="color:#F57F17">🦆 Yellow Duck</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/yellow-duck.png" alt="Yellow Duck">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-0.4s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="12"  cy="68" rx="10" ry="52" fill="#388E3C" transform="rotate(7 12 68)"/>
-          <ellipse cx="35"  cy="62" rx="11" ry="56" fill="#2E7D32" transform="rotate(-5 35 62)"/>
-          <ellipse cx="60"  cy="66" rx="10" ry="53" fill="#388E3C" transform="rotate(8 60 66)"/>
-          <ellipse cx="85"  cy="60" rx="11" ry="58" fill="#2E7D32" transform="rotate(-7 85 60)"/>
-          <ellipse cx="105" cy="65" rx="9"  ry="54" fill="#388E3C" transform="rotate(4 105 65)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.2s;animation-delay:-1s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#43A047"/>
-          <ellipse cx="18"  cy="82" rx="9"  ry="42" fill="#4CAF50" transform="rotate(-6 18 82)"/>
-          <ellipse cx="45"  cy="76" rx="10" ry="46" fill="#43A047" transform="rotate(5 45 76)"/>
-          <ellipse cx="72"  cy="80" rx="9"  ry="43" fill="#558B2F" transform="rotate(-4 72 80)"/>
-          <ellipse cx="98"  cy="75" rx="10" ry="47" fill="#4CAF50" transform="rotate(6 98 75)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:2s;animation-delay:-0.3s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#66BB6A"/>
-          <ellipse cx="25"  cy="96" rx="8"  ry="33" fill="#81C784" transform="rotate(4 25 96)"/>
-          <ellipse cx="55"  cy="92" rx="9"  ry="36" fill="#66BB6A" transform="rotate(-5 55 92)"/>
-          <ellipse cx="82"  cy="95" rx="8"  ry="34" fill="#81C784" transform="rotate(3 82 95)"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- 3. BLUE HORSE -->
-    <div class="animal-spot" data-name="🐴 Blue Horse" style="--gd:2.3s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#BBDEFB 0%,#E3F2FD 100%)"></div>
-      <div class="animal-name-badge" style="color:#1565C0">🐴 Blue Horse</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/blue-horse.png" alt="Blue Horse">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-0.8s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="8"   cy="66" rx="10" ry="54" fill="#388E3C" transform="rotate(-6 8 66)"/>
-          <ellipse cx="32"  cy="60" rx="11" ry="58" fill="#2E7D32" transform="rotate(8 32 60)"/>
-          <ellipse cx="58"  cy="64" rx="10" ry="55" fill="#388E3C" transform="rotate(-5 58 64)"/>
-          <ellipse cx="82"  cy="58" rx="11" ry="60" fill="#2E7D32" transform="rotate(6 82 58)"/>
-          <ellipse cx="104" cy="63" rx="10" ry="56" fill="#388E3C" transform="rotate(-4 104 63)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.6s;animation-delay:-0.2s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#388E3C"/>
-          <ellipse cx="14"  cy="78" rx="9"  ry="46" fill="#43A047" transform="rotate(5 14 78)"/>
-          <ellipse cx="42"  cy="74" rx="10" ry="48" fill="#388E3C" transform="rotate(-7 42 74)"/>
-          <ellipse cx="68"  cy="76" rx="9"  ry="47" fill="#4CAF50" transform="rotate(6 68 76)"/>
-          <ellipse cx="95"  cy="73" rx="10" ry="49" fill="#43A047" transform="rotate(-5 95 73)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:1.9s;animation-delay:-1.4s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#4CAF50"/>
-          <ellipse cx="22"  cy="94" rx="8"  ry="36" fill="#66BB6A" transform="rotate(-4 22 94)"/>
-          <ellipse cx="52"  cy="90" rx="9"  ry="38" fill="#4CAF50" transform="rotate(5 52 90)"/>
-          <ellipse cx="80"  cy="93" rx="8"  ry="35" fill="#66BB6A" transform="rotate(-3 80 93)"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- 4. GREEN FROG -->
-    <div class="animal-spot" data-name="🐸 Green Frog" style="--gd:2.0s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#C8E6C9 0%,#E8F5E9 100%)"></div>
-      <div class="animal-name-badge" style="color:#2E7D32">🐸 Green Frog</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/green-frog.png" alt="Green Frog">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-1.1s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="14"  cy="70" rx="10" ry="50" fill="#1B5E20" transform="rotate(-5 14 70)"/>
-          <ellipse cx="38"  cy="64" rx="11" ry="54" fill="#2E7D32" transform="rotate(7 38 64)"/>
-          <ellipse cx="62"  cy="68" rx="10" ry="51" fill="#1B5E20" transform="rotate(-8 62 68)"/>
-          <ellipse cx="86"  cy="62" rx="11" ry="56" fill="#2E7D32" transform="rotate(5 86 62)"/>
-          <ellipse cx="106" cy="67" rx="9"  ry="52" fill="#1B5E20" transform="rotate(-4 106 67)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.3s;animation-delay:-0.7s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#388E3C"/>
-          <ellipse cx="16"  cy="80" rx="9"  ry="44" fill="#43A047" transform="rotate(4 16 80)"/>
-          <ellipse cx="44"  cy="76" rx="10" ry="46" fill="#2E7D32" transform="rotate(-6 44 76)"/>
-          <ellipse cx="70"  cy="78" rx="9"  ry="45" fill="#43A047" transform="rotate(7 70 78)"/>
-          <ellipse cx="96"  cy="74" rx="10" ry="48" fill="#2E7D32" transform="rotate(-5 96 74)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:2.1s;animation-delay:-0.9s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#4CAF50"/>
-          <ellipse cx="18"  cy="96" rx="8"  ry="32" fill="#66BB6A" transform="rotate(3 18 96)"/>
-          <ellipse cx="48"  cy="92" rx="9"  ry="36" fill="#4CAF50" transform="rotate(-5 48 92)"/>
-          <ellipse cx="78"  cy="95" rx="8"  ry="33" fill="#66BB6A" transform="rotate(4 78 95)"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- 5. PURPLE CAT -->
-    <div class="animal-spot" data-name="🐱 Purple Cat" style="--gd:2.2s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#E1BEE7 0%,#F3E5F5 100%)"></div>
-      <div class="animal-name-badge" style="color:#6A1B9A">🐱 Purple Cat</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/purple-cat.png" alt="Purple Cat">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-1.5s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="10"  cy="68" rx="10" ry="52" fill="#388E3C" transform="rotate(7 10 68)"/>
-          <ellipse cx="34"  cy="62" rx="11" ry="56" fill="#2E7D32" transform="rotate(-5 34 62)"/>
-          <ellipse cx="58"  cy="66" rx="10" ry="53" fill="#388E3C" transform="rotate(6 58 66)"/>
-          <ellipse cx="82"  cy="60" rx="11" ry="58" fill="#2E7D32" transform="rotate(-7 82 60)"/>
-          <ellipse cx="102" cy="65" rx="9"  ry="54" fill="#388E3C" transform="rotate(4 102 65)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.5s;animation-delay:-0.5s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#43A047"/>
-          <ellipse cx="12"  cy="80" rx="9"  ry="44" fill="#4CAF50" transform="rotate(-4 12 80)"/>
-          <ellipse cx="40"  cy="74" rx="10" ry="48" fill="#43A047" transform="rotate(6 40 74)"/>
-          <ellipse cx="66"  cy="78" rx="9"  ry="45" fill="#558B2F" transform="rotate(-5 66 78)"/>
-          <ellipse cx="92"  cy="73" rx="10" ry="49" fill="#4CAF50" transform="rotate(7 92 73)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:1.7s;animation-delay:-1.3s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#66BB6A"/>
-          <ellipse cx="24"  cy="94" rx="8"  ry="34" fill="#81C784" transform="rotate(-3 24 94)"/>
-          <ellipse cx="54"  cy="90" rx="9"  ry="38" fill="#66BB6A" transform="rotate(4 54 90)"/>
-          <ellipse cx="84"  cy="93" rx="8"  ry="35" fill="#81C784" transform="rotate(-5 84 93)"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- 6. GOLDFISH -->
-    <div class="animal-spot" data-name="🐟 Goldfish" style="--gd:1.9s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#FFE0B2 0%,#FFF3E0 100%)"></div>
-      <div class="animal-name-badge" style="color:#E65100">🐟 Goldfish</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/goldfish.png" alt="Goldfish">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-0.6s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="10"  cy="66" rx="10" ry="54" fill="#388E3C" transform="rotate(-6 10 66)"/>
-          <ellipse cx="32"  cy="60" rx="11" ry="58" fill="#2E7D32" transform="rotate(6 32 60)"/>
-          <ellipse cx="56"  cy="64" rx="10" ry="55" fill="#388E3C" transform="rotate(-8 56 64)"/>
-          <ellipse cx="80"  cy="58" rx="11" ry="60" fill="#2E7D32" transform="rotate(6 80 58)"/>
-          <ellipse cx="104" cy="63" rx="10" ry="56" fill="#388E3C" transform="rotate(-5 104 63)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.4s;animation-delay:-1.1s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#388E3C"/>
-          <ellipse cx="16"  cy="82" rx="9"  ry="42" fill="#43A047" transform="rotate(5 16 82)"/>
-          <ellipse cx="44"  cy="76" rx="10" ry="46" fill="#388E3C" transform="rotate(-6 44 76)"/>
-          <ellipse cx="70"  cy="80" rx="9"  ry="43" fill="#4CAF50" transform="rotate(4 70 80)"/>
-          <ellipse cx="96"  cy="75" rx="10" ry="47" fill="#43A047" transform="rotate(-7 96 75)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:2s;animation-delay:-0.2s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#4CAF50"/>
-          <ellipse cx="20"  cy="96" rx="8"  ry="33" fill="#66BB6A" transform="rotate(3 20 96)"/>
-          <ellipse cx="50"  cy="92" rx="9"  ry="36" fill="#4CAF50" transform="rotate(-4 50 92)"/>
-          <ellipse cx="82"  cy="95" rx="8"  ry="34" fill="#66BB6A" transform="rotate(5 82 95)"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- 7. BLACK SHEEP -->
-    <div class="animal-spot" data-name="🐑 Black Sheep" style="--gd:2.4s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#CFD8DC 0%,#ECEFF1 100%)"></div>
-      <div class="animal-name-badge" style="color:#37474F">🐑 Black Sheep</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/black-sheep.png" alt="Black Sheep">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-0.3s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="12"  cy="70" rx="10" ry="50" fill="#388E3C" transform="rotate(-7 12 70)"/>
-          <ellipse cx="36"  cy="64" rx="11" ry="54" fill="#2E7D32" transform="rotate(6 36 64)"/>
-          <ellipse cx="60"  cy="68" rx="10" ry="51" fill="#388E3C" transform="rotate(-5 60 68)"/>
-          <ellipse cx="84"  cy="62" rx="11" ry="56" fill="#2E7D32" transform="rotate(8 84 62)"/>
-          <ellipse cx="104" cy="67" rx="9"  ry="52" fill="#388E3C" transform="rotate(-6 104 67)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.1s;animation-delay:-0.9s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#43A047"/>
-          <ellipse cx="14"  cy="78" rx="9"  ry="46" fill="#4CAF50" transform="rotate(6 14 78)"/>
-          <ellipse cx="42"  cy="74" rx="10" ry="48" fill="#388E3C" transform="rotate(-4 42 74)"/>
-          <ellipse cx="68"  cy="78" rx="9"  ry="45" fill="#558B2F" transform="rotate(5 68 78)"/>
-          <ellipse cx="94"  cy="73" rx="10" ry="49" fill="#4CAF50" transform="rotate(-7 94 73)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:1.8s;animation-delay:-1.5s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#66BB6A"/>
-          <ellipse cx="22"  cy="94" rx="8"  ry="34" fill="#81C784" transform="rotate(-4 22 94)"/>
-          <ellipse cx="52"  cy="90" rx="9"  ry="38" fill="#66BB6A" transform="rotate(3 52 90)"/>
-          <ellipse cx="82"  cy="93" rx="8"  ry="35" fill="#81C784" transform="rotate(-5 82 93)"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- 8. WHITE DOG -->
-    <div class="animal-spot" data-name="🐕 White Dog" style="--gd:1.7s">
-      <div class="spot-bg" style="background:linear-gradient(180deg,#F5F5F5 0%,#FAFAFA 100%)"></div>
-      <div class="animal-name-badge" style="color:#5D4037">🐕 White Dog</div>
-      <div class="found-star">⭐</div>
-      <div class="animal-figure">
-        <img src="assets/white-dog.png" alt="White Dog">
-      </div>
-      <div class="leaf-burst"></div>
-      <div class="swipe-paws"><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span><span class="swipe-paw">🐾</span></div>
-      <div class="grass-layer grass-layer-1 grass-wiggle" style="animation-delay:-1.3s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="50" y="90" fill="#2E7D32"/>
-          <ellipse cx="8"   cy="68" rx="10" ry="52" fill="#388E3C" transform="rotate(6 8 68)"/>
-          <ellipse cx="30"  cy="62" rx="11" ry="56" fill="#2E7D32" transform="rotate(-5 30 62)"/>
-          <ellipse cx="54"  cy="66" rx="10" ry="53" fill="#388E3C" transform="rotate(7 54 66)"/>
-          <ellipse cx="78"  cy="60" rx="11" ry="58" fill="#2E7D32" transform="rotate(-6 78 60)"/>
-          <ellipse cx="100" cy="65" rx="9"  ry="54" fill="#388E3C" transform="rotate(4 100 65)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-2 grass-wiggle" style="--gd:2.3s;animation-delay:-0.4s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="40" y="100" fill="#388E3C"/>
-          <ellipse cx="18"  cy="80" rx="9"  ry="44" fill="#43A047" transform="rotate(-5 18 80)"/>
-          <ellipse cx="46"  cy="76" rx="10" ry="46" fill="#388E3C" transform="rotate(6 46 76)"/>
-          <ellipse cx="72"  cy="78" rx="9"  ry="45" fill="#4CAF50" transform="rotate(-7 72 78)"/>
-          <ellipse cx="98"  cy="75" rx="10" ry="47" fill="#43A047" transform="rotate(4 98 75)"/>
-        </svg>
-      </div>
-      <div class="grass-layer grass-layer-3 grass-wiggle" style="--gd:2s;animation-delay:-1s">
-        <svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%">
-          <rect width="110" height="30" y="110" fill="#4CAF50"/>
-          <ellipse cx="26"  cy="96" rx="8"  ry="33" fill="#66BB6A" transform="rotate(4 26 96)"/>
-          <ellipse cx="56"  cy="92" rx="9"  ry="36" fill="#4CAF50" transform="rotate(-3 56 92)"/>
-          <ellipse cx="86"  cy="95" rx="8"  ry="34" fill="#66BB6A" transform="rotate(5 86 95)"/>
-        </svg>
-      </div>
-    </div>
-
+    <!-- Cards are generated by JS -->
+    <div class="swipe-instruction" id="swipeInstruction">👆 Swipe across to reveal!</div>
   </div>
 </div>
 
@@ -982,7 +626,6 @@
 <div id="details" class="screen">
   <div class="confetti-layer" id="confettiLayer"></div>
   <div class="party-card">
-    <!-- Bear on top -->
     <div class="card-bear">
       <img src="assets/brown-bear-front.png" alt="Brown Bear">
     </div>
@@ -1038,16 +681,9 @@
       We see <strong>everyone we love</strong> looking at us!"</em>
     </div>
 
-    <!-- Decorative Characters -->
-    <div class="detail-characters">
-      <div class="detail-character">
-        <img src="assets/children.png" alt="Children">
-        <div class="detail-character-label">The Kids</div>
-      </div>
-      <div class="detail-character">
-        <img src="assets/teacher.png" alt="Teacher">
-        <div class="detail-character-label">The Teacher</div>
-      </div>
+    <div class="family-portrait-wrap">
+      <img src="assets/family-portrait.png" alt="Skylar, Anja, Remi & Scout">
+      <div class="family-portrait-label">With love from our family to yours 💛</div>
     </div>
 
     <button class="rsvp-btn" onclick="alert('RSVP details coming soon! 🐾')">
@@ -1057,208 +693,294 @@
 </div>
 
 <script>
+  // ─── ANIMALS DATA ───
+  const animals = [
+    { name: '🐦 Red Bird',    img: 'assets/red-bird.png',    color: '#E53935', bg: '#FFCDD2' },
+    { name: '🦆 Yellow Duck', img: 'assets/yellow-duck.png', color: '#F57F17', bg: '#FFF9C4' },
+    { name: '🐴 Blue Horse',  img: 'assets/blue-horse.png',  color: '#1565C0', bg: '#BBDEFB' },
+    { name: '🐸 Green Frog',  img: 'assets/green-frog.png',  color: '#2E7D32', bg: '#C8E6C9' },
+    { name: '🐱 Purple Cat',  img: 'assets/purple-cat.png',  color: '#6A1B9A', bg: '#E1BEE7' },
+    { name: '🐟 Goldfish',    img: 'assets/goldfish.png',    color: '#E65100', bg: '#FFE0B2' },
+    { name: '🐑 Black Sheep', img: 'assets/black-sheep.png', color: '#37474F', bg: '#CFD8DC' },
+    { name: '🐕 White Dog',   img: 'assets/white-dog.png',   color: '#5D4037', bg: '#EFEBE9' },
+  ];
+
   let found = 0;
-  const total = 8;
-  const SWIPES_NEEDED = 3;
-  const MIN_SWIPE_DISTANCE = 30; // px needed for a swipe to count
+  const total = animals.length;
+  let currentIndex = 0;
+  let isSlashing = false;
+  let slashPoints = [];
+  let cardActive = false;
+  let currentCardSlashed = false;
 
-  // Track state per animal spot
-  const spotStates = new Map();
+  // Canvas for slash trail
+  const canvas = document.getElementById('slashCanvas');
+  const ctx = canvas.getContext('2d');
+  const arena = document.getElementById('ninjaArena');
 
-  function getSpotState(spot) {
-    if (!spotStates.has(spot)) {
-      spotStates.set(spot, {
-        swipes: 0,
-        isDown: false,
-        startX: 0,
-        startY: 0,
-        hasMoved: false
-      });
-    }
-    return spotStates.get(spot);
+  function resizeCanvas() {
+    canvas.width = arena.offsetWidth;
+    canvas.height = arena.offsetHeight;
   }
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const el = document.getElementById(id);
-    el.classList.add('active');
+    document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
     if (id === 'details') launchConfetti();
+    if (id === 'peekaboo') resizeCanvas();
   }
 
-  // Leaf burst effect when a grass layer is swiped away
-  function spawnLeaves(spot) {
-    const burst = spot.querySelector('.leaf-burst');
-    const leafEmojis = ['🍃', '🌿', '☘️', '🍀', '🌱'];
-    for (let i = 0; i < 6; i++) {
-      const leaf = document.createElement('span');
-      leaf.className = 'leaf';
-      leaf.textContent = leafEmojis[Math.floor(Math.random() * leafEmojis.length)];
-      leaf.style.left = (20 + Math.random() * 60) + '%';
-      leaf.style.top = (30 + Math.random() * 40) + '%';
-      leaf.style.setProperty('--lx', ((Math.random() - 0.5) * 120) + 'px');
-      leaf.style.setProperty('--ly', (-30 - Math.random() * 80) + 'px');
-      leaf.style.setProperty('--lr', ((Math.random() - 0.5) * 360) + 'deg');
-      burst.appendChild(leaf);
-      // Trigger animation
-      requestAnimationFrame(() => leaf.classList.add('fly'));
-      setTimeout(() => leaf.remove(), 800);
-    }
+  // ─── BUILD CARD HTML ───
+  function buildCard(animal, index) {
+    const card = document.createElement('div');
+    card.className = 'ninja-card';
+    card.dataset.index = index;
+    card.style.background = `radial-gradient(circle at 50% 60%, ${animal.bg} 0%, rgba(255,255,255,0.1) 70%)`;
+    card.innerHTML = `
+      <div class="ninja-animal-wrap">
+        <img src="${animal.img}" alt="${animal.name}">
+        <div class="ninja-name" style="color:${animal.color}">${animal.name}</div>
+      </div>
+      <div class="ninja-cover">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40"  cy="200" rx="22" ry="120" fill="#388E3C" transform="rotate(-8 40 200)" opacity="0.9"/>
+          <ellipse cx="90"  cy="180" rx="24" ry="140" fill="#2E7D32" transform="rotate(6 90 180)" opacity="0.85"/>
+          <ellipse cx="150" cy="190" rx="22" ry="130" fill="#43A047" transform="rotate(-4 150 190)" opacity="0.9"/>
+          <ellipse cx="210" cy="175" rx="24" ry="145" fill="#388E3C" transform="rotate(7 210 175)" opacity="0.85"/>
+          <ellipse cx="260" cy="195" rx="22" ry="125" fill="#2E7D32" transform="rotate(-6 260 195)" opacity="0.9"/>
+          <rect width="300" height="80" y="250" fill="#2E7D32"/>
+          <ellipse cx="70"  cy="240" rx="20" ry="90"  fill="#4CAF50" transform="rotate(5 70 240)" opacity="0.7"/>
+          <ellipse cx="140" cy="235" rx="18" ry="95"  fill="#66BB6A" transform="rotate(-3 140 235)" opacity="0.7"/>
+          <ellipse cx="230" cy="240" rx="20" ry="88"  fill="#4CAF50" transform="rotate(4 230 240)" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="star-burst"></div>
+    `;
+    return card;
   }
 
-  function processSwipe(spot, dx, dy) {
-    if (spot.classList.contains('revealed')) return;
-    const state = getSpotState(spot);
+  // ─── SHOW NEXT ANIMAL ───
+  function showNextAnimal() {
+    if (currentIndex >= total) return;
 
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < MIN_SWIPE_DISTANCE) return;
+    // Remove old exiting cards
+    arena.querySelectorAll('.ninja-card.exiting').forEach(c => {
+      setTimeout(() => c.remove(), 500);
+    });
 
-    // Determine swipe direction for animation
-    let sweepClass;
-    if (Math.abs(dx) > Math.abs(dy)) {
-      sweepClass = dx > 0 ? 'sweep-right' : 'sweep-left';
+    const card = buildCard(animals[currentIndex], currentIndex);
+    // Insert before the instruction
+    const instruction = document.getElementById('swipeInstruction');
+    arena.insertBefore(card, instruction);
+
+    // Show instruction for first card
+    if (currentIndex === 0) {
+      instruction.style.display = '';
     } else {
-      sweepClass = 'sweep-up';
+      instruction.style.display = 'none';
     }
 
-    // Remove the next grass layer
-    const layerIndex = SWIPES_NEEDED - state.swipes; // 3, 2, 1
-    const layer = spot.querySelector('.grass-layer-' + layerIndex);
-    if (layer && !layer.classList.contains('swept')) {
-      layer.classList.add('swept', sweepClass);
-      layer.style.animation = 'none'; // stop wiggling
-      spawnLeaves(spot);
-      state.swipes++;
-      state.hasMoved = true;
-
-      // Update paw indicators
-      const paws = spot.querySelectorAll('.swipe-paw');
-      if (paws[state.swipes - 1]) {
-        paws[state.swipes - 1].classList.add('cleared');
-      }
-
-      // Check if fully revealed
-      if (state.swipes >= SWIPES_NEEDED) {
-        setTimeout(() => revealAnimal(spot), 200);
-      }
-    }
+    requestAnimationFrame(() => {
+      card.classList.add('active');
+      cardActive = true;
+      currentCardSlashed = false;
+    });
   }
 
-  function revealAnimal(spot) {
-    if (spot.classList.contains('revealed')) return;
-    spot.classList.add('revealed');
-    found++;
+  function startGame() {
+    currentIndex = 0;
+    found = 0;
+    updateProgress();
+    setTimeout(() => {
+      resizeCanvas();
+      showNextAnimal();
+    }, 300);
+  }
+
+  function updateProgress() {
     const fill = document.getElementById('progressFill');
-    const txt  = document.getElementById('counterText');
+    const txt = document.getElementById('counterText');
     fill.style.width = (found / total * 100) + '%';
-    txt.textContent  = `Found: ${found} / ${total}`;
+    txt.textContent = `Found: ${found} / ${total}`;
     txt.classList.add('pop');
     setTimeout(() => txt.classList.remove('pop'), 300);
-    if (found === total) {
-      txt.textContent = 'ALL FOUND! 🎉 Opening party details...';
-      setTimeout(() => showScreen('details'), 900);
+  }
+
+  // ─── SLASH DETECTION ───
+  function getPos(e) {
+    const rect = arena.getBoundingClientRect();
+    if (e.touches) {
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    }
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  function drawSlashTrail() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (slashPoints.length < 2) return;
+
+    // Draw glowing slash line
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Outer glow
+    ctx.strokeStyle = 'rgba(255,255,100,0.3)';
+    ctx.lineWidth = 20;
+    ctx.beginPath();
+    ctx.moveTo(slashPoints[0].x, slashPoints[0].y);
+    for (let i = 1; i < slashPoints.length; i++) {
+      ctx.lineTo(slashPoints[i].x, slashPoints[i].y);
+    }
+    ctx.stroke();
+
+    // Inner bright line
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(slashPoints[0].x, slashPoints[0].y);
+    for (let i = 1; i < slashPoints.length; i++) {
+      ctx.lineTo(slashPoints[i].x, slashPoints[i].y);
+    }
+    ctx.stroke();
+  }
+
+  function spawnSlashParticles(x, y) {
+    const emojis = ['🍃', '🌿', '✨', '⭐', '☘️'];
+    for (let i = 0; i < 4; i++) {
+      const p = document.createElement('span');
+      p.className = 'slash-particle';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.setProperty('--px', ((Math.random() - 0.5) * 120) + 'px');
+      p.style.setProperty('--py', ((Math.random() - 0.5) * 120) + 'px');
+      p.style.setProperty('--pr', (Math.random() * 360) + 'deg');
+      arena.appendChild(p);
+      setTimeout(() => p.remove(), 700);
     }
   }
 
-  // ─── TOUCH EVENTS (mobile) ───
-  document.addEventListener('touchstart', function(e) {
-    const spot = e.target.closest('.animal-spot');
-    if (!spot || spot.classList.contains('revealed')) return;
-    const state = getSpotState(spot);
-    const touch = e.touches[0];
-    state.isDown = true;
-    state.startX = touch.clientX;
-    state.startY = touch.clientY;
-    state.hasMoved = false;
-    spot.classList.add('swiping');
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function(e) {
-    const spot = e.target.closest('.animal-spot');
-    if (!spot || spot.classList.contains('revealed')) return;
-    const state = getSpotState(spot);
-    if (!state.isDown) return;
-    const touch = e.touches[0];
-    const dx = touch.clientX - state.startX;
-    const dy = touch.clientY - state.startY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist >= MIN_SWIPE_DISTANCE && !state.hasMoved) {
-      processSwipe(spot, dx, dy);
-      // Reset start for next swipe within same touch
-      state.startX = touch.clientX;
-      state.startY = touch.clientY;
+  function spawnStarBurst(card) {
+    const burst = card.querySelector('.star-burst');
+    const stars = ['⭐', '🌟', '✨', '💫', '🎉'];
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement('span');
+      const angle = (i / 8) * Math.PI * 2;
+      const dist = 60 + Math.random() * 40;
+      s.textContent = stars[Math.floor(Math.random() * stars.length)];
+      s.style.setProperty('--sx', (Math.cos(angle) * dist) + 'px');
+      s.style.setProperty('--sy', (Math.sin(angle) * dist) + 'px');
+      s.style.animationDelay = (i * 0.04) + 's';
+      burst.appendChild(s);
+      setTimeout(() => s.remove(), 800);
     }
-  }, { passive: true });
+  }
 
-  document.addEventListener('touchend', function(e) {
-    const spot = e.target.closest('.animal-spot');
-    if (!spot) return;
-    const state = getSpotState(spot);
-    state.isDown = false;
-    spot.classList.remove('swiping');
-  }, { passive: true });
+  function calculateSlashLength() {
+    let len = 0;
+    for (let i = 1; i < slashPoints.length; i++) {
+      const dx = slashPoints[i].x - slashPoints[i-1].x;
+      const dy = slashPoints[i].y - slashPoints[i-1].y;
+      len += Math.sqrt(dx*dx + dy*dy);
+    }
+    return len;
+  }
 
-  // ─── MOUSE EVENTS (desktop) ───
-  document.addEventListener('mousedown', function(e) {
-    const spot = e.target.closest('.animal-spot');
-    if (!spot || spot.classList.contains('revealed')) return;
-    const state = getSpotState(spot);
-    state.isDown = true;
-    state.startX = e.clientX;
-    state.startY = e.clientY;
-    state.hasMoved = false;
-    spot.classList.add('swiping');
+  function revealCurrentAnimal() {
+    if (currentCardSlashed) return;
+    currentCardSlashed = true;
+    cardActive = false;
+
+    const card = arena.querySelector('.ninja-card.active');
+    if (!card) return;
+
+    card.classList.remove('active');
+    card.classList.add('slashed');
+    spawnStarBurst(card);
+
+    found++;
+    updateProgress();
+
+    if (found === total) {
+      const txt = document.getElementById('counterText');
+      txt.textContent = 'ALL FOUND! 🎉';
+      setTimeout(() => showScreen('details'), 1200);
+      return;
+    }
+
+    // Fold out old card, bring in next
+    setTimeout(() => {
+      card.classList.add('exiting');
+      currentIndex++;
+      setTimeout(() => showNextAnimal(), 300);
+    }, 1000);
+  }
+
+  // ─── EVENT HANDLERS ───
+  function onStart(e) {
+    if (!cardActive || currentCardSlashed) return;
     e.preventDefault();
-  });
+    isSlashing = true;
+    slashPoints = [getPos(e)];
+  }
 
-  document.addEventListener('mousemove', function(e) {
-    // Find which spot we're over (may have moved between spots)
-    const spot = document.elementFromPoint(e.clientX, e.clientY)?.closest('.animal-spot');
-    // Also check all spots for active drag state
-    spotStates.forEach((state, s) => {
-      if (!state.isDown) return;
-      if (s.classList.contains('revealed')) return;
-      const dx = e.clientX - state.startX;
-      const dy = e.clientY - state.startY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist >= MIN_SWIPE_DISTANCE) {
-        processSwipe(s, dx, dy);
-        state.startX = e.clientX;
-        state.startY = e.clientY;
-      }
-    });
-  });
+  function onMove(e) {
+    if (!isSlashing || !cardActive || currentCardSlashed) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    slashPoints.push(pos);
 
-  document.addEventListener('mouseup', function(e) {
-    spotStates.forEach((state, spot) => {
-      state.isDown = false;
-      spot.classList.remove('swiping');
-    });
-  });
+    // Keep trail short
+    if (slashPoints.length > 30) slashPoints.shift();
 
+    drawSlashTrail();
+    spawnSlashParticles(pos.x, pos.y);
+
+    // Check if slash is long enough
+    if (calculateSlashLength() > 80) {
+      revealCurrentAnimal();
+    }
+  }
+
+  function onEnd(e) {
+    isSlashing = false;
+    slashPoints = [];
+    // Fade out trail
+    setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 200);
+  }
+
+  // Touch
+  arena.addEventListener('touchstart', onStart, { passive: false });
+  arena.addEventListener('touchmove', onMove, { passive: false });
+  arena.addEventListener('touchend', onEnd);
+
+  // Mouse
+  arena.addEventListener('mousedown', onStart);
+  arena.addEventListener('mousemove', onMove);
+  arena.addEventListener('mouseup', onEnd);
+  arena.addEventListener('mouseleave', onEnd);
+
+  // Resize
+  window.addEventListener('resize', resizeCanvas);
+
+  // ─── CONFETTI ───
   function launchConfetti() {
-    const layer  = document.getElementById('confettiLayer');
+    const layer = document.getElementById('confettiLayer');
     const colors = ['#E53935','#FDCB6E','#43A047','#1E88E5','#7B1FA2','#FF8F00','#00BCD4','#F48FB1','#FFD700'];
     for (let i = 0; i < 100; i++) {
-      const el    = document.createElement('div');
+      const el = document.createElement('div');
       const color = colors[Math.floor(Math.random() * colors.length)];
-      const left  = Math.random() * 100;
-      const dur   = 2.2 + Math.random() * 2.4;
+      const left = Math.random() * 100;
+      const dur = 2.2 + Math.random() * 2.4;
       const delay = Math.random() * 1.8;
-      const dx    = (Math.random() - 0.5) * 260 + 'px';
-      const spin  = (Math.random() * 2 - 1) * 720 + 'deg';
+      const dx = (Math.random() - 0.5) * 260 + 'px';
+      const spin = (Math.random() * 2 - 1) * 720 + 'deg';
       const circle = Math.random() > 0.4;
       const w = 6 + Math.random() * 9;
       const h = circle ? w : (4 + Math.random() * 10);
       el.className = 'cf';
-      el.style.cssText = `
-        left:${left}%;
-        width:${w}px; height:${h}px;
-        background:${color};
-        --d:${dur}s; --dl:${delay}s;
-        --dx:${dx}; --spin:${spin};
-        --r:${circle ? '50%' : '2px'};
-      `;
+      el.style.cssText = `left:${left}%;width:${w}px;height:${h}px;background:${color};--d:${dur}s;--dl:${delay}s;--dx:${dx};--spin:${spin};--r:${circle ? '50%' : '2px'};`;
       layer.appendChild(el);
     }
     setTimeout(() => layer.innerHTML = '', 6000);
