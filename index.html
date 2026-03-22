@@ -678,7 +678,8 @@ let grassPixels = null;   // ImageData of the grass canvas
 let totalGrassPixels = 0;
 let clearedPixels = 0;
 let revealed = false;
-let brushRadius = 22;
+let brushRadius = 48;
+let moveCount = 0;
 
 // ═══════════════ ELEMENTS ═══════════════
 const arenaEl    = document.getElementById('cutArena');
@@ -841,6 +842,7 @@ function calculateClearPercent() {
 // ═══════════════ LOAD ANIMAL ═══════════════
 function loadAnimal(index) {
   revealed = false;
+  moveCount = 0;
   const animal = animals[index];
 
   arenaImg.src = animal.img;
@@ -959,12 +961,15 @@ function onMove(e) {
   const pos = getPos(e);
   cutGrass(pos.x, pos.y);
   drawTrail(pos.x, pos.y);
+  moveCount++;
 
-  // Check progress periodically
-  const pct = calculateClearPercent();
-  cutMeter.textContent = '🌿 ' + pct + '%';
+  // Check progress every few moves (pixel counting is expensive)
+  if (moveCount % 3 === 0) {
+    const pct = calculateClearPercent();
+    cutMeter.textContent = '🌿 ' + pct + '%';
+  }
 
-  if (pct >= 50) {
+  if (moveCount > 12 && calculateClearPercent() >= 35) {
     revealAnimal();
   }
 }
