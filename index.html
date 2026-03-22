@@ -678,7 +678,7 @@ let grassPixels = null;   // ImageData of the grass canvas
 let totalGrassPixels = 0;
 let clearedPixels = 0;
 let revealed = false;
-let brushRadius = 48;
+let brushRadius = 80;
 let moveCount = 0;
 
 // ═══════════════ ELEMENTS ═══════════════
@@ -969,7 +969,7 @@ function onMove(e) {
     cutMeter.textContent = '🌿 ' + pct + '%';
   }
 
-  if (moveCount > 12 && calculateClearPercent() >= 35) {
+  if (moveCount > 6 && calculateClearPercent() >= 20) {
     revealAnimal();
   }
 }
