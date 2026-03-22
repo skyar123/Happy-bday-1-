@@ -23,7 +23,6 @@
       font-family: 'Nunito', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      cursor: default;
       -webkit-user-select: none;
       user-select: none;
     }
@@ -44,8 +43,12 @@
       padding: 1.5rem;
     }
     .screen.active { display: flex; }
+    @keyframes screenIn {
+      from { opacity: 0; transform: scale(0.95) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
 
-    /* ─── INTRO ─── */
+    /* ═══════════════ INTRO ═══════════════ */
     #intro {
       background: linear-gradient(175deg, #87CEEB 0%, #B3E5FC 40%, #66BB6A 40%, #388E3C 100%);
       position: relative;
@@ -89,14 +92,9 @@
     .cloud-3::before { width: 38px; height: 36px; top: -20px; left: 10px; }
     .cloud-3::after  { width: 28px; height: 28px; top: -14px; left: 34px; }
     @keyframes cloudDrift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
-    @keyframes screenIn {
-      from { opacity: 0; transform: scale(0.95) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
 
     .intro-portrait {
-      position: relative;
-      z-index: 3;
+      position: relative; z-index: 3;
       width: clamp(200px, 55vw, 280px);
       height: clamp(200px, 55vw, 280px);
       border-radius: 50%;
@@ -106,37 +104,26 @@
       animation: portraitFloat 3s ease-in-out infinite;
       margin-bottom: 0.6rem;
     }
-    .intro-portrait img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .intro-portrait img { width: 100%; height: 100%; object-fit: cover; }
     @keyframes portraitFloat {
       0%,100% { transform: translateY(0) rotate(-1deg); }
       50%     { transform: translateY(-10px) rotate(1deg); }
     }
-
     .intro-title {
       font-family: 'Luckiest Guy', cursive;
       font-size: clamp(2rem, 8vw, 4rem);
       color: white;
       text-shadow: 4px 5px 0 rgba(80,40,10,0.35);
-      line-height: 1.05;
-      letter-spacing: 2px;
-      text-align: center;
-      position: relative;
-      z-index: 2;
+      line-height: 1.05; letter-spacing: 2px;
+      text-align: center; position: relative; z-index: 2;
     }
     .intro-names {
       font-family: 'Luckiest Guy', cursive;
       font-size: clamp(2.6rem, 11vw, 5rem);
-      text-align: center;
-      line-height: 1;
-      position: relative;
-      z-index: 2;
+      text-align: center; line-height: 1;
+      position: relative; z-index: 2;
       background: linear-gradient(120deg, #FFD700 0%, #FFF9C4 30%, #FFD700 60%, #FFA000 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
       filter: drop-shadow(3px 4px 0 rgba(80,40,10,0.4));
       margin: 0.1rem 0;
@@ -144,258 +131,280 @@
     .intro-subtitle {
       font-family: 'Caveat', cursive;
       font-size: clamp(1.3rem, 4.5vw, 2rem);
-      color: #FFFDE7;
-      text-align: center;
-      position: relative;
-      z-index: 2;
+      color: #FFFDE7; text-align: center;
+      position: relative; z-index: 2;
       text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
       margin: 0.2rem 0 0.8rem;
     }
     .start-btn {
-      background: var(--red);
-      color: white;
-      border: none;
+      background: var(--red); color: white; border: none;
       font-family: 'Luckiest Guy', cursive;
       font-size: clamp(1.1rem, 4vw, 1.5rem);
-      padding: 0.9rem 2.8rem;
-      border-radius: 60px;
-      cursor: pointer;
-      letter-spacing: 2px;
+      padding: 0.9rem 2.8rem; border-radius: 60px;
+      cursor: pointer; letter-spacing: 2px;
       box-shadow: 0 6px 0 #8B0000, 0 12px 24px rgba(0,0,0,0.2);
-      transform: translateY(0);
-      transition: transform 0.1s, box-shadow 0.1s;
-      position: relative;
-      z-index: 3;
+      position: relative; z-index: 3;
       animation: btnPulse 2s ease-in-out infinite;
+      transition: transform 0.1s, box-shadow 0.1s;
     }
     .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #8B0000, 0 14px 28px rgba(0,0,0,0.25); }
     .start-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #8B0000; }
-    @keyframes btnPulse {
-      0%,100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    @keyframes btnPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+    /* ═══════════════ PEEKABOO ═══════════════ */
+    #peekaboo {
+      background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 30%, #A5D6A7 30%, #2E7D32 100%);
+      padding: 0.8rem 1rem 1.5rem;
+      justify-content: flex-start;
+      gap: 0.4rem;
+      touch-action: none;
+      overflow: hidden;
     }
 
-    /* ─── PEEKABOO (Fruit Ninja Style) ─── */
-    #peekaboo {
-      background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 40%, #A5D6A7 40%, #2E7D32 100%);
-      gap: 0.5rem;
-      padding: 1rem 1rem 2rem;
-      justify-content: flex-start;
-      padding-top: 1rem;
-      touch-action: none;
+    /* ─ Carousel of found animals ─ */
+    .found-carousel {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      width: 100%;
+      flex-wrap: nowrap;
+      padding: 4px 0;
     }
-    .peek-title {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
-      color: white;
-      text-shadow: 3px 4px 0 rgba(0,0,0,0.2);
-      text-align: center;
+    .carousel-slot {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 2px dashed rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      flex-shrink: 0;
     }
-    .peek-hint {
+    .carousel-slot.filled {
+      border: 3px solid white;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      animation: slotPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .carousel-slot.filled img {
+      width: 100%; height: 100%; object-fit: contain;
+    }
+    @keyframes slotPop {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .peek-prompt {
       font-family: 'Caveat', cursive;
-      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      font-size: clamp(1rem, 3.2vw, 1.2rem);
       color: #E8F5E9;
       text-align: center;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
     }
-    .progress-bar-wrap {
-      width: min(340px, 85vw);
-      height: 14px;
-      background: rgba(255,255,255,0.3);
-      border-radius: 10px;
-      overflow: hidden;
-      border: 2px solid rgba(255,255,255,0.5);
-    }
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #FDCB6E, #E17055);
-      border-radius: 10px;
-      transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .counter-text {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: 0.9rem;
-      color: white;
-      text-shadow: 1px 2px 0 rgba(0,0,0,0.2);
-      transition: transform 0.15s, color 0.15s;
-    }
-    .counter-text.pop { transform: scale(1.3); color: #FDCB6E; }
 
-    /* ─── NINJA ARENA ─── */
-    .ninja-arena {
+    /* ─ The grass-cutting arena ─ */
+    .cut-arena {
       position: relative;
-      width: min(380px, 92vw);
-      height: min(380px, 70vh);
-      border-radius: 24px;
+      width: min(360px, 90vw);
+      height: min(400px, 62vh);
+      border-radius: 20px;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.08) 100%);
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.1), 0 8px 32px rgba(0,0,0,0.15);
-      cursor: crosshair;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      background: #C8E6C9;
       touch-action: none;
+      cursor: crosshair;
     }
-
-    /* Slash trail canvas */
-    .slash-canvas {
-      position: absolute;
-      inset: 0;
-      z-index: 50;
-      pointer-events: none;
-    }
-
-    /* Single animal card shown in arena */
-    .ninja-card {
+    /* Hidden animal image behind the grass */
+    .arena-animal {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 10;
+      z-index: 1;
     }
-    .ninja-card.active {
-      opacity: 1;
-      pointer-events: auto;
-      animation: origamiUnfold 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .ninja-card.slashed {
-      animation: slashReveal 0.5s ease-out both;
-      pointer-events: none;
-    }
-    .ninja-card.exiting {
-      animation: origamiFold 0.4s ease-in both;
-      pointer-events: none;
-    }
-
-    @keyframes origamiUnfold {
-      0%   { opacity: 0; transform: scale(0.3) rotateY(90deg); }
-      40%  { opacity: 1; transform: scale(1.05) rotateY(-8deg); }
-      70%  { transform: scale(0.98) rotateY(3deg); }
-      100% { transform: scale(1) rotateY(0); }
-    }
-    @keyframes origamiFold {
-      0%   { opacity: 1; transform: scale(1) rotateY(0); }
-      100% { opacity: 0; transform: scale(0.3) rotateY(-90deg) translateX(100px); }
-    }
-    @keyframes slashReveal {
-      0%   { transform: scale(1); }
-      30%  { transform: scale(1.15); }
-      100% { transform: scale(1); }
-    }
-
-    .ninja-animal-wrap {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .ninja-animal-wrap img {
-      width: clamp(160px, 45vw, 240px);
-      height: clamp(160px, 45vw, 240px);
+    .arena-animal img {
+      max-width: 80%;
+      max-height: 75%;
       object-fit: contain;
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
-      transition: filter 0.3s;
+      filter: drop-shadow(0 6px 16px rgba(0,0,0,0.25));
     }
-    .ninja-card.active .ninja-animal-wrap img {
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3)) brightness(0) saturate(0);
-      transition: filter 0.4s;
-    }
-    .ninja-card.slashed .ninja-animal-wrap img {
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3)) brightness(1) saturate(1);
-    }
-
-    /* Grass/cover overlay on the animal before slashing */
-    .ninja-cover {
+    .arena-animal-name {
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 12;
-      transition: opacity 0.4s, transform 0.4s;
-    }
-    .ninja-card.slashed .ninja-cover {
-      opacity: 0;
-      transform: scale(1.2);
-    }
-    .ninja-cover svg {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-    }
-
-    /* Name badge - BELOW the image */
-    .ninja-name {
+      bottom: 12px; left: 50%;
+      transform: translateX(-50%);
       font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.1rem, 4vw, 1.6rem);
+      font-size: 1.3rem;
       color: white;
       text-shadow: 2px 3px 0 rgba(0,0,0,0.3);
       opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+    .arena-animal-name.visible { opacity: 1; }
+
+    /* Grass overlay canvas - user cuts through this */
+    .grass-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      cursor: crosshair;
+    }
+
+    /* Slash trail canvas */
+    .trail-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    /* Cut % indicator */
+    .cut-meter {
+      position: absolute;
+      top: 10px; right: 10px;
+      z-index: 10;
+      background: rgba(0,0,0,0.4);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 0.8rem;
+      color: white;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Swipe hint */
+    .arena-hint {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 8;
+      font-size: 2.5rem;
+      animation: hintSwipe 2.2s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    @keyframes hintSwipe {
+      0%   { opacity: 0; transform: translate(-80%, -50%) rotate(-20deg); }
+      15%  { opacity: 0.9; }
+      50%  { opacity: 0.9; transform: translate(30%, -50%) rotate(10deg); }
+      65%  { opacity: 0; }
+      100% { opacity: 0; transform: translate(-80%, -50%) rotate(-20deg); }
+    }
+    .arena-hint.hidden { display: none; }
+
+    /* Leaf particles */
+    .leaf-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 7;
+      font-size: 1rem;
+      animation: leafFly 0.6s ease-out forwards;
+    }
+    @keyframes leafFly {
+      0%   { opacity: 1; transform: translate(0,0) rotate(0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--lx), var(--ly)) rotate(var(--lr)) scale(0.3); }
+    }
+
+    /* Reveal flash */
+    .reveal-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+      z-index: 12;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .reveal-flash.flash { opacity: 1; animation: flashPulse 0.6s ease-out forwards; }
+    @keyframes flashPulse {
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* ═══════════════ ALL-FOUND CELEBRATION ═══════════════ */
+    #celebrate {
+      background: linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 50%, #FFECB3 100%);
+      gap: 0.8rem;
+      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .celebrate-title {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      color: var(--brown);
+      text-align: center;
+      text-shadow: 2px 3px 0 rgba(0,0,0,0.08);
+    }
+    .celebrate-sub {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      color: #8D6E63;
       text-align: center;
     }
-    .ninja-card.slashed .ninja-name {
+    .all-animals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: min(380px, 90vw);
+      padding: 0.5rem;
+    }
+    .all-animal-cell {
+      background: white;
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: scale(0.5) translateY(20px);
+      transition: opacity 0.4s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .all-animal-cell.pop-in {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    .all-animal-cell img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+    }
+    .all-animal-cell span {
+      font-family: 'Caveat', cursive;
+      font-size: 0.7rem;
+      color: #888;
+      text-align: center;
+      line-height: 1.1;
+    }
+    .celebrate-btn {
+      background: var(--red); color: white; border: none;
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      padding: 0.8rem 2.4rem; border-radius: 60px;
+      cursor: pointer; letter-spacing: 2px;
+      box-shadow: 0 5px 0 #8B0000, 0 10px 20px rgba(214,48,49,0.25);
+      transition: transform 0.1s, box-shadow 0.1s;
+      animation: btnPulse 2s ease-in-out 2s infinite;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s 2.5s, transform 0.4s 2.5s;
+    }
+    .celebrate-btn.show {
       opacity: 1;
       transform: translateY(0);
     }
-
-    /* Swipe instruction */
-    .swipe-instruction {
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
-      color: rgba(255,255,255,0.8);
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-      z-index: 30;
-      white-space: nowrap;
-      animation: swipeInstructPulse 2s ease-in-out infinite;
-    }
-    @keyframes swipeInstructPulse {
-      0%,100% { opacity: 0.7; }
-      50% { opacity: 1; }
-    }
-    .ninja-card.slashed ~ .swipe-instruction { display: none; }
-
-    /* Slash particles */
-    .slash-particle {
-      position: absolute;
-      pointer-events: none;
-      z-index: 55;
-      font-size: 1.2rem;
-      animation: particleBurst 0.6s ease-out forwards;
-    }
-    @keyframes particleBurst {
-      0%   { opacity: 1; transform: translate(0,0) scale(1) rotate(0); }
-      100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0.3) rotate(var(--pr)); }
+    .celebrate-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #8B0000, 0 14px 24px rgba(214,48,49,0.3); }
+    .celebrate-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8B0000; }
+    .confetti-layer-celebrate {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 998; overflow: hidden;
     }
 
-    /* Star burst on reveal */
-    .star-burst {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      z-index: 20;
-      pointer-events: none;
-    }
-    .star-burst span {
-      position: absolute;
-      font-size: 1.6rem;
-      animation: starExplode 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
-      opacity: 0;
-    }
-    @keyframes starExplode {
-      0%   { opacity: 1; transform: translate(0,0) scale(0); }
-      50%  { opacity: 1; transform: translate(var(--sx), var(--sy)) scale(1.3); }
-      100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.5); }
-    }
-
-    /* ─── PARTY DETAILS ─── */
+    /* ═══════════════ PARTY DETAILS ═══════════════ */
     #details {
       background: linear-gradient(160deg, #FFF8F0 0%, #FFF3E0 100%);
       gap: 1rem;
@@ -403,18 +412,13 @@
       animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
     }
     .confetti-layer {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 998;
-      overflow: hidden;
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 998; overflow: hidden;
     }
     .cf {
-      position: absolute;
-      top: -20px;
+      position: absolute; top: -20px;
       animation: cfFall var(--d) var(--dl) ease-in forwards;
-      border-radius: var(--r);
-      opacity: 0;
+      border-radius: var(--r); opacity: 0;
     }
     @keyframes cfFall {
       0%   { top: -20px; transform: translateX(0) rotate(0); opacity: 1; }
@@ -424,11 +428,9 @@
       background: white;
       border-radius: 28px;
       padding: 1.8rem 1.6rem 1.6rem;
-      max-width: 420px;
-      width: 100%;
+      max-width: 420px; width: 100%;
       box-shadow: 0 0 0 3px var(--brown), 0 12px 40px rgba(139,94,60,0.18);
-      position: relative;
-      overflow: visible;
+      position: relative; overflow: visible;
       animation: cardBounceIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
     }
     @keyframes cardBounceIn {
@@ -436,49 +438,36 @@
       to   { transform: scale(1); opacity: 1; }
     }
     .card-bear {
-      position: absolute;
-      top: -42px;
-      left: 50%;
+      position: absolute; top: -42px; left: 50%;
       transform: translateX(-50%);
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
     }
     .card-bear img { width: 72px; height: auto; }
     .party-eyebrow {
-      font-family: 'Caveat', cursive;
-      font-size: 1.2rem;
-      color: #aaa;
-      text-align: center;
-      margin-top: 2rem;
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      color: #aaa; text-align: center; margin-top: 2rem;
     }
     .party-heading {
       font-family: 'Luckiest Guy', cursive;
       font-size: clamp(1.8rem, 7vw, 3rem);
-      text-align: center;
-      line-height: 1.05;
-      color: var(--brown);
+      text-align: center; line-height: 1.05; color: var(--brown);
     }
     .names-rainbow {
       font-family: 'Luckiest Guy', cursive;
       font-size: clamp(2.4rem, 10vw, 4rem);
-      text-align: center;
-      line-height: 1;
+      text-align: center; line-height: 1;
       background: linear-gradient(120deg, var(--red) 0%, var(--orange) 20%, var(--yellow) 40%, var(--green) 60%, var(--blue) 80%, var(--purple) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      padding: 0.1rem 0;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; padding: 0.1rem 0;
     }
     .rainbow-rule {
       height: 4px;
       background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple));
-      border-radius: 4px;
-      margin: 0.8rem 0 1rem;
+      border-radius: 4px; margin: 0.8rem 0 1rem;
     }
     .detail-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.9rem;
-      padding: 0.75rem 0;
+      display: flex; align-items: flex-start;
+      gap: 0.9rem; padding: 0.75rem 0;
       border-bottom: 2px dashed #F0E6D6;
     }
     .detail-row:last-of-type { border-bottom: none; }
@@ -488,40 +477,25 @@
     .detail-sub { font-size: 0.88rem; font-weight: 400; color: #888; }
     .book-quote {
       background: linear-gradient(135deg, #FFF9C4, #FFFDE7);
-      border: 2.5px solid #FDCB6E;
-      border-radius: 16px;
-      padding: 0.9rem 1.1rem;
-      margin-top: 1rem;
-      font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
-      color: #6B4226;
-      text-align: center;
-      line-height: 1.5;
+      border: 2.5px solid #FDCB6E; border-radius: 16px;
+      padding: 0.9rem 1.1rem; margin-top: 1rem;
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: #6B4226; text-align: center; line-height: 1.5;
     }
     .rsvp-btn {
-      display: block;
-      width: 100%;
-      background: var(--red);
-      color: white;
-      border: none;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: 1.2rem;
-      padding: 1rem;
-      border-radius: 60px;
-      cursor: pointer;
+      display: block; width: 100%;
+      background: var(--red); color: white; border: none;
+      font-family: 'Luckiest Guy', cursive; font-size: 1.2rem;
+      padding: 1rem; border-radius: 60px; cursor: pointer;
       letter-spacing: 1.5px;
       box-shadow: 0 5px 0 #8B0000, 0 10px 20px rgba(214,48,49,0.25);
-      transition: transform 0.1s, box-shadow 0.1s;
-      margin-top: 1.2rem;
+      transition: transform 0.1s, box-shadow 0.1s; margin-top: 1.2rem;
     }
     .rsvp-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 0 #8B0000, 0 14px 24px rgba(214,48,49,0.3); }
     .rsvp-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8B0000; }
     .animal-parade {
-      display: flex;
-      justify-content: center;
-      gap: 0.2rem;
-      font-size: 1.5rem;
-      margin: 0.5rem 0;
+      display: flex; justify-content: center;
+      gap: 0.2rem; font-size: 1.5rem; margin: 0.5rem 0;
     }
     .parade-animal {
       display: inline-block;
@@ -540,37 +514,24 @@
       0%,60%,100% { transform: translateY(0); }
       30% { transform: translateY(-8px); }
     }
-
-    /* Family portrait at bottom of details */
     .family-portrait-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 1.2rem;
-      gap: 0.4rem;
+      display: flex; flex-direction: column;
+      align-items: center; margin-top: 1.2rem; gap: 0.4rem;
     }
     .family-portrait-wrap img {
       width: clamp(180px, 60vw, 260px);
-      height: auto;
-      border-radius: 20px;
+      height: auto; border-radius: 20px;
       border: 4px solid var(--yellow);
       box-shadow: 0 6px 20px rgba(0,0,0,0.12);
     }
     .family-portrait-label {
       font-family: 'Caveat', cursive;
-      font-size: 1rem;
-      color: #aaa;
+      font-size: 1rem; color: #aaa;
     }
-
-    /* Bear watermark */
     .bear-watermark {
-      position: fixed;
-      bottom: -30px;
-      right: -30px;
-      width: 180px;
-      opacity: 0.06;
-      pointer-events: none;
-      z-index: 0;
+      position: fixed; bottom: -30px; right: -30px;
+      width: 180px; opacity: 0.06;
+      pointer-events: none; z-index: 0;
     }
   </style>
 </head>
@@ -578,51 +539,56 @@
 
 <img src="assets/brown-bear-back.png" alt="" class="bear-watermark">
 
-<!-- ═══════════════════════════════════════════
-     SCREEN 1 · INTRO  (Remi & Scout Portrait)
-══════════════════════════════════════════════ -->
+<!-- ═══════ SCREEN 1 · INTRO ═══════ -->
 <div id="intro" class="screen active">
   <div class="clouds">
     <div class="cloud cloud-1" style="margin-top:10px"></div>
     <div class="cloud cloud-2" style="margin-top:30px"></div>
     <div class="cloud cloud-3" style="margin-top:8px"></div>
   </div>
-
   <div class="intro-portrait">
     <img src="assets/remi-scout-portrait.png" alt="Remi & Scout">
   </div>
-
   <div class="intro-title">HAPPY 1ST BIRTHDAY</div>
   <div class="intro-names">Remi & Scout!</div>
   <div class="intro-subtitle">Brown Bear, Brown Bear, what do you see? 👀<br>We see a party looking at us! 🎉</div>
-
   <button class="start-btn" onclick="showScreen('peekaboo'); startGame();">
     🐾 TAP TO REVEAL THE PARTY!
   </button>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     SCREEN 2 · FRUIT NINJA PEEKABOO
-══════════════════════════════════════════════ -->
+<!-- ═══════ SCREEN 2 · PEEKABOO ═══════ -->
 <div id="peekaboo" class="screen">
-  <div class="peek-title">🌿 PEEK-A-BOO! 🌿</div>
-  <div class="peek-hint">Swipe across each animal to reveal it!</div>
-  <div class="progress-bar-wrap">
-    <div class="progress-bar-fill" id="progressFill"></div>
-  </div>
-  <div class="counter-text" id="counterText">Found: 0 / 8</div>
+  <!-- Carousel of found animals -->
+  <div class="found-carousel" id="foundCarousel"></div>
+  <div class="peek-prompt" id="peekPrompt">Swipe to cut the grass and find all 8 animals!</div>
 
-  <div class="ninja-arena" id="ninjaArena">
-    <canvas class="slash-canvas" id="slashCanvas"></canvas>
-
-    <!-- Cards are generated by JS -->
-    <div class="swipe-instruction" id="swipeInstruction">👆 Swipe across to reveal!</div>
+  <!-- The arena -->
+  <div class="cut-arena" id="cutArena">
+    <div class="arena-animal" id="arenaAnimal">
+      <img id="arenaImg" src="" alt="">
+      <div class="arena-animal-name" id="arenaName"></div>
+    </div>
+    <canvas class="grass-canvas" id="grassCanvas"></canvas>
+    <canvas class="trail-canvas" id="trailCanvas"></canvas>
+    <div class="cut-meter" id="cutMeter">🌿 0%</div>
+    <div class="arena-hint" id="arenaHint">👆</div>
+    <div class="reveal-flash" id="revealFlash"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     SCREEN 3 · PARTY DETAILS
-══════════════════════════════════════════════ -->
+<!-- ═══════ SCREEN 3 · ALL-FOUND CELEBRATION ═══════ -->
+<div id="celebrate" class="screen">
+  <div class="confetti-layer-celebrate" id="confettiCelebrate"></div>
+  <div class="celebrate-title">🎉 YOU FOUND THEM ALL! 🎉</div>
+  <div class="celebrate-sub">Brown Bear, Brown Bear, look what we see!</div>
+  <div class="all-animals-grid" id="allAnimalsGrid"></div>
+  <button class="celebrate-btn" id="celebrateBtn" onclick="showScreen('details'); launchConfetti();">
+    🎂 SEE THE PARTY DETAILS!
+  </button>
+</div>
+
+<!-- ═══════ SCREEN 4 · PARTY DETAILS ═══════ -->
 <div id="details" class="screen">
   <div class="confetti-layer" id="confettiLayer"></div>
   <div class="party-card">
@@ -680,12 +646,10 @@
       🐻 <em>"Brown Bear, Brown Bear, what do you see?<br>
       We see <strong>everyone we love</strong> looking at us!"</em>
     </div>
-
     <div class="family-portrait-wrap">
       <img src="assets/family-portrait.png" alt="Skylar, Anja, Remi & Scout">
       <div class="family-portrait-label">With love from our family to yours 💛</div>
     </div>
-
     <button class="rsvp-btn" onclick="alert('RSVP details coming soon! 🐾')">
       🐾 RSVP
     </button>
@@ -693,298 +657,367 @@
 </div>
 
 <script>
-  // ─── ANIMALS DATA ───
-  const animals = [
-    { name: '🐦 Red Bird',    img: 'assets/red-bird.png',    color: '#E53935', bg: '#FFCDD2' },
-    { name: '🦆 Yellow Duck', img: 'assets/yellow-duck.png', color: '#F57F17', bg: '#FFF9C4' },
-    { name: '🐴 Blue Horse',  img: 'assets/blue-horse.png',  color: '#1565C0', bg: '#BBDEFB' },
-    { name: '🐸 Green Frog',  img: 'assets/green-frog.png',  color: '#2E7D32', bg: '#C8E6C9' },
-    { name: '🐱 Purple Cat',  img: 'assets/purple-cat.png',  color: '#6A1B9A', bg: '#E1BEE7' },
-    { name: '🐟 Goldfish',    img: 'assets/goldfish.png',    color: '#E65100', bg: '#FFE0B2' },
-    { name: '🐑 Black Sheep', img: 'assets/black-sheep.png', color: '#37474F', bg: '#CFD8DC' },
-    { name: '🐕 White Dog',   img: 'assets/white-dog.png',   color: '#5D4037', bg: '#EFEBE9' },
+// ═══════════════ DATA ═══════════════
+const animals = [
+  { name: 'Red Bird',    img: 'assets/red-bird.png',    emoji: '🐦', color: '#E53935', bg: '#FFCDD2' },
+  { name: 'Yellow Duck', img: 'assets/yellow-duck.png', emoji: '🦆', color: '#F57F17', bg: '#FFF9C4' },
+  { name: 'Blue Horse',  img: 'assets/blue-horse.png',  emoji: '🐴', color: '#1565C0', bg: '#BBDEFB' },
+  { name: 'Green Frog',  img: 'assets/green-frog.png',  emoji: '🐸', color: '#2E7D32', bg: '#C8E6C9' },
+  { name: 'Purple Cat',  img: 'assets/purple-cat.png',  emoji: '🐱', color: '#6A1B9A', bg: '#E1BEE7' },
+  { name: 'Goldfish',    img: 'assets/goldfish.png',    emoji: '🐟', color: '#E65100', bg: '#FFE0B2' },
+  { name: 'Black Sheep', img: 'assets/black-sheep.png', emoji: '🐑', color: '#37474F', bg: '#CFD8DC' },
+  { name: 'White Dog',   img: 'assets/white-dog.png',   emoji: '🐕', color: '#5D4037', bg: '#EFEBE9' },
+];
+const total = animals.length;
+
+// ═══════════════ STATE ═══════════════
+let currentIndex = 0;
+let found = 0;
+let isDrawing = false;
+let grassPixels = null;   // ImageData of the grass canvas
+let totalGrassPixels = 0;
+let clearedPixels = 0;
+let revealed = false;
+let brushRadius = 22;
+
+// ═══════════════ ELEMENTS ═══════════════
+const arenaEl    = document.getElementById('cutArena');
+const grassC     = document.getElementById('grassCanvas');
+const trailC     = document.getElementById('trailCanvas');
+const grassCtx   = grassC.getContext('2d');
+const trailCtx   = trailC.getContext('2d');
+const arenaImg   = document.getElementById('arenaImg');
+const arenaName  = document.getElementById('arenaName');
+const cutMeter   = document.getElementById('cutMeter');
+const hint       = document.getElementById('arenaHint');
+const flash      = document.getElementById('revealFlash');
+const carousel   = document.getElementById('foundCarousel');
+const prompt     = document.getElementById('peekPrompt');
+
+// ═══════════════ SCREENS ═══════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════ CAROUSEL SETUP ═══════════════
+function buildCarousel() {
+  carousel.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'carousel-slot';
+    slot.id = 'slot-' + i;
+    carousel.appendChild(slot);
+  }
+}
+
+function fillCarouselSlot(index) {
+  const slot = document.getElementById('slot-' + index);
+  slot.classList.add('filled');
+  const img = document.createElement('img');
+  img.src = animals[index].img;
+  img.alt = animals[index].name;
+  slot.appendChild(img);
+}
+
+// ═══════════════ GRASS PAINTING ═══════════════
+function paintGrass() {
+  const w = grassC.width;
+  const h = grassC.height;
+  grassCtx.clearRect(0, 0, w, h);
+
+  // Paint layered grass using canvas drawing
+  const grassColors = [
+    { color: '#2E7D32', blades: 18, maxH: 0.95 },
+    { color: '#388E3C', blades: 16, maxH: 0.85 },
+    { color: '#43A047', blades: 14, maxH: 0.75 },
+    { color: '#4CAF50', blades: 12, maxH: 0.65 },
+    { color: '#66BB6A', blades: 10, maxH: 0.55 },
   ];
 
-  let found = 0;
-  const total = animals.length;
-  let currentIndex = 0;
-  let isSlashing = false;
-  let slashPoints = [];
-  let cardActive = false;
-  let currentCardSlashed = false;
+  // Ground fill
+  grassCtx.fillStyle = '#2E7D32';
+  grassCtx.fillRect(0, h * 0.4, w, h * 0.6);
 
-  // Canvas for slash trail
-  const canvas = document.getElementById('slashCanvas');
-  const ctx = canvas.getContext('2d');
-  const arena = document.getElementById('ninjaArena');
+  // Draw grass blades
+  for (const layer of grassColors) {
+    grassCtx.fillStyle = layer.color;
+    for (let i = 0; i < layer.blades; i++) {
+      const x = (i / layer.blades) * w + (Math.random() - 0.5) * (w / layer.blades);
+      const bladeW = 12 + Math.random() * 16;
+      const bladeH = h * (0.4 + Math.random() * layer.maxH * 0.5);
+      const lean = (Math.random() - 0.5) * 20;
 
-  function resizeCanvas() {
-    canvas.width = arena.offsetWidth;
-    canvas.height = arena.offsetHeight;
-  }
-
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0, 0);
-    if (id === 'details') launchConfetti();
-    if (id === 'peekaboo') resizeCanvas();
-  }
-
-  // ─── BUILD CARD HTML ───
-  function buildCard(animal, index) {
-    const card = document.createElement('div');
-    card.className = 'ninja-card';
-    card.dataset.index = index;
-    card.style.background = `radial-gradient(circle at 50% 60%, ${animal.bg} 0%, rgba(255,255,255,0.1) 70%)`;
-    card.innerHTML = `
-      <div class="ninja-animal-wrap">
-        <img src="${animal.img}" alt="${animal.name}">
-        <div class="ninja-name" style="color:${animal.color}">${animal.name}</div>
-      </div>
-      <div class="ninja-cover">
-        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="40"  cy="200" rx="22" ry="120" fill="#388E3C" transform="rotate(-8 40 200)" opacity="0.9"/>
-          <ellipse cx="90"  cy="180" rx="24" ry="140" fill="#2E7D32" transform="rotate(6 90 180)" opacity="0.85"/>
-          <ellipse cx="150" cy="190" rx="22" ry="130" fill="#43A047" transform="rotate(-4 150 190)" opacity="0.9"/>
-          <ellipse cx="210" cy="175" rx="24" ry="145" fill="#388E3C" transform="rotate(7 210 175)" opacity="0.85"/>
-          <ellipse cx="260" cy="195" rx="22" ry="125" fill="#2E7D32" transform="rotate(-6 260 195)" opacity="0.9"/>
-          <rect width="300" height="80" y="250" fill="#2E7D32"/>
-          <ellipse cx="70"  cy="240" rx="20" ry="90"  fill="#4CAF50" transform="rotate(5 70 240)" opacity="0.7"/>
-          <ellipse cx="140" cy="235" rx="18" ry="95"  fill="#66BB6A" transform="rotate(-3 140 235)" opacity="0.7"/>
-          <ellipse cx="230" cy="240" rx="20" ry="88"  fill="#4CAF50" transform="rotate(4 230 240)" opacity="0.7"/>
-        </svg>
-      </div>
-      <div class="star-burst"></div>
-    `;
-    return card;
-  }
-
-  // ─── SHOW NEXT ANIMAL ───
-  function showNextAnimal() {
-    if (currentIndex >= total) return;
-
-    // Remove old exiting cards
-    arena.querySelectorAll('.ninja-card.exiting').forEach(c => {
-      setTimeout(() => c.remove(), 500);
-    });
-
-    const card = buildCard(animals[currentIndex], currentIndex);
-    // Insert before the instruction
-    const instruction = document.getElementById('swipeInstruction');
-    arena.insertBefore(card, instruction);
-
-    // Show instruction for first card
-    if (currentIndex === 0) {
-      instruction.style.display = '';
-    } else {
-      instruction.style.display = 'none';
-    }
-
-    requestAnimationFrame(() => {
-      card.classList.add('active');
-      cardActive = true;
-      currentCardSlashed = false;
-    });
-  }
-
-  function startGame() {
-    currentIndex = 0;
-    found = 0;
-    updateProgress();
-    setTimeout(() => {
-      resizeCanvas();
-      showNextAnimal();
-    }, 300);
-  }
-
-  function updateProgress() {
-    const fill = document.getElementById('progressFill');
-    const txt = document.getElementById('counterText');
-    fill.style.width = (found / total * 100) + '%';
-    txt.textContent = `Found: ${found} / ${total}`;
-    txt.classList.add('pop');
-    setTimeout(() => txt.classList.remove('pop'), 300);
-  }
-
-  // ─── SLASH DETECTION ───
-  function getPos(e) {
-    const rect = arena.getBoundingClientRect();
-    if (e.touches) {
-      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
-    }
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-  }
-
-  function drawSlashTrail() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (slashPoints.length < 2) return;
-
-    // Draw glowing slash line
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    // Outer glow
-    ctx.strokeStyle = 'rgba(255,255,100,0.3)';
-    ctx.lineWidth = 20;
-    ctx.beginPath();
-    ctx.moveTo(slashPoints[0].x, slashPoints[0].y);
-    for (let i = 1; i < slashPoints.length; i++) {
-      ctx.lineTo(slashPoints[i].x, slashPoints[i].y);
-    }
-    ctx.stroke();
-
-    // Inner bright line
-    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(slashPoints[0].x, slashPoints[0].y);
-    for (let i = 1; i < slashPoints.length; i++) {
-      ctx.lineTo(slashPoints[i].x, slashPoints[i].y);
-    }
-    ctx.stroke();
-  }
-
-  function spawnSlashParticles(x, y) {
-    const emojis = ['🍃', '🌿', '✨', '⭐', '☘️'];
-    for (let i = 0; i < 4; i++) {
-      const p = document.createElement('span');
-      p.className = 'slash-particle';
-      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      p.style.left = x + 'px';
-      p.style.top = y + 'px';
-      p.style.setProperty('--px', ((Math.random() - 0.5) * 120) + 'px');
-      p.style.setProperty('--py', ((Math.random() - 0.5) * 120) + 'px');
-      p.style.setProperty('--pr', (Math.random() * 360) + 'deg');
-      arena.appendChild(p);
-      setTimeout(() => p.remove(), 700);
+      grassCtx.beginPath();
+      grassCtx.moveTo(x - bladeW/2, h);
+      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + lean * 1.5, h - bladeH);
+      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + bladeW/2, h);
+      grassCtx.fill();
     }
   }
 
-  function spawnStarBurst(card) {
-    const burst = card.querySelector('.star-burst');
-    const stars = ['⭐', '🌟', '✨', '💫', '🎉'];
-    for (let i = 0; i < 8; i++) {
-      const s = document.createElement('span');
-      const angle = (i / 8) * Math.PI * 2;
-      const dist = 60 + Math.random() * 40;
-      s.textContent = stars[Math.floor(Math.random() * stars.length)];
-      s.style.setProperty('--sx', (Math.cos(angle) * dist) + 'px');
-      s.style.setProperty('--sy', (Math.sin(angle) * dist) + 'px');
-      s.style.animationDelay = (i * 0.04) + 's';
-      burst.appendChild(s);
-      setTimeout(() => s.remove(), 800);
-    }
+  // Add some extra texture / small dots
+  grassCtx.fillStyle = '#1B5E20';
+  for (let i = 0; i < 60; i++) {
+    const x = Math.random() * w;
+    const y = h * 0.35 + Math.random() * h * 0.65;
+    grassCtx.beginPath();
+    grassCtx.arc(x, y, 1 + Math.random() * 3, 0, Math.PI * 2);
+    grassCtx.fill();
   }
 
-  function calculateSlashLength() {
-    let len = 0;
-    for (let i = 1; i < slashPoints.length; i++) {
-      const dx = slashPoints[i].x - slashPoints[i-1].x;
-      const dy = slashPoints[i].y - slashPoints[i-1].y;
-      len += Math.sqrt(dx*dx + dy*dy);
-    }
-    return len;
+  // Fill top area to ensure full coverage
+  grassCtx.fillStyle = '#388E3C';
+  grassCtx.fillRect(0, 0, w, h * 0.15);
+
+  // More overlapping blades from top
+  for (let i = 0; i < 20; i++) {
+    const x = Math.random() * w;
+    const bladeH = h * (0.3 + Math.random() * 0.5);
+    const lean = (Math.random() - 0.5) * 30;
+    grassCtx.fillStyle = ['#2E7D32', '#388E3C', '#43A047', '#4CAF50'][Math.floor(Math.random() * 4)];
+    grassCtx.beginPath();
+    grassCtx.moveTo(x - 8, 0);
+    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + lean * 1.2, bladeH);
+    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + 8, 0);
+    grassCtx.fill();
   }
 
-  function revealCurrentAnimal() {
-    if (currentCardSlashed) return;
-    currentCardSlashed = true;
-    cardActive = false;
+  // Count opaque pixels for progress tracking
+  grassPixels = grassCtx.getImageData(0, 0, w, h);
+  totalGrassPixels = 0;
+  clearedPixels = 0;
+  for (let i = 3; i < grassPixels.data.length; i += 4) {
+    if (grassPixels.data[i] > 0) totalGrassPixels++;
+  }
+}
 
-    const card = arena.querySelector('.ninja-card.active');
-    if (!card) return;
+// ═══════════════ CUT GRASS ═══════════════
+function cutGrass(x, y) {
+  // Use destination-out compositing to erase grass
+  grassCtx.globalCompositeOperation = 'destination-out';
+  grassCtx.beginPath();
+  grassCtx.arc(x, y, brushRadius, 0, Math.PI * 2);
+  grassCtx.fill();
+  grassCtx.globalCompositeOperation = 'source-over';
 
-    card.classList.remove('active');
-    card.classList.add('slashed');
-    spawnStarBurst(card);
+  // Spawn leaf particles
+  if (Math.random() > 0.6) {
+    spawnLeaf(x, y);
+  }
+}
 
+function spawnLeaf(x, y) {
+  const leaf = document.createElement('span');
+  leaf.className = 'leaf-particle';
+  leaf.textContent = ['🍃', '🌿', '☘️'][Math.floor(Math.random() * 3)];
+  leaf.style.left = x + 'px';
+  leaf.style.top = y + 'px';
+  leaf.style.setProperty('--lx', ((Math.random() - 0.5) * 80) + 'px');
+  leaf.style.setProperty('--ly', (-20 - Math.random() * 60) + 'px');
+  leaf.style.setProperty('--lr', ((Math.random() - 0.5) * 360) + 'deg');
+  arenaEl.appendChild(leaf);
+  setTimeout(() => leaf.remove(), 700);
+}
+
+function drawTrail(x, y) {
+  trailCtx.strokeStyle = 'rgba(255,255,255,0.5)';
+  trailCtx.lineWidth = 3;
+  trailCtx.lineCap = 'round';
+  trailCtx.lineTo(x, y);
+  trailCtx.stroke();
+}
+
+function calculateClearPercent() {
+  const data = grassCtx.getImageData(0, 0, grassC.width, grassC.height).data;
+  let remaining = 0;
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] > 0) remaining++;
+  }
+  return Math.round(((totalGrassPixels - remaining) / totalGrassPixels) * 100);
+}
+
+// ═══════════════ LOAD ANIMAL ═══════════════
+function loadAnimal(index) {
+  revealed = false;
+  const animal = animals[index];
+
+  arenaImg.src = animal.img;
+  arenaImg.alt = animal.name;
+  arenaName.textContent = animal.emoji + ' ' + animal.name;
+  arenaName.style.color = animal.color;
+  arenaName.classList.remove('visible');
+  arenaEl.style.background = animal.bg;
+  cutMeter.textContent = '🌿 0%';
+  hint.classList.remove('hidden');
+  flash.classList.remove('flash');
+
+  // Resize canvases
+  const w = arenaEl.offsetWidth;
+  const h = arenaEl.offsetHeight;
+  grassC.width = w;
+  grassC.height = h;
+  trailC.width = w;
+  trailC.height = h;
+  trailCtx.clearRect(0, 0, w, h);
+
+  // Paint fresh grass
+  paintGrass();
+
+  // Update prompt
+  prompt.textContent = `${animal.emoji} Who's hiding? Swipe to find out! (${found + 1}/${total})`;
+}
+
+// ═══════════════ REVEAL ANIMAL ═══════════════
+function revealAnimal() {
+  if (revealed) return;
+  revealed = true;
+  hint.classList.add('hidden');
+
+  // Clear all remaining grass with animation
+  grassCtx.clearRect(0, 0, grassC.width, grassC.height);
+  trailCtx.clearRect(0, 0, trailC.width, trailC.height);
+
+  // Flash effect
+  flash.classList.add('flash');
+
+  // Show name
+  arenaName.classList.add('visible');
+  cutMeter.textContent = '✅ Found!';
+
+  // After a showcase pause, move to carousel and load next
+  setTimeout(() => {
+    fillCarouselSlot(currentIndex);
     found++;
-    updateProgress();
 
-    if (found === total) {
-      const txt = document.getElementById('counterText');
-      txt.textContent = 'ALL FOUND! 🎉';
-      setTimeout(() => showScreen('details'), 1200);
-      return;
-    }
-
-    // Fold out old card, bring in next
-    setTimeout(() => {
-      card.classList.add('exiting');
+    if (found >= total) {
+      // All found! Go to celebration
+      setTimeout(() => showCelebration(), 400);
+    } else {
       currentIndex++;
-      setTimeout(() => showNextAnimal(), 300);
-    }, 1000);
-  }
-
-  // ─── EVENT HANDLERS ───
-  function onStart(e) {
-    if (!cardActive || currentCardSlashed) return;
-    e.preventDefault();
-    isSlashing = true;
-    slashPoints = [getPos(e)];
-  }
-
-  function onMove(e) {
-    if (!isSlashing || !cardActive || currentCardSlashed) return;
-    e.preventDefault();
-    const pos = getPos(e);
-    slashPoints.push(pos);
-
-    // Keep trail short
-    if (slashPoints.length > 30) slashPoints.shift();
-
-    drawSlashTrail();
-    spawnSlashParticles(pos.x, pos.y);
-
-    // Check if slash is long enough
-    if (calculateSlashLength() > 80) {
-      revealCurrentAnimal();
+      loadAnimal(currentIndex);
     }
+  }, 1500);
+}
+
+// ═══════════════ CELEBRATION SCREEN ═══════════════
+function showCelebration() {
+  showScreen('celebrate');
+  launchConfetti(document.getElementById('confettiCelebrate'));
+
+  const grid = document.getElementById('allAnimalsGrid');
+  grid.innerHTML = '';
+
+  animals.forEach((animal, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'all-animal-cell';
+    cell.innerHTML = `<img src="${animal.img}" alt="${animal.name}"><span>${animal.emoji} ${animal.name}</span>`;
+    grid.appendChild(cell);
+    setTimeout(() => cell.classList.add('pop-in'), 200 + i * 180);
+  });
+
+  // Show the button after animals pop in
+  setTimeout(() => {
+    document.getElementById('celebrateBtn').classList.add('show');
+  }, 200 + total * 180);
+}
+
+// ═══════════════ START GAME ═══════════════
+function startGame() {
+  currentIndex = 0;
+  found = 0;
+  buildCarousel();
+  setTimeout(() => loadAnimal(0), 300);
+}
+
+// ═══════════════ INPUT HANDLERS ═══════════════
+function getPos(e) {
+  const rect = arenaEl.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: (clientX - rect.left) * (grassC.width / rect.width),
+    y: (clientY - rect.top) * (grassC.height / rect.height)
+  };
+}
+
+function onStart(e) {
+  if (revealed) return;
+  e.preventDefault();
+  isDrawing = true;
+  hint.classList.add('hidden');
+  const pos = getPos(e);
+  trailCtx.beginPath();
+  trailCtx.moveTo(pos.x, pos.y);
+  cutGrass(pos.x, pos.y);
+}
+
+function onMove(e) {
+  if (!isDrawing || revealed) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  cutGrass(pos.x, pos.y);
+  drawTrail(pos.x, pos.y);
+
+  // Check progress periodically
+  const pct = calculateClearPercent();
+  cutMeter.textContent = '🌿 ' + pct + '%';
+
+  if (pct >= 50) {
+    revealAnimal();
   }
+}
 
-  function onEnd(e) {
-    isSlashing = false;
-    slashPoints = [];
-    // Fade out trail
-    setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 200);
-  }
-
-  // Touch
-  arena.addEventListener('touchstart', onStart, { passive: false });
-  arena.addEventListener('touchmove', onMove, { passive: false });
-  arena.addEventListener('touchend', onEnd);
-
-  // Mouse
-  arena.addEventListener('mousedown', onStart);
-  arena.addEventListener('mousemove', onMove);
-  arena.addEventListener('mouseup', onEnd);
-  arena.addEventListener('mouseleave', onEnd);
-
-  // Resize
-  window.addEventListener('resize', resizeCanvas);
-
-  // ─── CONFETTI ───
-  function launchConfetti() {
-    const layer = document.getElementById('confettiLayer');
-    const colors = ['#E53935','#FDCB6E','#43A047','#1E88E5','#7B1FA2','#FF8F00','#00BCD4','#F48FB1','#FFD700'];
-    for (let i = 0; i < 100; i++) {
-      const el = document.createElement('div');
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const left = Math.random() * 100;
-      const dur = 2.2 + Math.random() * 2.4;
-      const delay = Math.random() * 1.8;
-      const dx = (Math.random() - 0.5) * 260 + 'px';
-      const spin = (Math.random() * 2 - 1) * 720 + 'deg';
-      const circle = Math.random() > 0.4;
-      const w = 6 + Math.random() * 9;
-      const h = circle ? w : (4 + Math.random() * 10);
-      el.className = 'cf';
-      el.style.cssText = `left:${left}%;width:${w}px;height:${h}px;background:${color};--d:${dur}s;--dl:${delay}s;--dx:${dx};--spin:${spin};--r:${circle ? '50%' : '2px'};`;
-      layer.appendChild(el);
+function onEnd(e) {
+  isDrawing = false;
+  // Fade trail
+  setTimeout(() => {
+    if (!revealed) {
+      trailCtx.clearRect(0, 0, trailC.width, trailC.height);
     }
-    setTimeout(() => layer.innerHTML = '', 6000);
+  }, 300);
+}
+
+// Touch
+arenaEl.addEventListener('touchstart', onStart, { passive: false });
+arenaEl.addEventListener('touchmove', onMove, { passive: false });
+arenaEl.addEventListener('touchend', onEnd);
+
+// Mouse
+arenaEl.addEventListener('mousedown', onStart);
+arenaEl.addEventListener('mousemove', function(e) { if (isDrawing) onMove(e); });
+arenaEl.addEventListener('mouseup', onEnd);
+arenaEl.addEventListener('mouseleave', onEnd);
+
+// Resize
+window.addEventListener('resize', function() {
+  if (document.getElementById('peekaboo').classList.contains('active') && !revealed) {
+    loadAnimal(currentIndex);
   }
+});
+
+// ═══════════════ CONFETTI ═══════════════
+function launchConfetti(layer) {
+  layer = layer || document.getElementById('confettiLayer');
+  const colors = ['#E53935','#FDCB6E','#43A047','#1E88E5','#7B1FA2','#FF8F00','#00BCD4','#F48FB1','#FFD700'];
+  for (let i = 0; i < 100; i++) {
+    const el = document.createElement('div');
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = Math.random() * 100;
+    const dur = 2.2 + Math.random() * 2.4;
+    const delay = Math.random() * 1.8;
+    const dx = (Math.random() - 0.5) * 260 + 'px';
+    const spin = (Math.random() * 2 - 1) * 720 + 'deg';
+    const circle = Math.random() > 0.4;
+    const w = 6 + Math.random() * 9;
+    const h = circle ? w : (4 + Math.random() * 10);
+    el.className = 'cf';
+    el.style.cssText = `left:${left}%;width:${w}px;height:${h}px;background:${color};--d:${dur}s;--dl:${delay}s;--dx:${dx};--spin:${spin};--r:${circle ? '50%' : '2px'};`;
+    layer.appendChild(el);
+  }
+  setTimeout(() => layer.innerHTML = '', 6000);
+}
 </script>
 </body>
 </html>
