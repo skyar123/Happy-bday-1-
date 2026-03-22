@@ -346,7 +346,7 @@
     }
     .all-animals-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       width: min(380px, 90vw);
       padding: 0.5rem;
@@ -605,9 +605,9 @@
       <span class="parade-animal">🐴</span>
       <span class="parade-animal">🐸</span>
       <span class="parade-animal">🐱</span>
-      <span class="parade-animal">🐟</span>
-      <span class="parade-animal">🐑</span>
       <span class="parade-animal">🐕</span>
+      <span class="parade-animal">🐑</span>
+      <span class="parade-animal">👨‍👩‍👧‍👦</span>
     </div>
     <div class="rainbow-rule"></div>
     <div class="detail-row">
@@ -659,14 +659,15 @@
 <script>
 // ═══════════════ DATA ═══════════════
 const animals = [
+  { name: 'Brown Bear',  img: 'assets/brown-bear-front.png', emoji: '🐻', color: '#8B5E3C', bg: '#D7CCC8' },
   { name: 'Red Bird',    img: 'assets/red-bird.png',    emoji: '🐦', color: '#E53935', bg: '#FFCDD2' },
   { name: 'Yellow Duck', img: 'assets/yellow-duck.png', emoji: '🦆', color: '#F57F17', bg: '#FFF9C4' },
   { name: 'Blue Horse',  img: 'assets/blue-horse.png',  emoji: '🐴', color: '#1565C0', bg: '#BBDEFB' },
   { name: 'Green Frog',  img: 'assets/green-frog.png',  emoji: '🐸', color: '#2E7D32', bg: '#C8E6C9' },
   { name: 'Purple Cat',  img: 'assets/purple-cat.png',  emoji: '🐱', color: '#6A1B9A', bg: '#E1BEE7' },
-  { name: 'Goldfish',    img: 'assets/goldfish.png',    emoji: '🐟', color: '#E65100', bg: '#FFE0B2' },
-  { name: 'Black Sheep', img: 'assets/black-sheep.png', emoji: '🐑', color: '#37474F', bg: '#CFD8DC' },
   { name: 'White Dog',   img: 'assets/white-dog.png',   emoji: '🐕', color: '#5D4037', bg: '#EFEBE9' },
+  { name: 'Black Sheep', img: 'assets/black-sheep.png', emoji: '🐑', color: '#37474F', bg: '#CFD8DC' },
+  { name: 'Our Family',  img: 'assets/family-portrait.png', emoji: '👨‍👩‍👧‍👦', color: '#E91E63', bg: '#FCE4EC' },
 ];
 const total = animals.length;
 
