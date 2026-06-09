@@ -2,1027 +2,529 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Brown Bear, Brown Bear — Remi & Scout Turn One!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <!-- viewport-fit=cover + no zoom = full-bleed, toddler-proof on iPad -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ff8fab">
+  <!-- Full-screen "installed app" behaviour on iPad/iPhone -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Peekaboo">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Family Peekaboo</title>
   <style>
     :root {
-      --brown: #8B5E3C;
-      --red: #D63031;
-      --yellow: #FDCB6E;
-      --blue: #0984E3;
-      --green: #00B894;
-      --purple: #6C5CE7;
-      --orange: #E17055;
-      --paper: #FFF8F0;
-      --dark: #2D3436;
+      --pink:   #ff8fab;
+      --yellow: #ffd166;
+      --teal:   #06d6a0;
+      --blue:   #4cc9f0;
+      --purple: #b5179e;
+      --cream:  #fff8f0;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;            /* no pull-to-refresh */
+      touch-action: manipulation;
+      -webkit-user-select: none; user-select: none;
+      -webkit-touch-callout: none;          /* no image long-press menu */
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #2d2438;
+    }
     body {
-      background: var(--paper);
-      font-family: 'Nunito', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-user-select: none;
-      user-select: none;
+      /* dynamic viewport height keeps it full-screen even with iOS bars */
+      height: 100dvh;
+      display: flex; align-items: center; justify-content: center;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      background: linear-gradient(160deg, #ffe6f0 0%, #fff3d6 45%, #d6f7ef 100%);
     }
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+
+    /* The big tappable play surface — the whole screen is the button */
+    #app {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+
+    /* The stage holds the photo + the doors that cover it */
+    .stage {
+      position: relative;
+      width: min(92vw, 92vh);
+      height: min(92vw, 92vh);
+      max-width: 820px; max-height: 820px;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(60,20,60,0.30), 0 0 0 10px #fff, 0 0 0 16px rgba(255,255,255,0.4);
+      background: #fff;
+    }
+
+    /* The hidden photo */
+    .photo {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #fde2e4;
+    }
+    .photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scale(1.08);
+      transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .stage.open .photo img { transform: scale(1); }
+
+    /* Name banner that drops in on reveal */
+    .name-banner {
+      position: absolute;
+      left: 50%; bottom: 7%;
+      transform: translate(-50%, 160%) rotate(-2deg);
+      background: white;
+      color: #5a2a4a;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 7vw, 4rem);
+      letter-spacing: 1px;
+      padding: 0.35em 0.9em;
+      border-radius: 60px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      white-space: nowrap;
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34,1.7,0.5,1) 0.25s, opacity 0.3s 0.25s;
+      z-index: 30;
+    }
+    .stage.open .name-banner {
+      transform: translate(-50%, 0) rotate(-2deg);
+      opacity: 1;
+    }
+
+    /* Gentle "ok, you can move on now" cue — only appears after the linger time */
+    .next-hint {
+      position: absolute;
+      right: 14px; top: 14px;
+      z-index: 31;
+      background: rgba(0,0,0,0.42);
+      color: #fff; font-weight: 800;
+      font-size: clamp(0.85rem, 2.6vw, 1.15rem);
+      padding: 0.45em 0.9em; border-radius: 40px;
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.4s, transform 0.4s;
       pointer-events: none;
-      z-index: 9999;
     }
-    .screen {
-      display: none;
-      min-height: 100vh;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    .next-hint.show { opacity: 1; transform: translateY(0); animation: hintPulse 1.6s ease-in-out infinite; }
+    @keyframes hintPulse { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(0) scale(1.06); } }
+
+    /* ─── The two doors that cover the photo ─── */
+    .door {
+      position: absolute; top: 0; bottom: 0;
+      width: 50%;
+      z-index: 20;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.6s cubic-bezier(0.7,0,0.3,1);
+      backface-visibility: hidden;
+    }
+    .door::after {                 /* soft fold shading down the seam */
+      content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
+      pointer-events: none;
+    }
+    .door.left  { left: 0;  transform-origin: left center;  border-right: 3px solid rgba(255,255,255,0.5);
+      background: repeating-linear-gradient(135deg, var(--pink) 0 40px, #ff9fb8 40px 80px); }
+    .door.right { right: 0; transform-origin: right center; border-left: 3px solid rgba(255,255,255,0.5);
+      background: repeating-linear-gradient(135deg, var(--blue) 0 40px, #6fd6f5 40px 80px); }
+    .door.left::after  { right: 0;  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.18)); }
+    .door.right::after { left: 0;   background: linear-gradient(270deg, transparent, rgba(0,0,0,0.18)); }
+
+    .stage.open .door.left  { transform: translateX(-101%); }
+    .stage.open .door.right { transform: translateX(101%); }
+
+    .door .face {
+      font-size: clamp(3rem, 14vw, 8rem);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      transition: opacity 0.3s;
+    }
+    .stage.open .door .face { opacity: 0; }
+
+    /* Center "Tap!" prompt that bounces while covered */
+    .prompt {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 25;
+      text-align: center;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .prompt .hand { font-size: clamp(3rem, 16vw, 9rem); display: block; animation: tapBounce 1.3s ease-in-out infinite; }
+    .prompt .word {
+      display: inline-block; margin-top: 0.2em;
+      font-weight: 900; color: #fff;
+      font-size: clamp(1.6rem, 7vw, 3.4rem);
+      letter-spacing: 2px;
+      text-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 0 18px rgba(255,255,255,0.5);
+      animation: wordPulse 1.3s ease-in-out infinite;
+    }
+    .stage.open .prompt { opacity: 0; }
+    @keyframes tapBounce { 0%,100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-14px) rotate(4deg); } }
+    @keyframes wordPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+    /* Sparkle burst on reveal */
+    .spark {
+      position: absolute; z-index: 28; pointer-events: none;
+      font-size: 1.6rem;
+      animation: sparkFly 0.8s ease-out forwards;
+    }
+    @keyframes sparkFly {
+      0%   { opacity: 1; transform: translate(0,0) scale(0.4) rotate(0); }
+      100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1.3) rotate(var(--sr)); }
+    }
+
+    /* ─── Hidden parent settings (long-press top-left corner) ─── */
+    .gear {
+      position: fixed; top: 0; left: 0;
+      width: 64px; height: 64px;
+      z-index: 60;
+      opacity: 0.12;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+    }
+    .panel {
+      position: fixed; inset: 0; z-index: 70;
+      background: rgba(40,20,40,0.75);
+      backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
       padding: 1.5rem;
     }
-    .screen.active { display: flex; }
-    @keyframes screenIn {
-      from { opacity: 0; transform: scale(0.95) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+    .panel.show { display: flex; }
+    .panel-card {
+      background: #fff; border-radius: 28px; padding: 1.6rem 1.4rem;
+      width: min(420px, 90vw);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     }
+    .panel-card h2 { color: #5a2a4a; font-size: 1.4rem; margin-bottom: 0.2rem; }
+    .panel-card p.sub { color: #999; font-size: 0.85rem; margin-bottom: 1rem; }
+    .opt {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 0; border-bottom: 2px dashed #f0e6ee;
+      font-size: 1.05rem; color: #444; font-weight: 700;
+    }
+    .opt:last-of-type { border-bottom: none; }
+    .toggle {
+      width: 58px; height: 32px; border-radius: 32px; border: none;
+      background: #ddd; position: relative; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle.on { background: var(--teal); }
+    .toggle::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 26px; height: 26px; border-radius: 50%; background: #fff;
+      transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .toggle.on::after { transform: translateX(26px); }
+    .pill {
+      border: none; cursor: pointer;
+      background: var(--blue); color: #fff; font-weight: 900;
+      font-size: 1rem; padding: 0.45em 1.1em; border-radius: 40px;
+      min-width: 64px;
+    }
+    .panel-btn {
+      width: 100%; margin-top: 1.1rem; padding: 0.9rem;
+      border: none; border-radius: 60px; cursor: pointer;
+      font-weight: 900; font-size: 1.05rem; color: #fff;
+      background: var(--pink); box-shadow: 0 5px 0 #e0577b;
+    }
+    .panel-btn.close { background: #c9c9c9; box-shadow: 0 5px 0 #a8a8a8; margin-top: 0.6rem; }
+    .panel-hint { color:#bbb; font-size:0.75rem; text-align:center; margin-top:0.8rem; line-height:1.4; }
 
-    /* ═══════════════ INTRO ═══════════════ */
-    #intro {
-      background: linear-gradient(175deg, #87CEEB 0%, #B3E5FC 40%, #66BB6A 40%, #388E3C 100%);
-      position: relative;
-      overflow: hidden;
-      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    #intro::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 48%;
-      background: repeating-linear-gradient(90deg, #388E3C 0px, #43A047 12px, #2E7D32 12px, #388E3C 24px);
-      opacity: 0.4;
-    }
-    .clouds {
-      position: absolute;
-      top: 3%; left: 0; right: 0;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-    }
-    .cloud {
-      background: rgba(255,255,255,0.85);
-      border-radius: 50px;
-      position: relative;
-      animation: cloudDrift var(--d) ease-in-out infinite alternate;
-    }
-    .cloud::before, .cloud::after {
-      content: '';
-      position: absolute;
-      background: rgba(255,255,255,0.85);
-      border-radius: 50%;
-    }
-    .cloud-1 { width: 80px; height: 28px; --d: 6s; }
-    .cloud-1::before { width: 44px; height: 40px; top: -22px; left: 10px; }
-    .cloud-1::after  { width: 30px; height: 30px; top: -16px; left: 38px; }
-    .cloud-2 { width: 60px; height: 22px; --d: 8s; animation-delay: -3s; }
-    .cloud-2::before { width: 34px; height: 32px; top: -18px; left: 8px; }
-    .cloud-2::after  { width: 24px; height: 24px; top: -12px; left: 28px; }
-    .cloud-3 { width: 70px; height: 24px; --d: 7s; animation-delay: -1.5s; }
-    .cloud-3::before { width: 38px; height: 36px; top: -20px; left: 10px; }
-    .cloud-3::after  { width: 28px; height: 28px; top: -14px; left: 34px; }
-    @keyframes cloudDrift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
-
-    .intro-portrait {
-      position: relative; z-index: 3;
-      width: clamp(200px, 55vw, 280px);
-      height: clamp(200px, 55vw, 280px);
-      border-radius: 50%;
-      overflow: hidden;
-      border: 5px solid white;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.2);
-      animation: portraitFloat 3s ease-in-out infinite;
-      margin-bottom: 0.6rem;
-    }
-    .intro-portrait img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes portraitFloat {
-      0%,100% { transform: translateY(0) rotate(-1deg); }
-      50%     { transform: translateY(-10px) rotate(1deg); }
-    }
-    .intro-title {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2rem, 8vw, 4rem);
-      color: white;
-      text-shadow: 4px 5px 0 rgba(80,40,10,0.35);
-      line-height: 1.05; letter-spacing: 2px;
-      text-align: center; position: relative; z-index: 2;
-    }
-    .intro-names {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2.6rem, 11vw, 5rem);
-      text-align: center; line-height: 1;
-      position: relative; z-index: 2;
-      background: linear-gradient(120deg, #FFD700 0%, #FFF9C4 30%, #FFD700 60%, #FFA000 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(3px 4px 0 rgba(80,40,10,0.4));
-      margin: 0.1rem 0;
-    }
-    .intro-subtitle {
-      font-family: 'Caveat', cursive;
-      font-size: clamp(1.3rem, 4.5vw, 2rem);
-      color: #FFFDE7; text-align: center;
-      position: relative; z-index: 2;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
-      margin: 0.2rem 0 0.8rem;
-    }
-    .start-btn {
-      background: var(--red); color: white; border: none;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.1rem, 4vw, 1.5rem);
-      padding: 0.9rem 2.8rem; border-radius: 60px;
-      cursor: pointer; letter-spacing: 2px;
-      box-shadow: 0 6px 0 #8B0000, 0 12px 24px rgba(0,0,0,0.2);
-      position: relative; z-index: 3;
-      animation: btnPulse 2s ease-in-out infinite;
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
-    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #8B0000, 0 14px 28px rgba(0,0,0,0.25); }
-    .start-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #8B0000; }
-    @keyframes btnPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-
-    /* ═══════════════ PEEKABOO ═══════════════ */
-    #peekaboo {
-      background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 30%, #A5D6A7 30%, #2E7D32 100%);
-      padding: 0.8rem 1rem 1.5rem;
-      justify-content: flex-start;
-      gap: 0.4rem;
-      touch-action: none;
-      overflow: hidden;
-    }
-
-    /* ─ Carousel of found animals ─ */
-    .found-carousel {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      justify-content: center;
-      min-height: 52px;
-      width: 100%;
-      flex-wrap: nowrap;
-      padding: 4px 0;
-    }
-    .carousel-slot {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      border: 2px dashed rgba(255,255,255,0.3);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-      flex-shrink: 0;
-    }
-    .carousel-slot.filled {
-      border: 3px solid white;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      animation: slotPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .carousel-slot.filled img {
-      width: 100%; height: 100%; object-fit: contain;
-    }
-    @keyframes slotPop {
-      0%   { transform: scale(0); }
-      60%  { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    .peek-prompt {
-      font-family: 'Caveat', cursive;
-      font-size: clamp(1rem, 3.2vw, 1.2rem);
-      color: #E8F5E9;
-      text-align: center;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
-    }
-
-    /* ─ The grass-cutting arena ─ */
-    .cut-arena {
-      position: relative;
-      width: min(360px, 90vw);
-      height: min(400px, 62vh);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
-      background: #C8E6C9;
-      touch-action: none;
-      cursor: crosshair;
-    }
-    /* Hidden animal image behind the grass */
-    .arena-animal {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1;
-    }
-    .arena-animal img {
-      max-width: 80%;
-      max-height: 75%;
-      object-fit: contain;
-      filter: drop-shadow(0 6px 16px rgba(0,0,0,0.25));
-    }
-    .arena-animal-name {
-      position: absolute;
-      bottom: 12px; left: 50%;
+    /* Tiny "install" tip shown once in browser (not when installed) */
+    .install-tip {
+      position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 14px);
       transform: translateX(-50%);
-      font-family: 'Luckiest Guy', cursive;
-      font-size: 1.3rem;
-      color: white;
-      text-shadow: 2px 3px 0 rgba(0,0,0,0.3);
-      opacity: 0;
-      transition: opacity 0.3s;
-      white-space: nowrap;
+      background: rgba(45,36,56,0.92); color: #fff;
+      font-size: 0.82rem; line-height: 1.4;
+      padding: 0.7rem 1rem; border-radius: 16px;
+      max-width: 86vw; text-align: center; z-index: 50;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
     }
-    .arena-animal-name.visible { opacity: 1; }
-
-    /* Grass overlay canvas - user cuts through this */
-    .grass-canvas {
-      position: absolute;
-      inset: 0;
-      z-index: 5;
-      cursor: crosshair;
-    }
-
-    /* Slash trail canvas */
-    .trail-canvas {
-      position: absolute;
-      inset: 0;
-      z-index: 6;
-      pointer-events: none;
-    }
-
-    /* Cut % indicator */
-    .cut-meter {
-      position: absolute;
-      top: 10px; right: 10px;
-      z-index: 10;
-      background: rgba(0,0,0,0.4);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: 0.8rem;
-      color: white;
-      backdrop-filter: blur(4px);
-    }
-
-    /* Swipe hint */
-    .arena-hint {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 8;
-      font-size: 2.5rem;
-      animation: hintSwipe 2.2s ease-in-out infinite;
-      pointer-events: none;
-      opacity: 0.8;
-    }
-    @keyframes hintSwipe {
-      0%   { opacity: 0; transform: translate(-80%, -50%) rotate(-20deg); }
-      15%  { opacity: 0.9; }
-      50%  { opacity: 0.9; transform: translate(30%, -50%) rotate(10deg); }
-      65%  { opacity: 0; }
-      100% { opacity: 0; transform: translate(-80%, -50%) rotate(-20deg); }
-    }
-    .arena-hint.hidden { display: none; }
-
-    /* Leaf particles */
-    .leaf-particle {
-      position: absolute;
-      pointer-events: none;
-      z-index: 7;
-      font-size: 1rem;
-      animation: leafFly 0.6s ease-out forwards;
-    }
-    @keyframes leafFly {
-      0%   { opacity: 1; transform: translate(0,0) rotate(0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--lx), var(--ly)) rotate(var(--lr)) scale(0.3); }
-    }
-
-    /* Reveal flash */
-    .reveal-flash {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
-      z-index: 12;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-    }
-    .reveal-flash.flash { opacity: 1; animation: flashPulse 0.6s ease-out forwards; }
-    @keyframes flashPulse {
-      0%   { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    /* ═══════════════ ALL-FOUND CELEBRATION ═══════════════ */
-    #celebrate {
-      background: linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 50%, #FFECB3 100%);
-      gap: 0.8rem;
-      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .celebrate-title {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.6rem, 6vw, 2.8rem);
-      color: var(--brown);
-      text-align: center;
-      text-shadow: 2px 3px 0 rgba(0,0,0,0.08);
-    }
-    .celebrate-sub {
-      font-family: 'Caveat', cursive;
-      font-size: clamp(1.1rem, 4vw, 1.5rem);
-      color: #8D6E63;
-      text-align: center;
-    }
-    .all-animals-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      width: min(380px, 90vw);
-      padding: 0.5rem;
-    }
-    .all-animal-cell {
-      background: white;
-      border-radius: 16px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      opacity: 0;
-      transform: scale(0.5) translateY(20px);
-      transition: opacity 0.4s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .all-animal-cell.pop-in {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-    .all-animal-cell img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: contain;
-    }
-    .all-animal-cell span {
-      font-family: 'Caveat', cursive;
-      font-size: 0.7rem;
-      color: #888;
-      text-align: center;
-      line-height: 1.1;
-    }
-    .celebrate-btn {
-      background: var(--red); color: white; border: none;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1rem, 3.5vw, 1.3rem);
-      padding: 0.8rem 2.4rem; border-radius: 60px;
-      cursor: pointer; letter-spacing: 2px;
-      box-shadow: 0 5px 0 #8B0000, 0 10px 20px rgba(214,48,49,0.25);
-      transition: transform 0.1s, box-shadow 0.1s;
-      animation: btnPulse 2s ease-in-out 2s infinite;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.4s 2.5s, transform 0.4s 2.5s;
-    }
-    .celebrate-btn.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .celebrate-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #8B0000, 0 14px 24px rgba(214,48,49,0.3); }
-    .celebrate-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8B0000; }
-    .confetti-layer-celebrate {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 998; overflow: hidden;
-    }
-
-    /* ═══════════════ PARTY DETAILS ═══════════════ */
-    #details {
-      background: linear-gradient(160deg, #FFF8F0 0%, #FFF3E0 100%);
-      gap: 1rem;
-      padding: 2rem 1.5rem;
-      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .confetti-layer {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 998; overflow: hidden;
-    }
-    .cf {
-      position: absolute; top: -20px;
-      animation: cfFall var(--d) var(--dl) ease-in forwards;
-      border-radius: var(--r); opacity: 0;
-    }
-    @keyframes cfFall {
-      0%   { top: -20px; transform: translateX(0) rotate(0); opacity: 1; }
-      100% { top: 110vh; transform: translateX(var(--dx)) rotate(var(--spin)); opacity: 0.2; }
-    }
-    .party-card {
-      background: white;
-      border-radius: 28px;
-      padding: 1.8rem 1.6rem 1.6rem;
-      max-width: 420px; width: 100%;
-      box-shadow: 0 0 0 3px var(--brown), 0 12px 40px rgba(139,94,60,0.18);
-      position: relative; overflow: visible;
-      animation: cardBounceIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
-    }
-    @keyframes cardBounceIn {
-      from { transform: scale(0.85); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
-    }
-    .card-bear {
-      position: absolute; top: -42px; left: 50%;
-      transform: translateX(-50%);
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-    }
-    .card-bear img { width: 72px; height: auto; }
-    .party-eyebrow {
-      font-family: 'Caveat', cursive; font-size: 1.2rem;
-      color: #aaa; text-align: center; margin-top: 2rem;
-    }
-    .party-heading {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.8rem, 7vw, 3rem);
-      text-align: center; line-height: 1.05; color: var(--brown);
-    }
-    .names-rainbow {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2.4rem, 10vw, 4rem);
-      text-align: center; line-height: 1;
-      background: linear-gradient(120deg, var(--red) 0%, var(--orange) 20%, var(--yellow) 40%, var(--green) 60%, var(--blue) 80%, var(--purple) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; padding: 0.1rem 0;
-    }
-    .rainbow-rule {
-      height: 4px;
-      background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple));
-      border-radius: 4px; margin: 0.8rem 0 1rem;
-    }
-    .detail-row {
-      display: flex; align-items: flex-start;
-      gap: 0.9rem; padding: 0.75rem 0;
-      border-bottom: 2px dashed #F0E6D6;
-    }
-    .detail-row:last-of-type { border-bottom: none; }
-    .detail-icon { font-size: 1.8rem; flex-shrink: 0; width: 40px; text-align: center; line-height: 1.3; }
-    .detail-label { font-family: 'Caveat', cursive; font-size: 0.78rem; color: #bbb; letter-spacing: 1.5px; text-transform: uppercase; }
-    .detail-value { font-size: 1.05rem; font-weight: 900; color: var(--dark); line-height: 1.3; }
-    .detail-sub { font-size: 0.88rem; font-weight: 400; color: #888; }
-    .book-quote {
-      background: linear-gradient(135deg, #FFF9C4, #FFFDE7);
-      border: 2.5px solid #FDCB6E; border-radius: 16px;
-      padding: 0.9rem 1.1rem; margin-top: 1rem;
-      font-family: 'Caveat', cursive; font-size: 1.1rem;
-      color: #6B4226; text-align: center; line-height: 1.5;
-    }
-    .rsvp-btn {
-      display: block; width: 100%;
-      background: var(--red); color: white; border: none;
-      font-family: 'Luckiest Guy', cursive; font-size: 1.2rem;
-      padding: 1rem; border-radius: 60px; cursor: pointer;
-      letter-spacing: 1.5px;
-      box-shadow: 0 5px 0 #8B0000, 0 10px 20px rgba(214,48,49,0.25);
-      transition: transform 0.1s, box-shadow 0.1s; margin-top: 1.2rem;
-    }
-    .rsvp-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 0 #8B0000, 0 14px 24px rgba(214,48,49,0.3); }
-    .rsvp-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8B0000; }
-    .animal-parade {
-      display: flex; justify-content: center;
-      gap: 0.2rem; font-size: 1.5rem; margin: 0.5rem 0;
-    }
-    .parade-animal {
-      display: inline-block;
-      animation: paradeWave 1.4s ease-in-out infinite;
-    }
-    .parade-animal:nth-child(1) { animation-delay: 0.0s; }
-    .parade-animal:nth-child(2) { animation-delay: 0.15s; }
-    .parade-animal:nth-child(3) { animation-delay: 0.3s; }
-    .parade-animal:nth-child(4) { animation-delay: 0.45s; }
-    .parade-animal:nth-child(5) { animation-delay: 0.6s; }
-    .parade-animal:nth-child(6) { animation-delay: 0.75s; }
-    .parade-animal:nth-child(7) { animation-delay: 0.9s; }
-    .parade-animal:nth-child(8) { animation-delay: 1.05s; }
-    .parade-animal:nth-child(9) { animation-delay: 1.2s; }
-    @keyframes paradeWave {
-      0%,60%,100% { transform: translateY(0); }
-      30% { transform: translateY(-8px); }
-    }
-    .family-portrait-wrap {
-      display: flex; flex-direction: column;
-      align-items: center; margin-top: 1.2rem; gap: 0.4rem;
-    }
-    .family-portrait-wrap img {
-      width: clamp(180px, 60vw, 260px);
-      height: auto; border-radius: 20px;
-      border: 4px solid var(--yellow);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
-    .family-portrait-label {
-      font-family: 'Caveat', cursive;
-      font-size: 1rem; color: #aaa;
-    }
-    .bear-watermark {
-      position: fixed; bottom: -30px; right: -30px;
-      width: 180px; opacity: 0.06;
-      pointer-events: none; z-index: 0;
-    }
+    .install-tip b { color: var(--yellow); }
+    .install-tip .x { margin-left: 8px; opacity: 0.7; font-weight: 900; }
   </style>
 </head>
 <body>
 
-<img src="assets/brown-bear-back.png" alt="" class="bear-watermark">
+  <div id="app">
+    <div class="stage" id="stage">
+      <div class="photo"><img id="photoImg" src="" alt=""></div>
+      <div class="name-banner" id="nameBanner">Peekaboo!</div>
+      <div class="next-hint" id="nextHint">tap for the next one 👉</div>
 
-<!-- ═══════ SCREEN 1 · INTRO ═══════ -->
-<div id="intro" class="screen active">
-  <div class="clouds">
-    <div class="cloud cloud-1" style="margin-top:10px"></div>
-    <div class="cloud cloud-2" style="margin-top:30px"></div>
-    <div class="cloud cloud-3" style="margin-top:8px"></div>
-  </div>
-  <div class="intro-portrait">
-    <img src="assets/remi-scout-portrait.png" alt="Remi & Scout">
-  </div>
-  <div class="intro-title">HAPPY 1ST BIRTHDAY</div>
-  <div class="intro-names">Remi & Scout!</div>
-  <div class="intro-subtitle">Brown Bear, Brown Bear, what do you see? 👀<br>We see a party looking at us! 🎉</div>
-  <button class="start-btn" onclick="showScreen('peekaboo'); startGame();">
-    🐾 TAP TO REVEAL THE PARTY!
-  </button>
-</div>
+      <div class="door left"><span class="face">🫣</span></div>
+      <div class="door right"><span class="face">👀</span></div>
 
-<!-- ═══════ SCREEN 2 · PEEKABOO ═══════ -->
-<div id="peekaboo" class="screen">
-  <!-- Carousel of found animals -->
-  <div class="found-carousel" id="foundCarousel"></div>
-  <div class="peek-prompt" id="peekPrompt">Swipe to cut the grass and find all 8 animals!</div>
-
-  <!-- The arena -->
-  <div class="cut-arena" id="cutArena">
-    <div class="arena-animal" id="arenaAnimal">
-      <img id="arenaImg" src="" alt="">
-      <div class="arena-animal-name" id="arenaName"></div>
-    </div>
-    <canvas class="grass-canvas" id="grassCanvas"></canvas>
-    <canvas class="trail-canvas" id="trailCanvas"></canvas>
-    <div class="cut-meter" id="cutMeter">🌿 0%</div>
-    <div class="arena-hint" id="arenaHint">👆</div>
-    <div class="reveal-flash" id="revealFlash"></div>
-  </div>
-</div>
-
-<!-- ═══════ SCREEN 3 · ALL-FOUND CELEBRATION ═══════ -->
-<div id="celebrate" class="screen">
-  <div class="confetti-layer-celebrate" id="confettiCelebrate"></div>
-  <div class="celebrate-title">🎉 YOU FOUND THEM ALL! 🎉</div>
-  <div class="celebrate-sub">Brown Bear, Brown Bear, look what we see!</div>
-  <div class="all-animals-grid" id="allAnimalsGrid"></div>
-  <button class="celebrate-btn" id="celebrateBtn" onclick="showScreen('details'); launchConfetti();">
-    🎂 SEE THE PARTY DETAILS!
-  </button>
-</div>
-
-<!-- ═══════ SCREEN 4 · PARTY DETAILS ═══════ -->
-<div id="details" class="screen">
-  <div class="confetti-layer" id="confettiLayer"></div>
-  <div class="party-card">
-    <div class="card-bear">
-      <img src="assets/brown-bear-front.png" alt="Brown Bear">
-    </div>
-    <div class="party-eyebrow">You found all the animals! 🎉</div>
-    <div class="party-heading">Happy 1st Birthday</div>
-    <div class="names-rainbow">Remi & Scout!</div>
-    <div class="animal-parade">
-      <span class="parade-animal">🐻</span>
-      <span class="parade-animal">🐦</span>
-      <span class="parade-animal">🦆</span>
-      <span class="parade-animal">🐴</span>
-      <span class="parade-animal">🐸</span>
-      <span class="parade-animal">🐱</span>
-      <span class="parade-animal">🐟</span>
-      <span class="parade-animal">🐑</span>
-      <span class="parade-animal">🐕</span>
-    </div>
-    <div class="rainbow-rule"></div>
-    <div class="detail-row">
-      <div class="detail-icon">📅</div>
-      <div>
-        <div class="detail-label">When</div>
-        <div class="detail-value">Saturday, April 11, 2026</div>
-        <div class="detail-sub">12:00 PM – 2:30 PM</div>
+      <div class="prompt">
+        <span class="hand">👆</span>
+        <span class="word">TAP!</span>
       </div>
     </div>
-    <div class="detail-row">
-      <div class="detail-icon">🐾</div>
-      <div>
-        <div class="detail-label">Where</div>
-        <div class="detail-value">WNC Nature Center</div>
-        <div class="detail-sub">75 Gashes Creek Rd · Asheville, NC</div>
-      </div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-icon">🎂</div>
-      <div>
-        <div class="detail-label">Party Features</div>
-        <div class="detail-value">Smash cakes, storytime & cake!</div>
-        <div class="detail-sub">Custom Brown Bear book reveal at 12:30</div>
-      </div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-icon">📚</div>
-      <div>
-        <div class="detail-label">In lieu of gifts</div>
-        <div class="detail-value">Bring a board book!</div>
-        <div class="detail-sub">Help build Remi & Scout's library 🥹</div>
-      </div>
-    </div>
-    <div class="book-quote">
-      🐻 <em>"Brown Bear, Brown Bear, what do you see?<br>
-      We see <strong>everyone we love</strong> looking at us!"</em>
-    </div>
-    <div class="family-portrait-wrap">
-      <img src="assets/family-portrait.png" alt="Skylar, Anja, Remi & Scout">
-      <div class="family-portrait-label">With love from our family to yours 💛</div>
-    </div>
-    <button class="rsvp-btn" onclick="alert('RSVP details coming soon! 🐾')">
-      🐾 RSVP
-    </button>
   </div>
-</div>
 
-<script>
-// ═══════════════ DATA ═══════════════
-const animals = [
-  { name: 'Red Bird',    img: 'assets/red-bird.png',    emoji: '🐦', color: '#E53935', bg: '#FFCDD2' },
-  { name: 'Yellow Duck', img: 'assets/yellow-duck.png', emoji: '🦆', color: '#F57F17', bg: '#FFF9C4' },
-  { name: 'Blue Horse',  img: 'assets/blue-horse.png',  emoji: '🐴', color: '#1565C0', bg: '#BBDEFB' },
-  { name: 'Green Frog',  img: 'assets/green-frog.png',  emoji: '🐸', color: '#2E7D32', bg: '#C8E6C9' },
-  { name: 'Purple Cat',  img: 'assets/purple-cat.png',  emoji: '🐱', color: '#6A1B9A', bg: '#E1BEE7' },
-  { name: 'Goldfish',    img: 'assets/goldfish.png',    emoji: '🐟', color: '#E65100', bg: '#FFE0B2' },
-  { name: 'Black Sheep', img: 'assets/black-sheep.png', emoji: '🐑', color: '#37474F', bg: '#CFD8DC' },
-  { name: 'White Dog',   img: 'assets/white-dog.png',   emoji: '🐕', color: '#5D4037', bg: '#EFEBE9' },
-];
-const total = animals.length;
+  <!-- Hidden parent corner (long-press to open) -->
+  <div class="gear" id="gear">⚙️</div>
 
-// ═══════════════ STATE ═══════════════
-let currentIndex = 0;
-let found = 0;
-let isDrawing = false;
-let grassPixels = null;   // ImageData of the grass canvas
-let totalGrassPixels = 0;
-let clearedPixels = 0;
-let revealed = false;
-let brushRadius = 60;
-let moveCount = 0;
+  <div class="panel" id="panel">
+    <div class="panel-card">
+      <h2>Grown-up settings 🧸</h2>
+      <p class="sub">Tap the screen anywhere to play peekaboo.</p>
+      <div class="opt"><span>🔊 Say the names out loud</span>
+        <button class="toggle on" id="tSpeak"></button></div>
+      <div class="opt"><span>🎵 Pop &amp; chime sounds</span>
+        <button class="toggle on" id="tSound"></button></div>
+      <div class="opt"><span>🔀 Shuffle the order</span>
+        <button class="toggle" id="tShuffle"></button></div>
+      <div class="opt"><span>⏳ Stay on each photo</span>
+        <button class="pill" id="tLinger">6s</button></div>
+      <button class="panel-btn" id="restartBtn">↺ Start from the beginning</button>
+      <button class="panel-btn close" id="closeBtn">Done</button>
+      <p class="panel-hint">To add your own photos, drop pictures into the
+        <b>peekaboo/photos</b> folder and edit the PHOTOS list at the top of this file.</p>
+    </div>
+  </div>
 
-// ═══════════════ ELEMENTS ═══════════════
-const arenaEl    = document.getElementById('cutArena');
-const grassC     = document.getElementById('grassCanvas');
-const trailC     = document.getElementById('trailCanvas');
-const grassCtx   = grassC.getContext('2d');
-const trailCtx   = trailC.getContext('2d');
-const arenaImg   = document.getElementById('arenaImg');
-const arenaName  = document.getElementById('arenaName');
-const cutMeter   = document.getElementById('cutMeter');
-const hint       = document.getElementById('arenaHint');
-const flash      = document.getElementById('revealFlash');
-const carousel   = document.getElementById('foundCarousel');
-const prompt     = document.getElementById('peekPrompt');
-
-// ═══════════════ SCREENS ═══════════════
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-// ═══════════════ CAROUSEL SETUP ═══════════════
-function buildCarousel() {
-  carousel.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'carousel-slot';
-    slot.id = 'slot-' + i;
-    carousel.appendChild(slot);
-  }
-}
-
-function fillCarouselSlot(index) {
-  const slot = document.getElementById('slot-' + index);
-  slot.classList.add('filled');
-  const img = document.createElement('img');
-  img.src = animals[index].img;
-  img.alt = animals[index].name;
-  slot.appendChild(img);
-}
-
-// ═══════════════ GRASS PAINTING ═══════════════
-function paintGrass() {
-  const w = grassC.width;
-  const h = grassC.height;
-  grassCtx.clearRect(0, 0, w, h);
-
-  // Paint layered grass using canvas drawing
-  const grassColors = [
-    { color: '#2E7D32', blades: 18, maxH: 0.95 },
-    { color: '#388E3C', blades: 16, maxH: 0.85 },
-    { color: '#43A047', blades: 14, maxH: 0.75 },
-    { color: '#4CAF50', blades: 12, maxH: 0.65 },
-    { color: '#66BB6A', blades: 10, maxH: 0.55 },
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     👨‍👩‍👧‍👦  YOUR FAMILY PHOTOS  —  edit this list!
+     • Put image files in the  peekaboo/photos/  folder
+     • Add one line per photo:  { src: 'photos/FILE.jpg', name: 'WHO IT IS' }
+     • Also add the same filename to the list in  sw.js  so it works offline.
+     ════════════════════════════════════════════════════════════ */
+  const PHOTOS = [
+    { src: 'photos/anja-and-baby.jpg',   name: 'Anja!' },
+    { src: 'photos/anja-grass.jpg',      name: 'Anja!' },
+    { src: 'photos/mommy-and-anja.jpg',  name: 'Mommy & Anja!' },
+    { src: 'photos/anja-tree.jpg',       name: 'Anja!' },
+    { src: 'photos/anja-remi-scout.jpg', name: 'Anja, Remi & Scout!' },
+    { src: 'photos/anja-and-babies.jpg', name: 'Anja & the babies!' },
+    { src: 'photos/family-greenhouse.jpg', name: 'Our Family!' },
+    { src: 'photos/family-outside.jpg',  name: 'Our Family!' },
   ];
 
-  // Ground fill
-  grassCtx.fillStyle = '#2E7D32';
-  grassCtx.fillRect(0, h * 0.4, w, h * 0.6);
-
-  // Draw grass blades
-  for (const layer of grassColors) {
-    grassCtx.fillStyle = layer.color;
-    for (let i = 0; i < layer.blades; i++) {
-      const x = (i / layer.blades) * w + (Math.random() - 0.5) * (w / layer.blades);
-      const bladeW = 12 + Math.random() * 16;
-      const bladeH = h * (0.4 + Math.random() * layer.maxH * 0.5);
-      const lean = (Math.random() - 0.5) * 20;
-
-      grassCtx.beginPath();
-      grassCtx.moveTo(x - bladeW/2, h);
-      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + lean * 1.5, h - bladeH);
-      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + bladeW/2, h);
-      grassCtx.fill();
-    }
-  }
-
-  // Add some extra texture / small dots
-  grassCtx.fillStyle = '#1B5E20';
-  for (let i = 0; i < 60; i++) {
-    const x = Math.random() * w;
-    const y = h * 0.35 + Math.random() * h * 0.65;
-    grassCtx.beginPath();
-    grassCtx.arc(x, y, 1 + Math.random() * 3, 0, Math.PI * 2);
-    grassCtx.fill();
-  }
-
-  // Fill top area to ensure full coverage
-  grassCtx.fillStyle = '#388E3C';
-  grassCtx.fillRect(0, 0, w, h * 0.15);
-
-  // More overlapping blades from top
-  for (let i = 0; i < 20; i++) {
-    const x = Math.random() * w;
-    const bladeH = h * (0.3 + Math.random() * 0.5);
-    const lean = (Math.random() - 0.5) * 30;
-    grassCtx.fillStyle = ['#2E7D32', '#388E3C', '#43A047', '#4CAF50'][Math.floor(Math.random() * 4)];
-    grassCtx.beginPath();
-    grassCtx.moveTo(x - 8, 0);
-    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + lean * 1.2, bladeH);
-    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + 8, 0);
-    grassCtx.fill();
-  }
-
-  // Count opaque pixels for progress tracking
-  grassPixels = grassCtx.getImageData(0, 0, w, h);
-  totalGrassPixels = 0;
-  clearedPixels = 0;
-  for (let i = 3; i < grassPixels.data.length; i += 4) {
-    if (grassPixels.data[i] > 0) totalGrassPixels++;
-  }
-}
-
-// ═══════════════ CUT GRASS ═══════════════
-function cutGrass(x, y) {
-  // Use destination-out compositing to erase grass
-  grassCtx.globalCompositeOperation = 'destination-out';
-  grassCtx.beginPath();
-  grassCtx.arc(x, y, brushRadius, 0, Math.PI * 2);
-  grassCtx.fill();
-  grassCtx.globalCompositeOperation = 'source-over';
-
-  // Spawn leaf particles
-  if (Math.random() > 0.6) {
-    spawnLeaf(x, y);
-  }
-}
-
-function spawnLeaf(x, y) {
-  const leaf = document.createElement('span');
-  leaf.className = 'leaf-particle';
-  leaf.textContent = ['🍃', '🌿', '☘️'][Math.floor(Math.random() * 3)];
-  leaf.style.left = x + 'px';
-  leaf.style.top = y + 'px';
-  leaf.style.setProperty('--lx', ((Math.random() - 0.5) * 80) + 'px');
-  leaf.style.setProperty('--ly', (-20 - Math.random() * 60) + 'px');
-  leaf.style.setProperty('--lr', ((Math.random() - 0.5) * 360) + 'deg');
-  arenaEl.appendChild(leaf);
-  setTimeout(() => leaf.remove(), 700);
-}
-
-function drawTrail(x, y) {
-  trailCtx.strokeStyle = 'rgba(255,255,255,0.5)';
-  trailCtx.lineWidth = 3;
-  trailCtx.lineCap = 'round';
-  trailCtx.lineTo(x, y);
-  trailCtx.stroke();
-}
-
-function calculateClearPercent() {
-  const data = grassCtx.getImageData(0, 0, grassC.width, grassC.height).data;
-  let remaining = 0;
-  for (let i = 3; i < data.length; i += 4) {
-    if (data[i] > 0) remaining++;
-  }
-  return Math.round(((totalGrassPixels - remaining) / totalGrassPixels) * 100);
-}
-
-// ═══════════════ LOAD ANIMAL ═══════════════
-function loadAnimal(index) {
-  revealed = false;
-  moveCount = 0;
-  const animal = animals[index];
-
-  arenaImg.src = animal.img;
-  arenaImg.alt = animal.name;
-  arenaName.textContent = animal.emoji + ' ' + animal.name;
-  arenaName.style.color = animal.color;
-  arenaName.classList.remove('visible');
-  arenaEl.style.background = animal.bg;
-  cutMeter.textContent = '🌿 0%';
-  hint.classList.remove('hidden');
-  flash.classList.remove('flash');
-
-  // Resize canvases
-  const w = arenaEl.offsetWidth;
-  const h = arenaEl.offsetHeight;
-  grassC.width = w;
-  grassC.height = h;
-  trailC.width = w;
-  trailC.height = h;
-  trailCtx.clearRect(0, 0, w, h);
-
-  // Paint fresh grass
-  paintGrass();
-
-  // Update prompt
-  prompt.textContent = `${animal.emoji} Who's hiding? Swipe to find out! (${found + 1}/${total})`;
-}
-
-// ═══════════════ REVEAL ANIMAL ═══════════════
-function revealAnimal() {
-  if (revealed) return;
-  revealed = true;
-  hint.classList.add('hidden');
-
-  // Clear all remaining grass with animation
-  grassCtx.clearRect(0, 0, grassC.width, grassC.height);
-  trailCtx.clearRect(0, 0, trailC.width, trailC.height);
-
-  // Flash effect
-  flash.classList.add('flash');
-
-  // Show name
-  arenaName.classList.add('visible');
-  cutMeter.textContent = '✅ Found!';
-
-  // After a showcase pause, move to carousel and load next
-  setTimeout(() => {
-    fillCarouselSlot(currentIndex);
-    found++;
-
-    if (found >= total) {
-      // All found! Go to celebration
-      setTimeout(() => showCelebration(), 400);
-    } else {
-      currentIndex++;
-      loadAnimal(currentIndex);
-    }
-  }, 1500);
-}
-
-// ═══════════════ CELEBRATION SCREEN ═══════════════
-function showCelebration() {
-  showScreen('celebrate');
-  launchConfetti(document.getElementById('confettiCelebrate'));
-
-  const grid = document.getElementById('allAnimalsGrid');
-  grid.innerHTML = '';
-
-  animals.forEach((animal, i) => {
-    const cell = document.createElement('div');
-    cell.className = 'all-animal-cell';
-    cell.innerHTML = `<img src="${animal.img}" alt="${animal.name}"><span>${animal.emoji} ${animal.name}</span>`;
-    grid.appendChild(cell);
-    setTimeout(() => cell.classList.add('pop-in'), 200 + i * 180);
-  });
-
-  // Show the button after animals pop in
-  setTimeout(() => {
-    document.getElementById('celebrateBtn').classList.add('show');
-  }, 200 + total * 180);
-}
-
-// ═══════════════ START GAME ═══════════════
-function startGame() {
-  currentIndex = 0;
-  found = 0;
-  buildCarousel();
-  setTimeout(() => loadAnimal(0), 300);
-}
-
-// ═══════════════ INPUT HANDLERS ═══════════════
-function getPos(e) {
-  const rect = arenaEl.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return {
-    x: (clientX - rect.left) * (grassC.width / rect.width),
-    y: (clientY - rect.top) * (grassC.height / rect.height)
+  // ─── Settings (remembered on the device) ───
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem('pb_'+k); return v===null?d:JSON.parse(v); } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem('pb_'+k, JSON.stringify(v)); } catch(e){} }
   };
-}
+  let settings = {
+    speak:   store.get('speak', true),
+    sound:   store.get('sound', true),
+    shuffle: store.get('shuffle', false),
+    linger:  store.get('linger', 6),   // seconds a photo stays locked before you can move on
+  };
 
-function onStart(e) {
-  if (revealed) return;
-  e.preventDefault();
-  isDrawing = true;
-  hint.classList.add('hidden');
-  const pos = getPos(e);
-  trailCtx.beginPath();
-  trailCtx.moveTo(pos.x, pos.y);
-  cutGrass(pos.x, pos.y);
-}
+  // ─── Elements ───
+  const stage      = document.getElementById('stage');
+  const photoImg   = document.getElementById('photoImg');
+  const nameBanner = document.getElementById('nameBanner');
+  const app        = document.getElementById('app');
 
-function onMove(e) {
-  if (!isDrawing || revealed) return;
-  e.preventDefault();
-  const pos = getPos(e);
-  cutGrass(pos.x, pos.y);
-  drawTrail(pos.x, pos.y);
-  moveCount++;
+  const nextHint = document.getElementById('nextHint');
 
-  // Check progress every few moves (pixel counting is expensive)
-  if (moveCount % 3 === 0) {
-    const pct = calculateClearPercent();
-    cutMeter.textContent = '🌿 ' + pct + '%';
+  // ─── Play order ───
+  let order = PHOTOS.map((_, i) => i);
+  let pos = 0;                 // index into order
+  // state: 'covered' (doors shut) → 'lingering' (revealed, locked) → 'ready' (can move on)
+  let state = 'covered';
+  let busy = false;
+  let lingerTimer = null;
+
+  function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function buildOrder(){
+    order = PHOTOS.map((_, i) => i);
+    if (settings.shuffle) shuffleArray(order);
+    pos = 0;
   }
 
-  if (moveCount > 6 && calculateClearPercent() >= 20) {
-    revealAnimal();
-  }
-}
+  // Preload all images so reveals are instant + offline-ready
+  PHOTOS.forEach(p => { const im = new Image(); im.src = p.src; });
 
-function onEnd(e) {
-  isDrawing = false;
-  // Fade trail
-  setTimeout(() => {
-    if (!revealed) {
-      trailCtx.clearRect(0, 0, trailC.width, trailC.height);
+  function showCurrent(){
+    const item = PHOTOS[order[pos]];
+    photoImg.src = item.src;
+    photoImg.alt = item.name;
+    nameBanner.textContent = item.name;
+    stage.classList.remove('open');     // doors closed, prompt visible
+    nextHint.classList.remove('show');
+    state = 'covered';
+  }
+
+  function reveal(){
+    if (state !== 'covered' || busy) return;
+    state = 'lingering';                 // 🔒 locked — a quick tap can't skip ahead
+    stage.classList.add('open');
+    nextHint.classList.remove('show');
+    sayName();
+    // After the linger time, allow moving on
+    clearTimeout(lingerTimer);
+    lingerTimer = setTimeout(() => {
+      if (state === 'lingering') { state = 'ready'; nextHint.classList.add('show'); }
+    }, settings.linger * 1000);
+  }
+
+  // Re-say the name + sparkle without advancing (fun to tap mommy's face!)
+  function sayName(){
+    sparkleBurst();
+    playChime();
+    speak(PHOTOS[order[pos]].name);
+  }
+
+  function next(){
+    if (busy) return;
+    busy = true;
+    clearTimeout(lingerTimer);
+    stage.classList.remove('open');      // close doors first
+    nextHint.classList.remove('show');
+    pos = (pos + 1) % order.length;
+    if (pos === 0 && settings.shuffle) shuffleArray(order); // reshuffle each loop
+    setTimeout(() => { showCurrent(); busy = false; }, 480);
+  }
+
+  // ─── The one and only interaction: TAP ───
+  function onTap(e){
+    // ignore taps that land on the settings panel/gear
+    if (e.target.closest('.panel') || e.target.closest('.gear')) return;
+    if (state === 'covered')        reveal();   // open the doors
+    else if (state === 'lingering') sayName();  // still looking — replay, don't skip
+    else                            next();     // ready — move to the next photo
+  }
+  app.addEventListener('click', onTap);
+
+  // block right-click / long-press image menu & double-tap zoom
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  let lastTouch = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouch < 300) e.preventDefault();
+    lastTouch = now;
+  }, { passive: false });
+
+  // ─── Sparkles ───
+  function sparkleBurst(){
+    const emojis = ['✨','⭐','🌟','💫','🎉','💛','💖'];
+    const rect = stage.getBoundingClientRect();
+    for (let i = 0; i < 16; i++){
+      const s = document.createElement('span');
+      s.className = 'spark';
+      s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      s.style.left = (40 + Math.random()*20) + '%';
+      s.style.top  = (40 + Math.random()*20) + '%';
+      s.style.setProperty('--sx', ((Math.random()-0.5)*rect.width*0.9)+'px');
+      s.style.setProperty('--sy', ((Math.random()-0.5)*rect.height*0.9)+'px');
+      s.style.setProperty('--sr', ((Math.random()-0.5)*360)+'deg');
+      stage.appendChild(s);
+      setTimeout(() => s.remove(), 850);
     }
-  }, 300);
-}
-
-// Touch
-arenaEl.addEventListener('touchstart', onStart, { passive: false });
-arenaEl.addEventListener('touchmove', onMove, { passive: false });
-arenaEl.addEventListener('touchend', onEnd);
-
-// Mouse
-arenaEl.addEventListener('mousedown', onStart);
-arenaEl.addEventListener('mousemove', function(e) { if (isDrawing) onMove(e); });
-arenaEl.addEventListener('mouseup', onEnd);
-arenaEl.addEventListener('mouseleave', onEnd);
-
-// Resize
-window.addEventListener('resize', function() {
-  if (document.getElementById('peekaboo').classList.contains('active') && !revealed) {
-    loadAnimal(currentIndex);
   }
-});
 
-// ═══════════════ CONFETTI ═══════════════
-function launchConfetti(layer) {
-  layer = layer || document.getElementById('confettiLayer');
-  const colors = ['#E53935','#FDCB6E','#43A047','#1E88E5','#7B1FA2','#FF8F00','#00BCD4','#F48FB1','#FFD700'];
-  for (let i = 0; i < 100; i++) {
-    const el = document.createElement('div');
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const left = Math.random() * 100;
-    const dur = 2.2 + Math.random() * 2.4;
-    const delay = Math.random() * 1.8;
-    const dx = (Math.random() - 0.5) * 260 + 'px';
-    const spin = (Math.random() * 2 - 1) * 720 + 'deg';
-    const circle = Math.random() > 0.4;
-    const w = 6 + Math.random() * 9;
-    const h = circle ? w : (4 + Math.random() * 10);
-    el.className = 'cf';
-    el.style.cssText = `left:${left}%;width:${w}px;height:${h}px;background:${color};--d:${dur}s;--dl:${delay}s;--dx:${dx};--spin:${spin};--r:${circle ? '50%' : '2px'};`;
-    layer.appendChild(el);
+  // ─── Sounds (Web Audio, no files needed) ───
+  let audioCtx = null;
+  function ac(){ if(!audioCtx){ try { audioCtx = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){} } return audioCtx; }
+  function playChime(){
+    if (!settings.sound) return;
+    const ctx = ac(); if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // happy C major arpeggio
+    notes.forEach((f, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'triangle'; o.frequency.value = f;
+      const t = ctx.currentTime + i*0.09;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.25, t+0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.32);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t+0.34);
+    });
   }
-  setTimeout(() => layer.innerHTML = '', 6000);
-}
-</script>
+
+  // ─── Voice ───
+  function speak(text){
+    if (!settings.speak || !('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance('Peekaboo! ' + text);
+      u.rate = 0.95; u.pitch = 1.25; u.volume = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const nice = voices.find(v => /female|samantha|karen|moira|tessa|google us/i.test(v.name));
+      if (nice) u.voice = nice;
+      window.speechSynthesis.speak(u);
+    } catch(e){}
+  }
+  if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
+
+  /* ─── Hidden grown-up panel: long-press the top-left corner ─── */
+  const gear  = document.getElementById('gear');
+  const panel = document.getElementById('panel');
+  let pressTimer = null;
+  function startPress(){ pressTimer = setTimeout(() => panel.classList.add('show'), 700); }
+  function cancelPress(){ clearTimeout(pressTimer); }
+  gear.addEventListener('touchstart', startPress, {passive:true});
+  gear.addEventListener('touchend', cancelPress);
+  gear.addEventListener('mousedown', startPress);
+  gear.addEventListener('mouseup', cancelPress);
+  gear.addEventListener('mouseleave', cancelPress);
+
+  const tSpeak = document.getElementById('tSpeak');
+  const tSound = document.getElementById('tSound');
+  const tShuffle = document.getElementById('tShuffle');
+  const tLinger = document.getElementById('tLinger');
+  const LINGER_STEPS = [3, 6, 10, 20];
+  function paintToggles(){
+    tSpeak.classList.toggle('on', settings.speak);
+    tSound.classList.toggle('on', settings.sound);
+    tShuffle.classList.toggle('on', settings.shuffle);
+    tLinger.textContent = settings.linger + 's';
+  }
+  tLinger.onclick = () => {
+    const i = LINGER_STEPS.indexOf(settings.linger);
+    settings.linger = LINGER_STEPS[(i + 1) % LINGER_STEPS.length];
+    store.set('linger', settings.linger);
+    paintToggles();
+  };
+  paintToggles();
+  tSpeak.onclick = () => { settings.speak = !settings.speak; store.set('speak', settings.speak); paintToggles(); };
+  tSound.onclick = () => { settings.sound = !settings.sound; store.set('sound', settings.sound); paintToggles(); };
+  tShuffle.onclick = () => {
+    settings.shuffle = !settings.shuffle; store.set('shuffle', settings.shuffle);
+    paintToggles(); buildOrder(); showCurrent();
+  };
+  document.getElementById('restartBtn').onclick = () => { buildOrder(); showCurrent(); panel.classList.remove('show'); };
+  document.getElementById('closeBtn').onclick   = () => panel.classList.remove('show');
+  panel.addEventListener('click', e => { if (e.target === panel) panel.classList.remove('show'); });
+
+  /* ─── "Add to Home Screen" tip (only in a browser, shown once) ─── */
+  function isStandalone(){
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.matchMedia('(display-mode: fullscreen)').matches ||
+           window.navigator.standalone === true;
+  }
+  if (!isStandalone() && !store.get('tipDismissed', false)) {
+    const tip = document.createElement('div');
+    tip.className = 'install-tip';
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    tip.innerHTML = ios
+      ? 'Add to your iPad: tap <b>Share ⬆️</b> then <b>“Add to Home Screen”</b> for full-screen, offline play. <span class="x">✕</span>'
+      : 'Install this app from your browser menu for full-screen, offline play. <span class="x">✕</span>';
+    tip.querySelector('.x').onclick = (ev) => { ev.stopPropagation(); store.set('tipDismissed', true); tip.remove(); };
+    setTimeout(() => document.body.appendChild(tip), 1200);
+  }
+
+  /* ─── Register the service worker for OFFLINE use ─── */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+
+  // ─── Go! ───
+  buildOrder();
+  showCurrent();
+  </script>
 </body>
 </html>
