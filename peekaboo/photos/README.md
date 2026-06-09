@@ -32,6 +32,7 @@ That's it — commit, push, and Netlify will redeploy.
 
 ## Notes
 - There's no limit on how many photos you add; the game loops forever.
-- The starter photos here (`our-family.png`, `remi-and-scout.png`,
-  `the-babies.png`) are copies of images already in the project — feel
-  free to delete them once you've added your own.
+- Big phone photos are fine — but smaller files load faster offline.
+  Resizing the long edge to ~1600px keeps them sharp and light.
+- iPhone photos sometimes carry a sideways/upside-down "orientation" tag.
+  If one shows up rotated, re-save it upright (or just ask Claude to fix it).
