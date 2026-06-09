@@ -1,6 +1,6 @@
 /* Family Peekaboo — offline service worker.
    Bump CACHE_VERSION whenever you change files or add photos. */
-const CACHE_VERSION = 'peekaboo-v3';
+const CACHE_VERSION = 'peekaboo-v4';
 
 /* Everything the app needs to run with NO internet.
    👉 When you add a new family photo, add its path here too. */
@@ -22,9 +22,14 @@ const PRECACHE = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_VERSION)
-      .then(cache => cache.addAll(PRECACHE))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_VERSION).then(cache =>
+      /* Cache each file on its own so one transient hiccup can't sink the whole
+         install (cache.addAll is all-or-nothing). Anything that slips through is
+         picked up by the cache-first handler below the next time we're online. */
+      Promise.all(PRECACHE.map(url =>
+        cache.add(url).catch(err => console.warn('[sw] could not precache', url, err))
+      ))
+    ).then(() => self.skipWaiting())
   );
 });
 
@@ -39,17 +44,24 @@ self.addEventListener('activate', event => {
 /* Cache-first: instant + works offline. Falls back to network and
    stashes anything new (e.g. photos you added) for next time. */
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    // ignoreSearch so a stray ?query (e.g. the Home Screen launch URL) still hits the cache.
+    caches.match(req, { ignoreSearch: true }).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).then(resp => {
+      return fetch(req).then(resp => {
         if (resp && resp.status === 200 && resp.type === 'basic') {
           const copy = resp.clone();
-          caches.open(CACHE_VERSION).then(c => c.put(event.request, copy));
+          caches.open(CACHE_VERSION).then(c => c.put(req, copy));
         }
         return resp;
-      }).catch(() => cached);
+      }).catch(() => {
+        // Offline AND not cached: for any page navigation, fall back to the app shell
+        // so launching from the Home Screen always lands on the game, never an error page.
+        if (req.mode === 'navigate') return caches.match('./index.html', { ignoreSearch: true });
+        return cached;   // undefined for other misses — nothing more we can do offline
+      });
     })
   );
 });
