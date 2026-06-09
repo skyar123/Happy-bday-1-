@@ -1,6 +1,6 @@
 /* Family Peekaboo — offline service worker.
    Bump CACHE_VERSION whenever you change files or add photos. */
-const CACHE_VERSION = 'peekaboo-v1';
+const CACHE_VERSION = 'peekaboo-v2';
 
 /* Everything the app needs to run with NO internet.
    👉 When you add a new family photo, add its path here too. */
@@ -10,9 +10,14 @@ const PRECACHE = [
   './manifest.webmanifest',
   './icon.svg',
   './apple-touch-icon.png',
-  './photos/our-family.png',
-  './photos/remi-and-scout.png',
-  './photos/the-babies.png',
+  './photos/anja-and-baby.jpg',
+  './photos/anja-grass.jpg',
+  './photos/mommy-and-anja.jpg',
+  './photos/anja-tree.jpg',
+  './photos/anja-remi-scout.jpg',
+  './photos/anja-and-babies.jpg',
+  './photos/family-greenhouse.jpg',
+  './photos/family-outside.jpg',
 ];
 
 self.addEventListener('install', event => {

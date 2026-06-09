@@ -98,6 +98,24 @@
       opacity: 1;
     }
 
+    /* Gentle "ok, you can move on now" cue — only appears after the linger time */
+    .next-hint {
+      position: absolute;
+      right: 14px; top: 14px;
+      z-index: 31;
+      background: rgba(0,0,0,0.42);
+      color: #fff; font-weight: 800;
+      font-size: clamp(0.85rem, 2.6vw, 1.15rem);
+      padding: 0.45em 0.9em; border-radius: 40px;
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.4s, transform 0.4s;
+      pointer-events: none;
+    }
+    .next-hint.show { opacity: 1; transform: translateY(0); animation: hintPulse 1.6s ease-in-out infinite; }
+    @keyframes hintPulse { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(0) scale(1.06); } }
+
     /* ─── The two doors that cover the photo ─── */
     .door {
       position: absolute; top: 0; bottom: 0;
@@ -202,6 +220,12 @@
       transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
     .toggle.on::after { transform: translateX(26px); }
+    .pill {
+      border: none; cursor: pointer;
+      background: var(--blue); color: #fff; font-weight: 900;
+      font-size: 1rem; padding: 0.45em 1.1em; border-radius: 40px;
+      min-width: 64px;
+    }
     .panel-btn {
       width: 100%; margin-top: 1.1rem; padding: 0.9rem;
       border: none; border-radius: 60px; cursor: pointer;
@@ -231,6 +255,7 @@
     <div class="stage" id="stage">
       <div class="photo"><img id="photoImg" src="" alt=""></div>
       <div class="name-banner" id="nameBanner">Peekaboo!</div>
+      <div class="next-hint" id="nextHint">tap for the next one 👉</div>
 
       <div class="door left"><span class="face">🫣</span></div>
       <div class="door right"><span class="face">👀</span></div>
@@ -255,6 +280,8 @@
         <button class="toggle on" id="tSound"></button></div>
       <div class="opt"><span>🔀 Shuffle the order</span>
         <button class="toggle" id="tShuffle"></button></div>
+      <div class="opt"><span>⏳ Stay on each photo</span>
+        <button class="pill" id="tLinger">6s</button></div>
       <button class="panel-btn" id="restartBtn">↺ Start from the beginning</button>
       <button class="panel-btn close" id="closeBtn">Done</button>
       <p class="panel-hint">To add your own photos, drop pictures into the
@@ -270,12 +297,14 @@
      • Also add the same filename to the list in  sw.js  so it works offline.
      ════════════════════════════════════════════════════════════ */
   const PHOTOS = [
-    { src: 'photos/our-family.png',     name: 'Our Family!' },
-    { src: 'photos/remi-and-scout.png', name: 'Remi & Scout!' },
-    { src: 'photos/the-babies.png',     name: 'Peekaboo!' },
-    // { src: 'photos/mama.jpg',        name: 'Mama!' },
-    // { src: 'photos/dada.jpg',        name: 'Dada!' },
-    // { src: 'photos/grandma.jpg',     name: 'Grandma!' },
+    { src: 'photos/anja-and-baby.jpg',   name: 'Anja!' },
+    { src: 'photos/anja-grass.jpg',      name: 'Anja!' },
+    { src: 'photos/mommy-and-anja.jpg',  name: 'Mommy & Anja!' },
+    { src: 'photos/anja-tree.jpg',       name: 'Anja!' },
+    { src: 'photos/anja-remi-scout.jpg', name: 'Anja, Remi & Scout!' },
+    { src: 'photos/anja-and-babies.jpg', name: 'Anja & the babies!' },
+    { src: 'photos/family-greenhouse.jpg', name: 'Our Family!' },
+    { src: 'photos/family-outside.jpg',  name: 'Our Family!' },
   ];
 
   // ─── Settings (remembered on the device) ───
@@ -287,6 +316,7 @@
     speak:   store.get('speak', true),
     sound:   store.get('sound', true),
     shuffle: store.get('shuffle', false),
+    linger:  store.get('linger', 6),   // seconds a photo stays locked before you can move on
   };
 
   // ─── Elements ───
@@ -295,11 +325,15 @@
   const nameBanner = document.getElementById('nameBanner');
   const app        = document.getElementById('app');
 
+  const nextHint = document.getElementById('nextHint');
+
   // ─── Play order ───
   let order = PHOTOS.map((_, i) => i);
-  let pos = 0;            // index into order
-  let revealed = false;
+  let pos = 0;                 // index into order
+  // state: 'covered' (doors shut) → 'lingering' (revealed, locked) → 'ready' (can move on)
+  let state = 'covered';
   let busy = false;
+  let lingerTimer = null;
 
   function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
   function buildOrder(){
@@ -316,39 +350,49 @@
     photoImg.src = item.src;
     photoImg.alt = item.name;
     nameBanner.textContent = item.name;
-    stage.classList.remove('open');   // doors closed, prompt visible
-    revealed = false;
+    stage.classList.remove('open');     // doors closed, prompt visible
+    nextHint.classList.remove('show');
+    state = 'covered';
   }
 
   function reveal(){
-    if (revealed || busy) return;
-    revealed = true;
+    if (state !== 'covered' || busy) return;
+    state = 'lingering';                 // 🔒 locked — a quick tap can't skip ahead
     stage.classList.add('open');
+    nextHint.classList.remove('show');
+    sayName();
+    // After the linger time, allow moving on
+    clearTimeout(lingerTimer);
+    lingerTimer = setTimeout(() => {
+      if (state === 'lingering') { state = 'ready'; nextHint.classList.add('show'); }
+    }, settings.linger * 1000);
+  }
+
+  // Re-say the name + sparkle without advancing (fun to tap mommy's face!)
+  function sayName(){
     sparkleBurst();
     playChime();
-    const item = PHOTOS[order[pos]];
-    speak(item.name);
+    speak(PHOTOS[order[pos]].name);
   }
 
   function next(){
     if (busy) return;
     busy = true;
-    // close doors first, then swap photo & reopen-ready
-    stage.classList.remove('open');
+    clearTimeout(lingerTimer);
+    stage.classList.remove('open');      // close doors first
+    nextHint.classList.remove('show');
     pos = (pos + 1) % order.length;
     if (pos === 0 && settings.shuffle) shuffleArray(order); // reshuffle each loop
-    setTimeout(() => {
-      showCurrent();
-      busy = false;
-    }, 480);
+    setTimeout(() => { showCurrent(); busy = false; }, 480);
   }
 
   // ─── The one and only interaction: TAP ───
   function onTap(e){
     // ignore taps that land on the settings panel/gear
     if (e.target.closest('.panel') || e.target.closest('.gear')) return;
-    if (!revealed) reveal();
-    else next();
+    if (state === 'covered')        reveal();   // open the doors
+    else if (state === 'lingering') sayName();  // still looking — replay, don't skip
+    else                            next();     // ready — move to the next photo
   }
   app.addEventListener('click', onTap);
 
@@ -430,11 +474,20 @@
   const tSpeak = document.getElementById('tSpeak');
   const tSound = document.getElementById('tSound');
   const tShuffle = document.getElementById('tShuffle');
+  const tLinger = document.getElementById('tLinger');
+  const LINGER_STEPS = [3, 6, 10, 20];
   function paintToggles(){
     tSpeak.classList.toggle('on', settings.speak);
     tSound.classList.toggle('on', settings.sound);
     tShuffle.classList.toggle('on', settings.shuffle);
+    tLinger.textContent = settings.linger + 's';
   }
+  tLinger.onclick = () => {
+    const i = LINGER_STEPS.indexOf(settings.linger);
+    settings.linger = LINGER_STEPS[(i + 1) % LINGER_STEPS.length];
+    store.set('linger', settings.linger);
+    paintToggles();
+  };
   paintToggles();
   tSpeak.onclick = () => { settings.speak = !settings.speak; store.set('speak', settings.speak); paintToggles(); };
   tSound.onclick = () => { settings.sound = !settings.sound; store.set('sound', settings.sound); paintToggles(); };
