@@ -393,6 +393,16 @@
 
   /* ─── Register the service worker for OFFLINE use ─── */
   if ('serviceWorker' in navigator) {
+    // When a freshly-deployed service worker takes control, reload once so the
+    // newest photos show up without anyone having to clear a cache. The guard
+    // skips the very first install (no previous controller) to avoid a needless reload.
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloadedForUpdate = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloadedForUpdate) return;
+      reloadedForUpdate = true;
+      window.location.reload();
+    });
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
   }
 
