@@ -2,181 +2,198 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Brown Bear, Brown Bear — Remi & Scout Turn One!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <!-- viewport-fit=cover + no zoom = full-bleed, toddler-proof on iPad -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#9e3b2e">
+  <!-- Full-screen "installed app" behaviour on iPad/iPhone -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Peekaboo">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Family Peekaboo</title>
   <style>
     :root {
-      --brown: #8B5E3C;
-      --red: #D63031;
-      --yellow: #FDCB6E;
-      --blue: #0984E3;
-      --green: #00B894;
-      --purple: #6C5CE7;
-      --orange: #E17055;
-      --paper: #FFF8F0;
-      --dark: #2D3436;
+      --barn:   #9e3b2e;   /* barn red */
+      --barn-d: #7d2c22;   /* darker red plank line */
+      --trim:   #f3ece0;   /* cream painted trim */
+      --wood:   #6b4329;   /* door frame wood */
+      --hay:    #fbe6c8;   /* warm background */
+      --ink:    #4a2c1e;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;            /* no pull-to-refresh */
+      touch-action: manipulation;
+      -webkit-user-select: none; user-select: none;
+      -webkit-touch-callout: none;          /* no image long-press menu */
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #2d2438;
+    }
     body {
-      background: var(--paper);
-      font-family: 'Nunito', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .screen {
-      display: none;
-      min-height: 100vh;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-    .screen.active { display: flex; }
-    @keyframes screenIn {
-      from { opacity: 0; transform: scale(0.95) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      height: 100dvh;                       /* full-screen even with iOS bars */
+      background: radial-gradient(circle at 50% 30%, #fff6e6 0%, var(--hay) 55%, #f3d9a8 100%);
     }
 
-    /* ═══════════════ INTRO ═══════════════ */
-    #intro {
-      background: linear-gradient(175deg, #87CEEB 0%, #B3E5FC 40%, #66BB6A 40%, #388E3C 100%);
+    /* The whole screen is one big tappable button */
+    #app {
+      position: fixed; inset: 0;
+      cursor: pointer;
+    }
+    /* Landscape-first layout: barn on one side, the name beside it */
+    .layout {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: row;
+      align-items: center; justify-content: center;
+      gap: clamp(12px, 3vw, 56px);
+      padding: max(env(safe-area-inset-top), 2vh)
+               max(env(safe-area-inset-right), 3vw)
+               max(env(safe-area-inset-bottom), 2vh)
+               max(env(safe-area-inset-left), 3vw);
+    }
+
+    /* ─── The barn doorway (photo behind, doors in front) ─── */
+    .stage {
       position: relative;
+      flex: 0 0 auto;
+      height: min(92vh, 58vw);
+      width:  min(92vh, 58vw);
+      border-radius: 14px;
       overflow: hidden;
-      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+      perspective: 1700px;
+      perspective-origin: 50% 50%;
+      background: #1d130d;
+      /* chunky wooden barn frame + depth */
+      box-shadow:
+        0 0 0 10px var(--wood),
+        0 0 0 14px #4f3120,
+        0 26px 60px rgba(40,20,10,0.45);
     }
-    #intro::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 48%;
-      background: repeating-linear-gradient(90deg, #388E3C 0px, #43A047 12px, #2E7D32 12px, #388E3C 24px);
-      opacity: 0.4;
-    }
-    .clouds {
-      position: absolute;
-      top: 3%; left: 0; right: 0;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-    }
-    .cloud {
-      background: rgba(255,255,255,0.85);
-      border-radius: 50px;
-      position: relative;
-      animation: cloudDrift var(--d) ease-in-out infinite alternate;
-    }
-    .cloud::before, .cloud::after {
-      content: '';
-      position: absolute;
-      background: rgba(255,255,255,0.85);
-      border-radius: 50%;
-    }
-    .cloud-1 { width: 80px; height: 28px; --d: 6s; }
-    .cloud-1::before { width: 44px; height: 40px; top: -22px; left: 10px; }
-    .cloud-1::after  { width: 30px; height: 30px; top: -16px; left: 38px; }
-    .cloud-2 { width: 60px; height: 22px; --d: 8s; animation-delay: -3s; }
-    .cloud-2::before { width: 34px; height: 32px; top: -18px; left: 8px; }
-    .cloud-2::after  { width: 24px; height: 24px; top: -12px; left: 28px; }
-    .cloud-3 { width: 70px; height: 24px; --d: 7s; animation-delay: -1.5s; }
-    .cloud-3::before { width: 38px; height: 36px; top: -20px; left: 10px; }
-    .cloud-3::after  { width: 28px; height: 28px; top: -14px; left: 34px; }
-    @keyframes cloudDrift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
+    .stage:not(.open) { animation: breathe 2.6s ease-in-out infinite; }
+    @keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.012); } }
 
-    .intro-portrait {
-      position: relative; z-index: 3;
-      width: clamp(200px, 55vw, 280px);
-      height: clamp(200px, 55vw, 280px);
-      border-radius: 50%;
-      overflow: hidden;
-      border: 5px solid white;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.2);
-      animation: portraitFloat 3s ease-in-out infinite;
-      margin-bottom: 0.6rem;
+    /* The hidden photo */
+    .photo { position: absolute; inset: 0; background: #d8c7b0; }
+    .photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      transform: scale(1.06);
+      transition: transform 0.7s cubic-bezier(0.34,1.4,0.5,1);
     }
-    .intro-portrait img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes portraitFloat {
-      0%,100% { transform: translateY(0) rotate(-1deg); }
-      50%     { transform: translateY(-10px) rotate(1deg); }
-    }
-    .intro-title {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2rem, 8vw, 4rem);
-      color: white;
-      text-shadow: 4px 5px 0 rgba(80,40,10,0.35);
-      line-height: 1.05; letter-spacing: 2px;
-      text-align: center; position: relative; z-index: 2;
-    }
-    .intro-names {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2.6rem, 11vw, 5rem);
-      text-align: center; line-height: 1;
-      position: relative; z-index: 2;
-      background: linear-gradient(120deg, #FFD700 0%, #FFF9C4 30%, #FFD700 60%, #FFA000 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(3px 4px 0 rgba(80,40,10,0.4));
-      margin: 0.1rem 0;
-    }
-    .intro-subtitle {
-      font-family: 'Caveat', cursive;
-      font-size: clamp(1.3rem, 4.5vw, 2rem);
-      color: #FFFDE7; text-align: center;
-      position: relative; z-index: 2;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
-      margin: 0.2rem 0 0.8rem;
-    }
-    .start-btn {
-      background: var(--red); color: white; border: none;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.1rem, 4vw, 1.5rem);
-      padding: 0.9rem 2.8rem; border-radius: 60px;
-      cursor: pointer; letter-spacing: 2px;
-      box-shadow: 0 6px 0 #8B0000, 0 12px 24px rgba(0,0,0,0.2);
-      position: relative; z-index: 3;
-      animation: btnPulse 2s ease-in-out infinite;
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
-    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #8B0000, 0 14px 28px rgba(0,0,0,0.25); }
-    .start-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #8B0000; }
-    @keyframes btnPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .stage.open .photo img { transform: scale(1); }
 
-    /* ═══════════════ PEEKABOO ═══════════════ */
-    #peekaboo {
-      background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 30%, #A5D6A7 30%, #2E7D32 100%);
-      padding: 0.8rem 1rem 1.5rem;
-      justify-content: flex-start;
-      gap: 0.4rem;
-      touch-action: none;
+    /* ─── The two barn doors ─── */
+    .door {
+      position: absolute; top: 0; bottom: 0;
+      width: 50%;
+      z-index: 20;
       overflow: hidden;
+      transition: transform 0.75s cubic-bezier(0.6,0.02,0.2,1);
+      /* red vertical planks */
+      background-color: var(--barn);
+      background-image:
+        repeating-linear-gradient(90deg,
+          rgba(0,0,0,0.22) 0 2px,
+          rgba(255,255,255,0.05) 2px 4px,
+          transparent 4px 52px);
+      /* painted cream trim around each door + inner shadow for depth */
+      box-shadow:
+        inset 0 0 0 7px var(--trim),
+        inset 0 0 40px rgba(0,0,0,0.4);
+    }
+    .door.left  { left: 0;  transform-origin: left center; }
+    .door.right { right: 0; transform-origin: right center; }
+    .stage.open .door.left  { transform: rotateY(-118deg); }
+    .stage.open .door.right { transform: rotateY(118deg); }
+
+    /* White cross-brace (the classic barn-door "X") */
+    .brace {
+      position: absolute; left: 50%; top: 50%;
+      width: clamp(10px, 2.2vmin, 18px); height: 165%;
+      background: var(--trim);
+      box-shadow: 0 0 5px rgba(0,0,0,0.18);
+    }
+    .brace.a { transform: translate(-50%,-50%) rotate(27deg); }
+    .brace.b { transform: translate(-50%,-50%) rotate(-27deg); }
+
+    /* Dark door handles meeting at the center seam */
+    .handle {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: clamp(8px, 1.6vmin, 12px); height: clamp(48px, 11vmin, 84px);
+      border-radius: 6px; background: #2f2013;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .door.left  .handle { right: clamp(10px, 2.4vmin, 18px); }
+    .door.right .handle { left:  clamp(10px, 2.4vmin, 18px); }
+
+    /* Confetti burst on reveal (simple shapes, no emoji) */
+    .spark {
+      position: absolute; z-index: 28; pointer-events: none;
+      width: 12px; height: 12px;
+      animation: sparkFly 0.85s ease-out forwards;
+    }
+    @keyframes sparkFly {
+      0%   { opacity: 1; transform: translate(0,0) scale(0.3) rotate(0); }
+      100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1.2) rotate(var(--sr)); }
     }
 
-    /* ─ Carousel of found animals ─ */
-    .found-carousel {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      justify-content: center;
-      min-height: 52px;
-      width: 100%;
-      flex-wrap: nowrap;
-      padding: 4px 0;
+    /* ─── Portrait fallback: barn fills more of the screen ─── */
+    @media (orientation: portrait) {
+      .layout { flex-direction: column; gap: clamp(10px, 3vh, 32px); }
+      .stage  { height: min(62vh, 92vw); width: min(62vh, 92vw); }
     }
-    .carousel-slot {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      border: 2px dashed rgba(255,255,255,0.3);
+
+    /* ─── Hidden grown-up settings (long-press top-left corner) ─── */
+    .gear { position: fixed; top: 0; left: 0; width: 70px; height: 70px; z-index: 60; opacity: 0.001; }
+    .panel {
+      position: fixed; inset: 0; z-index: 70;
+      background: rgba(40,20,10,0.72); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .panel.show { display: flex; }
+    .panel-card {
+      background: #fff; border-radius: 26px; padding: 1.6rem 1.4rem;
+      width: min(440px, 92vw); box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+    .panel-card h2 { color: var(--barn); font-size: 1.4rem; margin-bottom: 0.2rem; }
+    .panel-card p.sub { color: #999; font-size: 0.85rem; margin-bottom: 1rem; }
+    .opt {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 0; border-bottom: 2px dashed #f0e6da;
+      font-size: 1.05rem; color: #444; font-weight: 700;
+    }
+    .opt:last-of-type { border-bottom: none; }
+    .toggle { width: 58px; height: 32px; border-radius: 32px; border: none; background: #ddd; position: relative; cursor: pointer; transition: background 0.2s; }
+    .toggle.on { background: #06d6a0; }
+    .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    .toggle.on::after { transform: translateX(26px); }
+    .pill { border: none; cursor: pointer; background: var(--wood); color: #fff; font-weight: 900; font-size: 1rem; padding: 0.45em 1.1em; border-radius: 40px; min-width: 64px; }
+    .panel-btn {
+      width: 100%; margin-top: 1.1rem; padding: 0.9rem; border: none; border-radius: 60px; cursor: pointer;
+      font-weight: 900; font-size: 1.05rem; color: #fff; background: var(--barn); box-shadow: 0 5px 0 var(--barn-d);
+    }
+    .panel-btn.close { background: #c9c9c9; box-shadow: 0 5px 0 #a8a8a8; margin-top: 0.6rem; }
+    .panel-hint { color:#bbb; font-size:0.75rem; text-align:center; margin-top:0.8rem; line-height:1.4; }
+    .panel-card { max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* ─── #2 Anticipation: a little wind-up before the doors fly open ─── */
+    .stage.peeking { animation: knock 0.48s ease-in-out; }
+    @keyframes knock {
+      0%,100% { transform: translateX(0) rotate(0); }
+      18% { transform: translateX(-5px) rotate(-0.6deg); }
+      42% { transform: translateX(6px)  rotate(0.7deg); }
+      68% { transform: translateX(-4px) rotate(-0.4deg); }
+      86% { transform: translateX(2px)  rotate(0.2deg); }
+    }
+    .stage.peeking .door.left  { transform: rotateY(-15deg); }   /* doors crack open a sliver */
+    .stage.peeking .door.right { transform: rotateY(15deg); }
+
+    /* ─── #3 Calm wind-down ("all done" — tap anywhere to play again) ─── */
+    .winddown {
+      position: absolute; inset: 0; z-index: 40;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
       transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
@@ -532,6 +549,50 @@
       position: fixed; bottom: -30px; right: -30px;
       width: 180px; opacity: 0.06;
       pointer-events: none; z-index: 0;
+      background: radial-gradient(circle at 50% 36%, #41506f 0%, #2b3050 58%, #1b1e30 100%);
+      opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+    }
+    .winddown.show { opacity: 1; pointer-events: auto; }
+    .moon {
+      position: relative; width: 22vmin; height: 22vmin; border-radius: 50%;
+      background: radial-gradient(circle at 38% 34%, #fff7d6 0%, #ffe9a8 58%, #f1cf78 100%);
+      box-shadow: 0 0 46px 12px rgba(255,231,150,0.45);
+      animation: moonBob 4.5s ease-in-out infinite;
+    }
+    @keyframes moonBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.8vmin); } }
+    .stars { position: absolute; inset: 0; pointer-events: none; }
+    .stars span { position: absolute; background:#fff; border-radius:50%; opacity:0.12; animation: twinkle 3s ease-in-out infinite; }
+    @keyframes twinkle { 0%,100% { opacity: 0.12; } 50% { opacity: 0.9; } }
+
+    /* ─── Grown-up: co-play tip + photo show/hide grid ─── */
+    .coplay-tip {
+      background:#fff7ea; border:2px dashed #f0d9b8; color:#7a5a36;
+      font-size:0.82rem; line-height:1.45; border-radius:14px;
+      padding:0.7rem 0.85rem; margin-bottom:0.3rem; font-weight:600;
+    }
+    .coplay-tip b { color: var(--barn); }
+    .grid-label { font-size:0.82rem; font-weight:800; color:#777; margin:0.9rem 0 0.4rem; }
+    .photo-grid {
+      display:grid; grid-template-columns: repeat(5, 1fr); gap:6px;
+      max-height:32vh; overflow-y:auto; padding:5px;
+      background:#f6f0e8; border-radius:12px; -webkit-overflow-scrolling: touch;
+    }
+    .photo-grid button {
+      position:relative; padding:0; border:none; border-radius:8px;
+      overflow:hidden; aspect-ratio:1/1; cursor:pointer; background:#ddd;
+    }
+    .photo-grid img { width:100%; height:100%; object-fit:cover; display:block; }
+    .photo-grid button.hidden img { filter: grayscale(1) brightness(0.5); }
+    .photo-grid button.hidden::after {
+      content:'✕'; position:absolute; top:3px; right:3px;
+      width:18px; height:18px; border-radius:50%;
+      background:#e53935; color:#fff; font-size:12px; font-weight:900;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* Respect a child's/parent's reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .stage:not(.open), .stage.peeking, .moon, .stars span { animation: none !important; }
     }
   </style>
 </head>
@@ -617,15 +678,25 @@
         <div class="detail-label">When</div>
         <div class="detail-value">Saturday, April 11, 2026</div>
         <div class="detail-sub">12:00 PM – 2:30 PM</div>
+  <div id="app">
+    <div class="layout">
+      <div class="stage" id="stage">
+        <div class="photo"><img id="photoImg" src="" alt=""></div>
+
+        <div class="door left">
+          <span class="brace a"></span><span class="brace b"></span>
+          <span class="handle"></span>
+        </div>
+        <div class="door right">
+          <span class="brace a"></span><span class="brace b"></span>
+          <span class="handle"></span>
+        </div>
       </div>
     </div>
-    <div class="detail-row">
-      <div class="detail-icon">🐾</div>
-      <div>
-        <div class="detail-label">Where</div>
-        <div class="detail-value">WNC Nature Center</div>
-        <div class="detail-sub">75 Gashes Creek Rd · Asheville, NC</div>
-      </div>
+    <!-- Calm "all done" wind-down (tap anywhere to play again) -->
+    <div class="winddown" id="winddown" aria-hidden="true">
+      <div class="stars" id="stars"></div>
+      <div class="moon"></div>
     </div>
     <div class="detail-row">
       <div class="detail-icon">🎂</div>
@@ -704,328 +775,359 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
 }
+  </div>
 
-// ═══════════════ CAROUSEL SETUP ═══════════════
-function buildCarousel() {
-  carousel.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'carousel-slot';
-    slot.id = 'slot-' + i;
-    carousel.appendChild(slot);
-  }
-}
+  <!-- Hidden parent corner (long-press to open) -->
+  <div class="gear" id="gear"></div>
 
-function fillCarouselSlot(index) {
-  const slot = document.getElementById('slot-' + index);
-  slot.classList.add('filled');
-  const img = document.createElement('img');
-  img.src = animals[index].img;
-  img.alt = animals[index].name;
-  slot.appendChild(img);
-}
+  <div class="panel" id="panel">
+    <div class="panel-card">
+      <h2>Grown-up settings</h2>
+      <p class="sub">Tap anywhere on the screen to open the barn doors.</p>
+      <div class="coplay-tip">Best played <b>together</b> — name who you see, follow your
+        child's gaze, and let them do the tapping. Your voice + a familiar face is where the
+        learning happens.</div>
+      <div class="opt"><span>Shuffle the order</span>
+        <button class="toggle" id="tShuffle"></button></div>
+      <div class="opt"><span>Stay on each photo</span>
+        <button class="pill" id="tLinger">6s</button></div>
+      <div class="opt"><span>Calm ending after</span>
+        <button class="pill" id="tWind">5m</button></div>
+      <div class="grid-label">Show / hide photos — tap a photo to hide it</div>
+      <div class="photo-grid" id="photoGrid"></div>
+      <button class="panel-btn" id="restartBtn">Start from the beginning</button>
+      <button class="panel-btn close" id="closeBtn">Done</button>
+      <p class="panel-hint">Hidden photos won't appear in the game — at least one always stays on.</p>
+    </div>
+  </div>
 
-// ═══════════════ GRASS PAINTING ═══════════════
-function paintGrass() {
-  const w = grassC.width;
-  const h = grassC.height;
-  grassCtx.clearRect(0, 0, w, h);
-
-  // Paint layered grass using canvas drawing
-  const grassColors = [
-    { color: '#2E7D32', blades: 18, maxH: 0.95 },
-    { color: '#388E3C', blades: 16, maxH: 0.85 },
-    { color: '#43A047', blades: 14, maxH: 0.75 },
-    { color: '#4CAF50', blades: 12, maxH: 0.65 },
-    { color: '#66BB6A', blades: 10, maxH: 0.55 },
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     FAMILY PHOTOS — edit this list!
+     • Put image files in the  photos/  folder
+     • Add one line per photo:  { src: 'photos/FILE.jpg', group: 'who' }
+       'group' keeps a wide shot and its close-up from landing back-to-back
+       when shuffled. Give unrelated photos their own unique group.
+     • Also add the same filename to the list in  sw.js  for offline use.
+     ════════════════════════════════════════════════════════════ */
+  const PHOTOS = [
+    { src: 'photos/mommy.jpg',                 group: 'mommy' },
+    { src: 'photos/mommy-face.jpg',            group: 'mommy' },
+    { src: 'photos/mommy-germany.jpg',         group: 'mommy-germany' },
+    { src: 'photos/mommy-germany-2.jpg',       group: 'mommy-germany-2' },
+    { src: 'photos/alli.jpg',                  group: 'alli' },
+    { src: 'photos/ammorette.jpg',             group: 'ammorette' },
+    { src: 'photos/amorette.jpg',              group: 'amorette' },
+    { src: 'photos/becca.jpg',                 group: 'becca' },
+    { src: 'photos/becca-face.jpg',            group: 'becca' },
+    { src: 'photos/boone.jpg',                 group: 'boone' },
+    { src: 'photos/boone-face.jpg',            group: 'boone' },
+    { src: 'photos/claudia.jpg',               group: 'claudia' },
+    { src: 'photos/eva.jpg',                   group: 'eva' },
+    { src: 'photos/eva-anska-becca-uli.jpg',   group: 'eva-anska-becca-uli' },
+    { src: 'photos/gam-gam-and-ga-ga.jpg',     group: 'gam-gam-and-ga-ga' },
+    { src: 'photos/grand-dad.jpg',             group: 'grand-dad' },
+    { src: 'photos/grand-dad-face.jpg',        group: 'grand-dad' },
+    { src: 'photos/klaus.jpg',                 group: 'klaus' },
+    { src: 'photos/klaus-face.jpg',            group: 'klaus' },
+    { src: 'photos/klaus-2.jpg',               group: 'klaus-2' },
+    { src: 'photos/klaus-2-face.jpg',          group: 'klaus-2' },
+    { src: 'photos/maggie.jpg',                group: 'maggie' },
+    { src: 'photos/maggie-face.jpg',           group: 'maggie' },
+    { src: 'photos/opa.jpg',                   group: 'opa' },
+    { src: 'photos/opa-face.jpg',              group: 'opa' },
+    { src: 'photos/remi-and-scout.jpg',        group: 'remi-and-scout' },
+    { src: 'photos/remi-scout-sauce-gigi.jpg', group: 'remi-scout-sauce-gigi' },
+    { src: 'photos/scout-and-opa.jpg',         group: 'scout-and-opa' },
+    { src: 'photos/scout-and-opa-face.jpg',    group: 'scout-and-opa' },
+    { src: 'photos/sauce-and-remi.jpg',        group: 'sauce-and-remi' },
+    { src: 'photos/torren.jpg',                group: 'torren' },
+    { src: 'photos/torren-face.jpg',           group: 'torren' },
+    { src: 'photos/uli.jpg',                   group: 'uli' },
+    { src: 'photos/anja-and-baby.jpg',         group: 'anja-and-baby' },
+    { src: 'photos/anja-and-baby-face.jpg',    group: 'anja-and-baby' },
+    { src: 'photos/anja-grass.jpg',            group: 'anja-grass' },
+    { src: 'photos/anja-grass-face.jpg',       group: 'anja-grass' },
+    { src: 'photos/mommy-and-anja.jpg',        group: 'mommy-and-anja' },
+    { src: 'photos/mommy-and-anja-face.jpg',   group: 'mommy-and-anja' },
+    { src: 'photos/anja-tree.jpg',             group: 'anja-tree' },
+    { src: 'photos/anja-tree-face.jpg',        group: 'anja-tree' },
+    { src: 'photos/anja-remi-scout.jpg',       group: 'anja-remi-scout' },
+    { src: 'photos/anja-and-babies.jpg',       group: 'anja-and-babies' },
+    { src: 'photos/family-greenhouse.jpg',     group: 'family-greenhouse' },
+    { src: 'photos/family-outside.jpg',        group: 'family-outside' },
   ];
 
-  // Ground fill
-  grassCtx.fillStyle = '#2E7D32';
-  grassCtx.fillRect(0, h * 0.4, w, h * 0.6);
-
-  // Draw grass blades
-  for (const layer of grassColors) {
-    grassCtx.fillStyle = layer.color;
-    for (let i = 0; i < layer.blades; i++) {
-      const x = (i / layer.blades) * w + (Math.random() - 0.5) * (w / layer.blades);
-      const bladeW = 12 + Math.random() * 16;
-      const bladeH = h * (0.4 + Math.random() * layer.maxH * 0.5);
-      const lean = (Math.random() - 0.5) * 20;
-
-      grassCtx.beginPath();
-      grassCtx.moveTo(x - bladeW/2, h);
-      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + lean * 1.5, h - bladeH);
-      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + bladeW/2, h);
-      grassCtx.fill();
-    }
-  }
-
-  // Add some extra texture / small dots
-  grassCtx.fillStyle = '#1B5E20';
-  for (let i = 0; i < 60; i++) {
-    const x = Math.random() * w;
-    const y = h * 0.35 + Math.random() * h * 0.65;
-    grassCtx.beginPath();
-    grassCtx.arc(x, y, 1 + Math.random() * 3, 0, Math.PI * 2);
-    grassCtx.fill();
-  }
-
-  // Fill top area to ensure full coverage
-  grassCtx.fillStyle = '#388E3C';
-  grassCtx.fillRect(0, 0, w, h * 0.15);
-
-  // More overlapping blades from top
-  for (let i = 0; i < 20; i++) {
-    const x = Math.random() * w;
-    const bladeH = h * (0.3 + Math.random() * 0.5);
-    const lean = (Math.random() - 0.5) * 30;
-    grassCtx.fillStyle = ['#2E7D32', '#388E3C', '#43A047', '#4CAF50'][Math.floor(Math.random() * 4)];
-    grassCtx.beginPath();
-    grassCtx.moveTo(x - 8, 0);
-    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + lean * 1.2, bladeH);
-    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + 8, 0);
-    grassCtx.fill();
-  }
-
-  // Count opaque pixels for progress tracking
-  grassPixels = grassCtx.getImageData(0, 0, w, h);
-  totalGrassPixels = 0;
-  clearedPixels = 0;
-  for (let i = 3; i < grassPixels.data.length; i += 4) {
-    if (grassPixels.data[i] > 0) totalGrassPixels++;
-  }
-}
-
-// ═══════════════ CUT GRASS ═══════════════
-function cutGrass(x, y) {
-  // Use destination-out compositing to erase grass
-  grassCtx.globalCompositeOperation = 'destination-out';
-  grassCtx.beginPath();
-  grassCtx.arc(x, y, brushRadius, 0, Math.PI * 2);
-  grassCtx.fill();
-  grassCtx.globalCompositeOperation = 'source-over';
-
-  // Spawn leaf particles
-  if (Math.random() > 0.6) {
-    spawnLeaf(x, y);
-  }
-}
-
-function spawnLeaf(x, y) {
-  const leaf = document.createElement('span');
-  leaf.className = 'leaf-particle';
-  leaf.textContent = ['🍃', '🌿', '☘️'][Math.floor(Math.random() * 3)];
-  leaf.style.left = x + 'px';
-  leaf.style.top = y + 'px';
-  leaf.style.setProperty('--lx', ((Math.random() - 0.5) * 80) + 'px');
-  leaf.style.setProperty('--ly', (-20 - Math.random() * 60) + 'px');
-  leaf.style.setProperty('--lr', ((Math.random() - 0.5) * 360) + 'deg');
-  arenaEl.appendChild(leaf);
-  setTimeout(() => leaf.remove(), 700);
-}
-
-function drawTrail(x, y) {
-  trailCtx.strokeStyle = 'rgba(255,255,255,0.5)';
-  trailCtx.lineWidth = 3;
-  trailCtx.lineCap = 'round';
-  trailCtx.lineTo(x, y);
-  trailCtx.stroke();
-}
-
-function calculateClearPercent() {
-  const data = grassCtx.getImageData(0, 0, grassC.width, grassC.height).data;
-  let remaining = 0;
-  for (let i = 3; i < data.length; i += 4) {
-    if (data[i] > 0) remaining++;
-  }
-  return Math.round(((totalGrassPixels - remaining) / totalGrassPixels) * 100);
-}
-
-// ═══════════════ LOAD ANIMAL ═══════════════
-function loadAnimal(index) {
-  revealed = false;
-  moveCount = 0;
-  const animal = animals[index];
-
-  arenaImg.src = animal.img;
-  arenaImg.alt = animal.name;
-  arenaName.textContent = animal.emoji + ' ' + animal.name;
-  arenaName.style.color = animal.color;
-  arenaName.classList.remove('visible');
-  arenaEl.style.background = animal.bg;
-  cutMeter.textContent = '🌿 0%';
-  hint.classList.remove('hidden');
-  flash.classList.remove('flash');
-
-  // Resize canvases
-  const w = arenaEl.offsetWidth;
-  const h = arenaEl.offsetHeight;
-  grassC.width = w;
-  grassC.height = h;
-  trailC.width = w;
-  trailC.height = h;
-  trailCtx.clearRect(0, 0, w, h);
-
-  // Paint fresh grass
-  paintGrass();
-
-  // Update prompt
-  prompt.textContent = `${animal.emoji} Who's hiding? Swipe to find out! (${found + 1}/${total})`;
-}
-
-// ═══════════════ REVEAL ANIMAL ═══════════════
-function revealAnimal() {
-  if (revealed) return;
-  revealed = true;
-  hint.classList.add('hidden');
-
-  // Clear all remaining grass with animation
-  grassCtx.clearRect(0, 0, grassC.width, grassC.height);
-  trailCtx.clearRect(0, 0, trailC.width, trailC.height);
-
-  // Flash effect
-  flash.classList.add('flash');
-
-  // Show name
-  arenaName.classList.add('visible');
-  cutMeter.textContent = '✅ Found!';
-
-  // After a showcase pause, move to carousel and load next
-  setTimeout(() => {
-    fillCarouselSlot(currentIndex);
-    found++;
-
-    if (found >= total) {
-      // All found! Go to celebration
-      setTimeout(() => showCelebration(), 400);
-    } else {
-      currentIndex++;
-      loadAnimal(currentIndex);
-    }
-  }, 1500);
-}
-
-// ═══════════════ CELEBRATION SCREEN ═══════════════
-function showCelebration() {
-  showScreen('celebrate');
-  launchConfetti(document.getElementById('confettiCelebrate'));
-
-  const grid = document.getElementById('allAnimalsGrid');
-  grid.innerHTML = '';
-
-  animals.forEach((animal, i) => {
-    const cell = document.createElement('div');
-    cell.className = 'all-animal-cell';
-    cell.innerHTML = `<img src="${animal.img}" alt="${animal.name}"><span>${animal.emoji} ${animal.name}</span>`;
-    grid.appendChild(cell);
-    setTimeout(() => cell.classList.add('pop-in'), 200 + i * 180);
-  });
-
-  // Show the button after animals pop in
-  setTimeout(() => {
-    document.getElementById('celebrateBtn').classList.add('show');
-  }, 200 + total * 180);
-}
-
-// ═══════════════ START GAME ═══════════════
-function startGame() {
-  currentIndex = 0;
-  found = 0;
-  buildCarousel();
-  setTimeout(() => loadAnimal(0), 300);
-}
-
-// ═══════════════ INPUT HANDLERS ═══════════════
-function getPos(e) {
-  const rect = arenaEl.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return {
-    x: (clientX - rect.left) * (grassC.width / rect.width),
-    y: (clientY - rect.top) * (grassC.height / rect.height)
+  // ─── Settings (remembered on the device) ───
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem('pb_'+k); return v===null?d:JSON.parse(v); } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem('pb_'+k, JSON.stringify(v)); } catch(e){} }
   };
-}
+  let settings = {
+    shuffle: store.get('shuffle', true),   // randomized + interspersed by default
+    linger:  store.get('linger', 6),       // seconds a photo stays locked before you can move on
+    windMin: store.get('windMin', 5),      // calm "all done" after N minutes of play (0 = off)
+    hidden:  store.get('hidden', []),      // photo srcs a grown-up has chosen to hide
+  };
 
-function onStart(e) {
-  if (revealed) return;
-  e.preventDefault();
-  isDrawing = true;
-  hint.classList.add('hidden');
-  const pos = getPos(e);
-  trailCtx.beginPath();
-  trailCtx.moveTo(pos.x, pos.y);
-  cutGrass(pos.x, pos.y);
-}
+  // ─── Elements ───
+  const stage    = document.getElementById('stage');
+  const photoImg = document.getElementById('photoImg');
+  const app      = document.getElementById('app');
+  const winddown = document.getElementById('winddown');
+  const starsEl  = document.getElementById('stars');
 
-function onMove(e) {
-  if (!isDrawing || revealed) return;
-  e.preventDefault();
-  const pos = getPos(e);
-  cutGrass(pos.x, pos.y);
-  drawTrail(pos.x, pos.y);
-  moveCount++;
+  // ─── Play order ───
+  let order = [];
+  let pos = 0;
+  // state: 'covered' → 'peeking' (wind-up) → 'lingering' (open, locked) → 'ready' → next
+  //        plus 'winddown' (calm end screen)
+  let state = 'covered';
+  let busy = false;
+  let lingerTimer = null;
+  let sessionStart = Date.now();
+  let reveals = 0;
 
-  // Check progress every few moves (pixel counting is expensive)
-  if (moveCount % 3 === 0) {
-    const pct = calculateClearPercent();
-    cutMeter.textContent = '🌿 ' + pct + '%';
+  function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  function visibleIndexes(){
+    const hidden = new Set(settings.hidden);
+    const idx = [];
+    PHOTOS.forEach((p, i) => { if (!hidden.has(p.src)) idx.push(i); });
+    return idx.length ? idx : PHOTOS.map((_, i) => i);   // safety: never empty
   }
-
-  if (moveCount > 6 && calculateClearPercent() >= 20) {
-    revealAnimal();
-  }
-}
-
-function onEnd(e) {
-  isDrawing = false;
-  // Fade trail
-  setTimeout(() => {
-    if (!revealed) {
-      trailCtx.clearRect(0, 0, trailC.width, trailC.height);
+  // Keep a wide shot and its own close-up (same group) from sitting next to each other.
+  function deAdjacent(arr){
+    for (let i = 1; i < arr.length; i++){
+      if (PHOTOS[arr[i]].group === PHOTOS[arr[i-1]].group){
+        const gPrev = PHOTOS[arr[i-1]].group;
+        const gNext = (i+1 < arr.length) ? PHOTOS[arr[i+1]].group : null;
+        for (let j = i+1; j < arr.length; j++){
+          if (PHOTOS[arr[j]].group !== gPrev && PHOTOS[arr[j]].group !== gNext){
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+            break;
+          }
+        }
+      }
     }
-  }, 300);
-}
-
-// Touch
-arenaEl.addEventListener('touchstart', onStart, { passive: false });
-arenaEl.addEventListener('touchmove', onMove, { passive: false });
-arenaEl.addEventListener('touchend', onEnd);
-
-// Mouse
-arenaEl.addEventListener('mousedown', onStart);
-arenaEl.addEventListener('mousemove', function(e) { if (isDrawing) onMove(e); });
-arenaEl.addEventListener('mouseup', onEnd);
-arenaEl.addEventListener('mouseleave', onEnd);
-
-// Resize
-window.addEventListener('resize', function() {
-  if (document.getElementById('peekaboo').classList.contains('active') && !revealed) {
-    loadAnimal(currentIndex);
+    return arr;
   }
-});
-
-// ═══════════════ CONFETTI ═══════════════
-function launchConfetti(layer) {
-  layer = layer || document.getElementById('confettiLayer');
-  const colors = ['#E53935','#FDCB6E','#43A047','#1E88E5','#7B1FA2','#FF8F00','#00BCD4','#F48FB1','#FFD700'];
-  for (let i = 0; i < 100; i++) {
-    const el = document.createElement('div');
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const left = Math.random() * 100;
-    const dur = 2.2 + Math.random() * 2.4;
-    const delay = Math.random() * 1.8;
-    const dx = (Math.random() - 0.5) * 260 + 'px';
-    const spin = (Math.random() * 2 - 1) * 720 + 'deg';
-    const circle = Math.random() > 0.4;
-    const w = 6 + Math.random() * 9;
-    const h = circle ? w : (4 + Math.random() * 10);
-    el.className = 'cf';
-    el.style.cssText = `left:${left}%;width:${w}px;height:${h}px;background:${color};--d:${dur}s;--dl:${delay}s;--dx:${dx};--spin:${spin};--r:${circle ? '50%' : '2px'};`;
-    layer.appendChild(el);
+  function buildOrder(){
+    order = visibleIndexes();
+    if (settings.shuffle){ shuffleArray(order); deAdjacent(order); }
+    pos = 0;
   }
-  setTimeout(() => layer.innerHTML = '', 6000);
-}
-</script>
+
+  // Preload images so reveals are instant + offline-ready
+  PHOTOS.forEach(p => { const im = new Image(); im.src = p.src; });
+
+  function showCurrent(){
+    const item = PHOTOS[order[pos]];
+    photoImg.src = item.src;
+    photoImg.alt = '';
+    stage.classList.remove('open', 'peeking');   // doors closed
+    state = 'covered';
+  }
+
+  function reveal(){
+    if (state !== 'covered' || busy) return;
+    busy = true;
+    state = 'peeking';
+    stage.classList.add('peeking');          // #2 wind-up: the barn rattles + doors crack...
+    setTimeout(() => {
+      stage.classList.remove('peeking');
+      stage.classList.add('open');           // ...then they burst open
+      state = 'lingering';                    // locked — a quick tap can't skip ahead
+      busy = false;
+      confettiBurst();
+      clearTimeout(lingerTimer);
+      lingerTimer = setTimeout(() => { if (state === 'lingering') state = 'ready'; }, settings.linger * 1000);
+    }, 480);
+  }
+
+  function next(){
+    if (busy) return;
+    busy = true;
+    clearTimeout(lingerTimer);
+    stage.classList.remove('open');          // close doors first
+    reveals++;
+    // #3 a gentle, predictable end to a session
+    if (settings.windMin > 0 && (Date.now() - sessionStart) >= settings.windMin * 60000){
+      setTimeout(() => { enterWindDown(); busy = false; }, 540);
+      return;
+    }
+    pos += 1;
+    if (pos >= order.length) buildOrder();    // loop (reshuffles + re-intersperses if on)
+    setTimeout(() => { showCurrent(); busy = false; }, 540);
+  }
+
+  function enterWindDown(){
+    state = 'winddown';
+    stage.classList.remove('open', 'peeking');
+    buildStars();
+    winddown.classList.add('show');
+  }
+  function exitWindDown(){
+    winddown.classList.remove('show');
+    sessionStart = Date.now(); reveals = 0;
+    buildOrder(); showCurrent();
+  }
+
+  // ─── The one and only interaction: TAP ───
+  function onTap(e){
+    if (e.target.closest('.panel') || e.target.closest('.gear')) return;
+    if (busy) return;
+    if (state === 'winddown')       exitWindDown();    // play again
+    else if (state === 'covered')   reveal();          // open the doors
+    else if (state === 'lingering') confettiBurst();   // still looking — little sparkle, don't skip
+    else                            next();            // ready — move to the next photo
+  }
+  app.addEventListener('click', onTap);
+
+  // block right-click / long-press menu & double-tap zoom
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  let lastTouch = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouch < 300) e.preventDefault();
+    lastTouch = now;
+  }, { passive: false });
+
+  // ─── Confetti (simple coloured shapes, no sound, no emoji) ───
+  function confettiBurst(){
+    const colors = ['#ffd166','#ef476f','#06d6a0','#4cc9f0','#f78c6b','#ffffff'];
+    const rect = stage.getBoundingClientRect();
+    for (let i = 0; i < 14; i++){
+      const s = document.createElement('span');
+      s.className = 'spark';
+      s.style.background = colors[Math.floor(Math.random()*colors.length)];
+      s.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      s.style.left = (46 + Math.random()*8) + '%';
+      s.style.top  = (44 + Math.random()*12) + '%';
+      s.style.setProperty('--sx', ((Math.random()-0.5)*rect.width*0.95)+'px');
+      s.style.setProperty('--sy', ((Math.random()-0.5)*rect.height*0.95)+'px');
+      s.style.setProperty('--sr', ((Math.random()-0.5)*360)+'deg');
+      stage.appendChild(s);
+      setTimeout(() => s.remove(), 900);
+    }
+  }
+
+  // ─── Calm-ending star field ───
+  function buildStars(){
+    starsEl.innerHTML = '';
+    for (let i = 0; i < 32; i++){
+      const s = document.createElement('span');
+      const sz = (Math.random() * 2.2 + 1).toFixed(1);
+      s.style.width = sz + 'px'; s.style.height = sz + 'px';
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.top  = (Math.random() * 72) + '%';
+      s.style.animationDelay = (Math.random() * 3).toFixed(2) + 's';
+      starsEl.appendChild(s);
+    }
+  }
+
+  /* ─── Hidden grown-up panel: long-press the top-left corner ─── */
+  const gear  = document.getElementById('gear');
+  const panel = document.getElementById('panel');
+  let pressTimer = null;
+  function startPress(){ pressTimer = setTimeout(() => panel.classList.add('show'), 700); }
+  function cancelPress(){ clearTimeout(pressTimer); }
+  gear.addEventListener('touchstart', startPress, {passive:true});
+  gear.addEventListener('touchend', cancelPress);
+  gear.addEventListener('mousedown', startPress);
+  gear.addEventListener('mouseup', cancelPress);
+  gear.addEventListener('mouseleave', cancelPress);
+
+  const tShuffle = document.getElementById('tShuffle');
+  const tLinger  = document.getElementById('tLinger');
+  const tWind    = document.getElementById('tWind');
+  const LINGER_STEPS = [3, 6, 10, 20];
+  const WIND_STEPS   = [0, 3, 5, 10];   // minutes; 0 = off
+  function paintControls(){
+    tShuffle.classList.toggle('on', settings.shuffle);
+    tLinger.textContent = settings.linger + 's';
+    tWind.textContent   = settings.windMin === 0 ? 'Off' : settings.windMin + 'm';
+  }
+  tLinger.onclick = () => {
+    const i = LINGER_STEPS.indexOf(settings.linger);
+    settings.linger = LINGER_STEPS[(i + 1) % LINGER_STEPS.length];
+    store.set('linger', settings.linger);
+    paintControls();
+  };
+  tWind.onclick = () => {
+    const i = WIND_STEPS.indexOf(settings.windMin);
+    settings.windMin = WIND_STEPS[(i + 1) % WIND_STEPS.length];
+    store.set('windMin', settings.windMin);
+    paintControls();
+  };
+  tShuffle.onclick = () => {
+    settings.shuffle = !settings.shuffle; store.set('shuffle', settings.shuffle);
+    paintControls(); buildOrder(); showCurrent();
+  };
+  paintControls();
+
+  // ─── Show / hide photos (grown-up) ───
+  const photoGrid = document.getElementById('photoGrid');
+  function buildPhotoGrid(){
+    const hidden = new Set(settings.hidden);
+    photoGrid.innerHTML = '';
+    PHOTOS.forEach(p => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      if (hidden.has(p.src)) b.classList.add('hidden');
+      const im = document.createElement('img');
+      im.src = p.src; im.alt = ''; im.loading = 'lazy';
+      b.appendChild(im);
+      b.addEventListener('click', () => toggleHidden(p.src, b));
+      photoGrid.appendChild(b);
+    });
+  }
+  function toggleHidden(src, btn){
+    const set = new Set(settings.hidden);
+    if (set.has(src)) {
+      set.delete(src);
+    } else {
+      if (set.size >= PHOTOS.length - 1) return;   // always keep at least one showing
+      set.add(src);
+    }
+    settings.hidden = [...set];
+    store.set('hidden', settings.hidden);
+    btn.classList.toggle('hidden', set.has(src));
+    const curSrc = (order.length && PHOTOS[order[pos]]) ? PHOTOS[order[pos]].src : null;
+    buildOrder();
+    const at = curSrc ? order.findIndex(i => PHOTOS[i].src === curSrc) : -1;
+    if (at >= 0) pos = at;     // keep showing the same photo if it's still visible
+    else showCurrent();        // current was just hidden — swap in a visible one
+  }
+  buildPhotoGrid();
+
+  document.getElementById('restartBtn').onclick = () => {
+    winddown.classList.remove('show');
+    sessionStart = Date.now(); reveals = 0;
+    buildOrder(); showCurrent(); panel.classList.remove('show');
+  };
+  document.getElementById('closeBtn').onclick   = () => panel.classList.remove('show');
+  panel.addEventListener('click', e => { if (e.target === panel) panel.classList.remove('show'); });
+
+  /* ─── Register the service worker for OFFLINE use ─── */
+  if ('serviceWorker' in navigator) {
+    // When a freshly-deployed service worker takes control, reload once so the
+    // newest photos show up without anyone having to clear a cache. The guard
+    // skips the very first install (no previous controller) to avoid a needless reload.
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloadedForUpdate = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloadedForUpdate) return;
+      reloadedForUpdate = true;
+      window.location.reload();
+    });
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+
+  // ─── Go! ───
+  buildOrder();
+  showCurrent();
+  </script>
 </body>
 </html>
