@@ -1,6 +1,6 @@
 /* Family Peekaboo — offline service worker.
    Bump CACHE_VERSION whenever you change files or add photos. */
-const CACHE_VERSION = 'peekaboo-v6';
+const CACHE_VERSION = 'peekaboo-v7';
 
 /* Everything the app needs to run with NO internet.
    👉 When you add a new family photo, add its path here too. */
@@ -41,6 +41,21 @@ const PRECACHE = [
   './photos/anja-and-babies.jpg',
   './photos/family-greenhouse.jpg',
   './photos/family-outside.jpg',
+  // close-up face crops (interspersed in the game)
+  './photos/mommy-face.jpg',
+  './photos/becca-face.jpg',
+  './photos/boone-face.jpg',
+  './photos/grand-dad-face.jpg',
+  './photos/klaus-face.jpg',
+  './photos/klaus-2-face.jpg',
+  './photos/maggie-face.jpg',
+  './photos/opa-face.jpg',
+  './photos/scout-and-opa-face.jpg',
+  './photos/torren-face.jpg',
+  './photos/anja-and-baby-face.jpg',
+  './photos/anja-grass-face.jpg',
+  './photos/mommy-and-anja-face.jpg',
+  './photos/anja-tree-face.jpg',
 ];
 
 self.addEventListener('install', event => {

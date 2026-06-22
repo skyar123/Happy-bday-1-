@@ -177,6 +177,69 @@
     }
     .panel-btn.close { background: #c9c9c9; box-shadow: 0 5px 0 #a8a8a8; margin-top: 0.6rem; }
     .panel-hint { color:#bbb; font-size:0.75rem; text-align:center; margin-top:0.8rem; line-height:1.4; }
+    .panel-card { max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* ─── #2 Anticipation: a little wind-up before the doors fly open ─── */
+    .stage.peeking { animation: knock 0.48s ease-in-out; }
+    @keyframes knock {
+      0%,100% { transform: translateX(0) rotate(0); }
+      18% { transform: translateX(-5px) rotate(-0.6deg); }
+      42% { transform: translateX(6px)  rotate(0.7deg); }
+      68% { transform: translateX(-4px) rotate(-0.4deg); }
+      86% { transform: translateX(2px)  rotate(0.2deg); }
+    }
+    .stage.peeking .door.left  { transform: rotateY(-15deg); }   /* doors crack open a sliver */
+    .stage.peeking .door.right { transform: rotateY(15deg); }
+
+    /* ─── #3 Calm wind-down ("all done" — tap anywhere to play again) ─── */
+    .winddown {
+      position: absolute; inset: 0; z-index: 40;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 50% 36%, #41506f 0%, #2b3050 58%, #1b1e30 100%);
+      opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+    }
+    .winddown.show { opacity: 1; pointer-events: auto; }
+    .moon {
+      position: relative; width: 22vmin; height: 22vmin; border-radius: 50%;
+      background: radial-gradient(circle at 38% 34%, #fff7d6 0%, #ffe9a8 58%, #f1cf78 100%);
+      box-shadow: 0 0 46px 12px rgba(255,231,150,0.45);
+      animation: moonBob 4.5s ease-in-out infinite;
+    }
+    @keyframes moonBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.8vmin); } }
+    .stars { position: absolute; inset: 0; pointer-events: none; }
+    .stars span { position: absolute; background:#fff; border-radius:50%; opacity:0.12; animation: twinkle 3s ease-in-out infinite; }
+    @keyframes twinkle { 0%,100% { opacity: 0.12; } 50% { opacity: 0.9; } }
+
+    /* ─── Grown-up: co-play tip + photo show/hide grid ─── */
+    .coplay-tip {
+      background:#fff7ea; border:2px dashed #f0d9b8; color:#7a5a36;
+      font-size:0.82rem; line-height:1.45; border-radius:14px;
+      padding:0.7rem 0.85rem; margin-bottom:0.3rem; font-weight:600;
+    }
+    .coplay-tip b { color: var(--barn); }
+    .grid-label { font-size:0.82rem; font-weight:800; color:#777; margin:0.9rem 0 0.4rem; }
+    .photo-grid {
+      display:grid; grid-template-columns: repeat(5, 1fr); gap:6px;
+      max-height:32vh; overflow-y:auto; padding:5px;
+      background:#f6f0e8; border-radius:12px; -webkit-overflow-scrolling: touch;
+    }
+    .photo-grid button {
+      position:relative; padding:0; border:none; border-radius:8px;
+      overflow:hidden; aspect-ratio:1/1; cursor:pointer; background:#ddd;
+    }
+    .photo-grid img { width:100%; height:100%; object-fit:cover; display:block; }
+    .photo-grid button.hidden img { filter: grayscale(1) brightness(0.5); }
+    .photo-grid button.hidden::after {
+      content:'✕'; position:absolute; top:3px; right:3px;
+      width:18px; height:18px; border-radius:50%;
+      background:#e53935; color:#fff; font-size:12px; font-weight:900;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* Respect a child's/parent's reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .stage:not(.open), .stage.peeking, .moon, .stars span { animation: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -196,6 +259,11 @@
         </div>
       </div>
     </div>
+    <!-- Calm "all done" wind-down (tap anywhere to play again) -->
+    <div class="winddown" id="winddown" aria-hidden="true">
+      <div class="stars" id="stars"></div>
+      <div class="moon"></div>
+    </div>
   </div>
 
   <!-- Hidden parent corner (long-press to open) -->
@@ -205,14 +273,20 @@
     <div class="panel-card">
       <h2>Grown-up settings</h2>
       <p class="sub">Tap anywhere on the screen to open the barn doors.</p>
+      <div class="coplay-tip">Best played <b>together</b> — name who you see, follow your
+        child's gaze, and let them do the tapping. Your voice + a familiar face is where the
+        learning happens.</div>
       <div class="opt"><span>Shuffle the order</span>
         <button class="toggle" id="tShuffle"></button></div>
       <div class="opt"><span>Stay on each photo</span>
         <button class="pill" id="tLinger">6s</button></div>
+      <div class="opt"><span>Calm ending after</span>
+        <button class="pill" id="tWind">5m</button></div>
+      <div class="grid-label">Show / hide photos — tap a photo to hide it</div>
+      <div class="photo-grid" id="photoGrid"></div>
       <button class="panel-btn" id="restartBtn">Start from the beginning</button>
       <button class="panel-btn close" id="closeBtn">Done</button>
-      <p class="panel-hint">To add photos, drop pictures into the <b>photos</b> folder,
-        then add them to the PHOTOS list near the top of this file (and to sw.js for offline).</p>
+      <p class="panel-hint">Hidden photos won't appear in the game — at least one always stays on.</p>
     </div>
   </div>
 
@@ -220,41 +294,57 @@
   /* ════════════════════════════════════════════════════════════
      FAMILY PHOTOS — edit this list!
      • Put image files in the  photos/  folder
-     • Add one line per photo:  { src: 'photos/FILE.jpg' }
+     • Add one line per photo:  { src: 'photos/FILE.jpg', group: 'who' }
+       'group' keeps a wide shot and its close-up from landing back-to-back
+       when shuffled. Give unrelated photos their own unique group.
      • Also add the same filename to the list in  sw.js  for offline use.
      ════════════════════════════════════════════════════════════ */
   const PHOTOS = [
-    { src: 'photos/mommy.jpg' },
-    { src: 'photos/mommy-germany.jpg' },
-    { src: 'photos/mommy-germany-2.jpg' },
-    { src: 'photos/alli.jpg' },
-    { src: 'photos/ammorette.jpg' },
-    { src: 'photos/amorette.jpg' },
-    { src: 'photos/becca.jpg' },
-    { src: 'photos/boone.jpg' },
-    { src: 'photos/claudia.jpg' },
-    { src: 'photos/eva.jpg' },
-    { src: 'photos/eva-anska-becca-uli.jpg' },
-    { src: 'photos/gam-gam-and-ga-ga.jpg' },
-    { src: 'photos/grand-dad.jpg' },
-    { src: 'photos/klaus.jpg' },
-    { src: 'photos/klaus-2.jpg' },
-    { src: 'photos/maggie.jpg' },
-    { src: 'photos/opa.jpg' },
-    { src: 'photos/remi-and-scout.jpg' },
-    { src: 'photos/remi-scout-sauce-gigi.jpg' },
-    { src: 'photos/scout-and-opa.jpg' },
-    { src: 'photos/sauce-and-remi.jpg' },
-    { src: 'photos/torren.jpg' },
-    { src: 'photos/uli.jpg' },
-    { src: 'photos/anja-and-baby.jpg' },
-    { src: 'photos/anja-grass.jpg' },
-    { src: 'photos/mommy-and-anja.jpg' },
-    { src: 'photos/anja-tree.jpg' },
-    { src: 'photos/anja-remi-scout.jpg' },
-    { src: 'photos/anja-and-babies.jpg' },
-    { src: 'photos/family-greenhouse.jpg' },
-    { src: 'photos/family-outside.jpg' },
+    { src: 'photos/mommy.jpg',                 group: 'mommy' },
+    { src: 'photos/mommy-face.jpg',            group: 'mommy' },
+    { src: 'photos/mommy-germany.jpg',         group: 'mommy-germany' },
+    { src: 'photos/mommy-germany-2.jpg',       group: 'mommy-germany-2' },
+    { src: 'photos/alli.jpg',                  group: 'alli' },
+    { src: 'photos/ammorette.jpg',             group: 'ammorette' },
+    { src: 'photos/amorette.jpg',              group: 'amorette' },
+    { src: 'photos/becca.jpg',                 group: 'becca' },
+    { src: 'photos/becca-face.jpg',            group: 'becca' },
+    { src: 'photos/boone.jpg',                 group: 'boone' },
+    { src: 'photos/boone-face.jpg',            group: 'boone' },
+    { src: 'photos/claudia.jpg',               group: 'claudia' },
+    { src: 'photos/eva.jpg',                   group: 'eva' },
+    { src: 'photos/eva-anska-becca-uli.jpg',   group: 'eva-anska-becca-uli' },
+    { src: 'photos/gam-gam-and-ga-ga.jpg',     group: 'gam-gam-and-ga-ga' },
+    { src: 'photos/grand-dad.jpg',             group: 'grand-dad' },
+    { src: 'photos/grand-dad-face.jpg',        group: 'grand-dad' },
+    { src: 'photos/klaus.jpg',                 group: 'klaus' },
+    { src: 'photos/klaus-face.jpg',            group: 'klaus' },
+    { src: 'photos/klaus-2.jpg',               group: 'klaus-2' },
+    { src: 'photos/klaus-2-face.jpg',          group: 'klaus-2' },
+    { src: 'photos/maggie.jpg',                group: 'maggie' },
+    { src: 'photos/maggie-face.jpg',           group: 'maggie' },
+    { src: 'photos/opa.jpg',                   group: 'opa' },
+    { src: 'photos/opa-face.jpg',              group: 'opa' },
+    { src: 'photos/remi-and-scout.jpg',        group: 'remi-and-scout' },
+    { src: 'photos/remi-scout-sauce-gigi.jpg', group: 'remi-scout-sauce-gigi' },
+    { src: 'photos/scout-and-opa.jpg',         group: 'scout-and-opa' },
+    { src: 'photos/scout-and-opa-face.jpg',    group: 'scout-and-opa' },
+    { src: 'photos/sauce-and-remi.jpg',        group: 'sauce-and-remi' },
+    { src: 'photos/torren.jpg',                group: 'torren' },
+    { src: 'photos/torren-face.jpg',           group: 'torren' },
+    { src: 'photos/uli.jpg',                   group: 'uli' },
+    { src: 'photos/anja-and-baby.jpg',         group: 'anja-and-baby' },
+    { src: 'photos/anja-and-baby-face.jpg',    group: 'anja-and-baby' },
+    { src: 'photos/anja-grass.jpg',            group: 'anja-grass' },
+    { src: 'photos/anja-grass-face.jpg',       group: 'anja-grass' },
+    { src: 'photos/mommy-and-anja.jpg',        group: 'mommy-and-anja' },
+    { src: 'photos/mommy-and-anja-face.jpg',   group: 'mommy-and-anja' },
+    { src: 'photos/anja-tree.jpg',             group: 'anja-tree' },
+    { src: 'photos/anja-tree-face.jpg',        group: 'anja-tree' },
+    { src: 'photos/anja-remi-scout.jpg',       group: 'anja-remi-scout' },
+    { src: 'photos/anja-and-babies.jpg',       group: 'anja-and-babies' },
+    { src: 'photos/family-greenhouse.jpg',     group: 'family-greenhouse' },
+    { src: 'photos/family-outside.jpg',        group: 'family-outside' },
   ];
 
   // ─── Settings (remembered on the device) ───
@@ -263,27 +353,57 @@
     set(k, v){ try { localStorage.setItem('pb_'+k, JSON.stringify(v)); } catch(e){} }
   };
   let settings = {
-    shuffle: store.get('shuffle', false),
-    linger:  store.get('linger', 6),   // seconds a photo stays locked before you can move on
+    shuffle: store.get('shuffle', true),   // randomized + interspersed by default
+    linger:  store.get('linger', 6),       // seconds a photo stays locked before you can move on
+    windMin: store.get('windMin', 5),      // calm "all done" after N minutes of play (0 = off)
+    hidden:  store.get('hidden', []),      // photo srcs a grown-up has chosen to hide
   };
 
   // ─── Elements ───
   const stage    = document.getElementById('stage');
   const photoImg = document.getElementById('photoImg');
   const app      = document.getElementById('app');
+  const winddown = document.getElementById('winddown');
+  const starsEl  = document.getElementById('stars');
 
   // ─── Play order ───
-  let order = PHOTOS.map((_, i) => i);
+  let order = [];
   let pos = 0;
-  // state: 'covered' (doors shut) → 'lingering' (open, locked) → 'ready' (can move on)
+  // state: 'covered' → 'peeking' (wind-up) → 'lingering' (open, locked) → 'ready' → next
+  //        plus 'winddown' (calm end screen)
   let state = 'covered';
   let busy = false;
   let lingerTimer = null;
+  let sessionStart = Date.now();
+  let reveals = 0;
 
   function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  function visibleIndexes(){
+    const hidden = new Set(settings.hidden);
+    const idx = [];
+    PHOTOS.forEach((p, i) => { if (!hidden.has(p.src)) idx.push(i); });
+    return idx.length ? idx : PHOTOS.map((_, i) => i);   // safety: never empty
+  }
+  // Keep a wide shot and its own close-up (same group) from sitting next to each other.
+  function deAdjacent(arr){
+    for (let i = 1; i < arr.length; i++){
+      if (PHOTOS[arr[i]].group === PHOTOS[arr[i-1]].group){
+        const gPrev = PHOTOS[arr[i-1]].group;
+        const gNext = (i+1 < arr.length) ? PHOTOS[arr[i+1]].group : null;
+        for (let j = i+1; j < arr.length; j++){
+          if (PHOTOS[arr[j]].group !== gPrev && PHOTOS[arr[j]].group !== gNext){
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+            break;
+          }
+        }
+      }
+    }
+    return arr;
+  }
   function buildOrder(){
-    order = PHOTOS.map((_, i) => i);
-    if (settings.shuffle) shuffleArray(order);
+    order = visibleIndexes();
+    if (settings.shuffle){ shuffleArray(order); deAdjacent(order); }
     pos = 0;
   }
 
@@ -294,35 +414,60 @@
     const item = PHOTOS[order[pos]];
     photoImg.src = item.src;
     photoImg.alt = '';
-    stage.classList.remove('open');     // doors closed
+    stage.classList.remove('open', 'peeking');   // doors closed
     state = 'covered';
   }
 
   function reveal(){
     if (state !== 'covered' || busy) return;
-    state = 'lingering';                 // locked — a quick tap can't skip ahead
-    stage.classList.add('open');
-    confettiBurst();
-    clearTimeout(lingerTimer);
-    lingerTimer = setTimeout(() => {
-      if (state === 'lingering') state = 'ready';
-    }, settings.linger * 1000);
+    busy = true;
+    state = 'peeking';
+    stage.classList.add('peeking');          // #2 wind-up: the barn rattles + doors crack...
+    setTimeout(() => {
+      stage.classList.remove('peeking');
+      stage.classList.add('open');           // ...then they burst open
+      state = 'lingering';                    // locked — a quick tap can't skip ahead
+      busy = false;
+      confettiBurst();
+      clearTimeout(lingerTimer);
+      lingerTimer = setTimeout(() => { if (state === 'lingering') state = 'ready'; }, settings.linger * 1000);
+    }, 480);
   }
 
   function next(){
     if (busy) return;
     busy = true;
     clearTimeout(lingerTimer);
-    stage.classList.remove('open');      // close doors first
-    pos = (pos + 1) % order.length;
-    if (pos === 0 && settings.shuffle) shuffleArray(order);   // reshuffle each loop
+    stage.classList.remove('open');          // close doors first
+    reveals++;
+    // #3 a gentle, predictable end to a session
+    if (settings.windMin > 0 && (Date.now() - sessionStart) >= settings.windMin * 60000){
+      setTimeout(() => { enterWindDown(); busy = false; }, 540);
+      return;
+    }
+    pos += 1;
+    if (pos >= order.length) buildOrder();    // loop (reshuffles + re-intersperses if on)
     setTimeout(() => { showCurrent(); busy = false; }, 540);
+  }
+
+  function enterWindDown(){
+    state = 'winddown';
+    stage.classList.remove('open', 'peeking');
+    buildStars();
+    winddown.classList.add('show');
+  }
+  function exitWindDown(){
+    winddown.classList.remove('show');
+    sessionStart = Date.now(); reveals = 0;
+    buildOrder(); showCurrent();
   }
 
   // ─── The one and only interaction: TAP ───
   function onTap(e){
     if (e.target.closest('.panel') || e.target.closest('.gear')) return;
-    if (state === 'covered')        reveal();          // open the doors
+    if (busy) return;
+    if (state === 'winddown')       exitWindDown();    // play again
+    else if (state === 'covered')   reveal();          // open the doors
     else if (state === 'lingering') confettiBurst();   // still looking — little sparkle, don't skip
     else                            next();            // ready — move to the next photo
   }
@@ -357,6 +502,20 @@
     }
   }
 
+  // ─── Calm-ending star field ───
+  function buildStars(){
+    starsEl.innerHTML = '';
+    for (let i = 0; i < 32; i++){
+      const s = document.createElement('span');
+      const sz = (Math.random() * 2.2 + 1).toFixed(1);
+      s.style.width = sz + 'px'; s.style.height = sz + 'px';
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.top  = (Math.random() * 72) + '%';
+      s.style.animationDelay = (Math.random() * 3).toFixed(2) + 's';
+      starsEl.appendChild(s);
+    }
+  }
+
   /* ─── Hidden grown-up panel: long-press the top-left corner ─── */
   const gear  = document.getElementById('gear');
   const panel = document.getElementById('panel');
@@ -371,10 +530,13 @@
 
   const tShuffle = document.getElementById('tShuffle');
   const tLinger  = document.getElementById('tLinger');
+  const tWind    = document.getElementById('tWind');
   const LINGER_STEPS = [3, 6, 10, 20];
+  const WIND_STEPS   = [0, 3, 5, 10];   // minutes; 0 = off
   function paintControls(){
     tShuffle.classList.toggle('on', settings.shuffle);
     tLinger.textContent = settings.linger + 's';
+    tWind.textContent   = settings.windMin === 0 ? 'Off' : settings.windMin + 'm';
   }
   tLinger.onclick = () => {
     const i = LINGER_STEPS.indexOf(settings.linger);
@@ -382,12 +544,58 @@
     store.set('linger', settings.linger);
     paintControls();
   };
+  tWind.onclick = () => {
+    const i = WIND_STEPS.indexOf(settings.windMin);
+    settings.windMin = WIND_STEPS[(i + 1) % WIND_STEPS.length];
+    store.set('windMin', settings.windMin);
+    paintControls();
+  };
   tShuffle.onclick = () => {
     settings.shuffle = !settings.shuffle; store.set('shuffle', settings.shuffle);
     paintControls(); buildOrder(); showCurrent();
   };
   paintControls();
-  document.getElementById('restartBtn').onclick = () => { buildOrder(); showCurrent(); panel.classList.remove('show'); };
+
+  // ─── Show / hide photos (grown-up) ───
+  const photoGrid = document.getElementById('photoGrid');
+  function buildPhotoGrid(){
+    const hidden = new Set(settings.hidden);
+    photoGrid.innerHTML = '';
+    PHOTOS.forEach(p => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      if (hidden.has(p.src)) b.classList.add('hidden');
+      const im = document.createElement('img');
+      im.src = p.src; im.alt = ''; im.loading = 'lazy';
+      b.appendChild(im);
+      b.addEventListener('click', () => toggleHidden(p.src, b));
+      photoGrid.appendChild(b);
+    });
+  }
+  function toggleHidden(src, btn){
+    const set = new Set(settings.hidden);
+    if (set.has(src)) {
+      set.delete(src);
+    } else {
+      if (set.size >= PHOTOS.length - 1) return;   // always keep at least one showing
+      set.add(src);
+    }
+    settings.hidden = [...set];
+    store.set('hidden', settings.hidden);
+    btn.classList.toggle('hidden', set.has(src));
+    const curSrc = (order.length && PHOTOS[order[pos]]) ? PHOTOS[order[pos]].src : null;
+    buildOrder();
+    const at = curSrc ? order.findIndex(i => PHOTOS[i].src === curSrc) : -1;
+    if (at >= 0) pos = at;     // keep showing the same photo if it's still visible
+    else showCurrent();        // current was just hidden — swap in a visible one
+  }
+  buildPhotoGrid();
+
+  document.getElementById('restartBtn').onclick = () => {
+    winddown.classList.remove('show');
+    sessionStart = Date.now(); reveals = 0;
+    buildOrder(); showCurrent(); panel.classList.remove('show');
+  };
   document.getElementById('closeBtn').onclick   = () => panel.classList.remove('show');
   panel.addEventListener('click', e => { if (e.target === panel) panel.classList.remove('show'); });
 
