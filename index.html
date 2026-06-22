@@ -2,182 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Brown Bear, Brown Bear — Remi & Scout Turn One!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <!-- viewport-fit=cover + no zoom = full-bleed, toddler-proof on iPad -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#9e3b2e">
+  <!-- Full-screen "installed app" behaviour on iPad/iPhone -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Peekaboo">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Family Peekaboo</title>
   <style>
     :root {
-      --brown: #8B5E3C;
-      --red: #D63031;
-      --yellow: #FDCB6E;
-      --blue: #0984E3;
-      --green: #00B894;
-      --purple: #6C5CE7;
-      --orange: #E17055;
-      --paper: #FFF8F0;
-      --dark: #2D3436;
+      --barn:   #9e3b2e;   /* barn red */
+      --barn-d: #7d2c22;   /* darker red plank line */
+      --trim:   #f3ece0;   /* cream painted trim */
+      --wood:   #6b4329;   /* door frame wood */
+      --hay:    #fbe6c8;   /* warm background */
+      --ink:    #4a2c1e;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;            /* no pull-to-refresh */
+      touch-action: manipulation;
+      -webkit-user-select: none; user-select: none;
+      -webkit-touch-callout: none;          /* no image long-press menu */
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #2d2438;
+    }
     body {
-      background: var(--paper);
-      font-family: 'Nunito', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .screen {
-      display: none;
-      min-height: 100vh;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-    .screen.active { display: flex; }
-    @keyframes screenIn {
-      from { opacity: 0; transform: scale(0.95) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      height: 100dvh;                       /* full-screen even with iOS bars */
+      background: radial-gradient(circle at 50% 30%, #fff6e6 0%, var(--hay) 55%, #f3d9a8 100%);
     }
 
-    /* ═══════════════ INTRO ═══════════════ */
-    #intro {
-      background: linear-gradient(175deg, #87CEEB 0%, #B3E5FC 40%, #66BB6A 40%, #388E3C 100%);
+    /* The whole screen is one big tappable button */
+    #app {
+      position: fixed; inset: 0;
+      cursor: pointer;
+    }
+    /* Landscape-first layout: barn on one side, the name beside it */
+    .layout {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: row;
+      align-items: center; justify-content: center;
+      gap: clamp(12px, 3vw, 56px);
+      padding: max(env(safe-area-inset-top), 2vh)
+               max(env(safe-area-inset-right), 3vw)
+               max(env(safe-area-inset-bottom), 2vh)
+               max(env(safe-area-inset-left), 3vw);
+    }
+
+    /* ─── The barn doorway (photo behind, doors in front) ─── */
+    .stage {
       position: relative;
+      flex: 0 0 auto;
+      height: min(92vh, 58vw);
+      width:  min(92vh, 58vw);
+      border-radius: 14px;
       overflow: hidden;
-      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+      perspective: 1700px;
+      perspective-origin: 50% 50%;
+      background: #1d130d;
+      /* chunky wooden barn frame + depth */
+      box-shadow:
+        0 0 0 10px var(--wood),
+        0 0 0 14px #4f3120,
+        0 26px 60px rgba(40,20,10,0.45);
     }
-    #intro::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 48%;
-      background: repeating-linear-gradient(90deg, #388E3C 0px, #43A047 12px, #2E7D32 12px, #388E3C 24px);
-      opacity: 0.4;
-    }
-    .clouds {
-      position: absolute;
-      top: 3%; left: 0; right: 0;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-    }
-    .cloud {
-      background: rgba(255,255,255,0.85);
-      border-radius: 50px;
-      position: relative;
-      animation: cloudDrift var(--d) ease-in-out infinite alternate;
-    }
-    .cloud::before, .cloud::after {
-      content: '';
-      position: absolute;
-      background: rgba(255,255,255,0.85);
-      border-radius: 50%;
-    }
-    .cloud-1 { width: 80px; height: 28px; --d: 6s; }
-    .cloud-1::before { width: 44px; height: 40px; top: -22px; left: 10px; }
-    .cloud-1::after  { width: 30px; height: 30px; top: -16px; left: 38px; }
-    .cloud-2 { width: 60px; height: 22px; --d: 8s; animation-delay: -3s; }
-    .cloud-2::before { width: 34px; height: 32px; top: -18px; left: 8px; }
-    .cloud-2::after  { width: 24px; height: 24px; top: -12px; left: 28px; }
-    .cloud-3 { width: 70px; height: 24px; --d: 7s; animation-delay: -1.5s; }
-    .cloud-3::before { width: 38px; height: 36px; top: -20px; left: 10px; }
-    .cloud-3::after  { width: 28px; height: 28px; top: -14px; left: 34px; }
-    @keyframes cloudDrift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
+    .stage:not(.open) { animation: breathe 2.6s ease-in-out infinite; }
+    @keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.012); } }
 
-    .intro-portrait {
-      position: relative; z-index: 3;
-      width: clamp(200px, 55vw, 280px);
-      height: clamp(200px, 55vw, 280px);
-      border-radius: 50%;
-      overflow: hidden;
-      border: 5px solid white;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.2);
-      animation: portraitFloat 3s ease-in-out infinite;
-      margin-bottom: 0.6rem;
+    /* The hidden photo */
+    .photo { position: absolute; inset: 0; background: #d8c7b0; }
+    .photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      transform: scale(1.06);
+      transition: transform 0.7s cubic-bezier(0.34,1.4,0.5,1);
     }
-    .intro-portrait img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes portraitFloat {
-      0%,100% { transform: translateY(0) rotate(-1deg); }
-      50%     { transform: translateY(-10px) rotate(1deg); }
-    }
-    .intro-title {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2rem, 8vw, 4rem);
-      color: white;
-      text-shadow: 4px 5px 0 rgba(80,40,10,0.35);
-      line-height: 1.05; letter-spacing: 2px;
-      text-align: center; position: relative; z-index: 2;
-    }
-    .intro-names {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(2.6rem, 11vw, 5rem);
-      text-align: center; line-height: 1;
-      position: relative; z-index: 2;
-      background: linear-gradient(120deg, #FFD700 0%, #FFF9C4 30%, #FFD700 60%, #FFA000 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(3px 4px 0 rgba(80,40,10,0.4));
-      margin: 0.1rem 0;
-    }
-    .intro-subtitle {
-      font-family: 'Caveat', cursive;
-      font-size: clamp(1.3rem, 4.5vw, 2rem);
-      color: #FFFDE7; text-align: center;
-      position: relative; z-index: 2;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
-      margin: 0.2rem 0 0.8rem;
-    }
-    .start-btn {
-      background: var(--red); color: white; border: none;
-      font-family: 'Luckiest Guy', cursive;
-      font-size: clamp(1.1rem, 4vw, 1.5rem);
-      padding: 0.9rem 2.8rem; border-radius: 60px;
-      cursor: pointer; letter-spacing: 2px;
-      box-shadow: 0 6px 0 #8B0000, 0 12px 24px rgba(0,0,0,0.2);
-      position: relative; z-index: 3;
-      animation: btnPulse 2s ease-in-out infinite;
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
-    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #8B0000, 0 14px 28px rgba(0,0,0,0.25); }
-    .start-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #8B0000; }
-    @keyframes btnPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .stage.open .photo img { transform: scale(1); }
 
-    /* ═══════════════ PEEKABOO ═══════════════ */
-    #peekaboo {
-      background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 30%, #A5D6A7 30%, #2E7D32 100%);
-      padding: 0.8rem 1rem 1.5rem;
-      justify-content: flex-start;
-      gap: 0.4rem;
-      touch-action: none;
-      overflow: hidden;
-    }
-
-    /* ─ Carousel of found animals ─ */
-    .found-carousel {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      justify-content: center;
-      min-height: 52px;
-      width: 100%;
-      flex-wrap: nowrap;
-      padding: 4px 0;
-    }
-    .carousel-slot {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      border: 2px dashed rgba(255,255,255,0.3);
-      display: flex; align-items: center; justify-content: center;
+    /* ─── The two barn doors ─── */
+    .door {
+      position: absolute; top: 0; bottom: 0;
+      width: 50%;
+      z-index: 20;
       overflow: hidden;
       transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
       flex-shrink: 0;
@@ -537,63 +449,38 @@
 </head>
 <body>
 
-<img src="assets/brown-bear-back.png" alt="" class="bear-watermark">
+  <div id="app">
+    <div class="layout">
+      <div class="stage" id="stage">
+        <div class="photo"><img id="photoImg" src="" alt=""></div>
 
-<!-- ═══════ SCREEN 1 · INTRO ═══════ -->
-<div id="intro" class="screen active">
-  <div class="clouds">
-    <div class="cloud cloud-1" style="margin-top:10px"></div>
-    <div class="cloud cloud-2" style="margin-top:30px"></div>
-    <div class="cloud cloud-3" style="margin-top:8px"></div>
-  </div>
-  <div class="intro-portrait">
-    <img src="assets/remi-scout-portrait.png" alt="Remi & Scout">
-  </div>
-  <div class="intro-title">HAPPY 1ST BIRTHDAY</div>
-  <div class="intro-names">Remi & Scout!</div>
-  <div class="intro-subtitle">Brown Bear, Brown Bear, what do you see? 👀<br>We see a party looking at us! 🎉</div>
-  <button class="start-btn" onclick="showScreen('peekaboo'); startGame();">
-    🐾 TAP TO REVEAL THE PARTY!
-  </button>
-</div>
-
-<!-- ═══════ SCREEN 2 · PEEKABOO ═══════ -->
-<div id="peekaboo" class="screen">
-  <!-- Carousel of found animals -->
-  <div class="found-carousel" id="foundCarousel"></div>
-  <div class="peek-prompt" id="peekPrompt">Swipe to cut the grass and find all 8 animals!</div>
-
-  <!-- The arena -->
-  <div class="cut-arena" id="cutArena">
-    <div class="arena-animal" id="arenaAnimal">
-      <img id="arenaImg" src="" alt="">
-      <div class="arena-animal-name" id="arenaName"></div>
+        <div class="door left">
+          <span class="brace a"></span><span class="brace b"></span>
+          <span class="handle"></span>
+        </div>
+        <div class="door right">
+          <span class="brace a"></span><span class="brace b"></span>
+          <span class="handle"></span>
+        </div>
+      </div>
     </div>
-    <canvas class="grass-canvas" id="grassCanvas"></canvas>
-    <canvas class="trail-canvas" id="trailCanvas"></canvas>
-    <div class="cut-meter" id="cutMeter">🌿 0%</div>
-    <div class="arena-hint" id="arenaHint">👆</div>
-    <div class="reveal-flash" id="revealFlash"></div>
   </div>
-</div>
 
-<!-- ═══════ SCREEN 3 · ALL-FOUND CELEBRATION ═══════ -->
-<div id="celebrate" class="screen">
-  <div class="confetti-layer-celebrate" id="confettiCelebrate"></div>
-  <div class="celebrate-title">🎉 YOU FOUND THEM ALL! 🎉</div>
-  <div class="celebrate-sub">Brown Bear, Brown Bear, look what we see!</div>
-  <div class="all-animals-grid" id="allAnimalsGrid"></div>
-  <button class="celebrate-btn" id="celebrateBtn" onclick="showScreen('details'); launchConfetti();">
-    🎂 SEE THE PARTY DETAILS!
-  </button>
-</div>
+  <!-- Hidden parent corner (long-press to open) -->
+  <div class="gear" id="gear"></div>
 
-<!-- ═══════ SCREEN 4 · PARTY DETAILS ═══════ -->
-<div id="details" class="screen">
-  <div class="confetti-layer" id="confettiLayer"></div>
-  <div class="party-card">
-    <div class="card-bear">
-      <img src="assets/brown-bear-front.png" alt="Brown Bear">
+  <div class="panel" id="panel">
+    <div class="panel-card">
+      <h2>Grown-up settings</h2>
+      <p class="sub">Tap anywhere on the screen to open the barn doors.</p>
+      <div class="opt"><span>Shuffle the order</span>
+        <button class="toggle" id="tShuffle"></button></div>
+      <div class="opt"><span>Stay on each photo</span>
+        <button class="pill" id="tLinger">6s</button></div>
+      <button class="panel-btn" id="restartBtn">Start from the beginning</button>
+      <button class="panel-btn close" id="closeBtn">Done</button>
+      <p class="panel-hint">To add photos, drop pictures into the <b>photos</b> folder,
+        then add them to the PHOTOS list near the top of this file (and to sw.js for offline).</p>
     </div>
     <div class="party-eyebrow">You found all the animals! 🎉</div>
     <div class="party-heading">Happy 1st Birthday</div>
@@ -730,302 +617,201 @@ function paintGrass() {
   const w = grassC.width;
   const h = grassC.height;
   grassCtx.clearRect(0, 0, w, h);
+  </div>
 
-  // Paint layered grass using canvas drawing
-  const grassColors = [
-    { color: '#2E7D32', blades: 18, maxH: 0.95 },
-    { color: '#388E3C', blades: 16, maxH: 0.85 },
-    { color: '#43A047', blades: 14, maxH: 0.75 },
-    { color: '#4CAF50', blades: 12, maxH: 0.65 },
-    { color: '#66BB6A', blades: 10, maxH: 0.55 },
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     FAMILY PHOTOS — edit this list!
+     • Put image files in the  photos/  folder
+     • Add one line per photo:  { src: 'photos/FILE.jpg' }
+     • Also add the same filename to the list in  sw.js  for offline use.
+     ════════════════════════════════════════════════════════════ */
+  const PHOTOS = [
+    { src: 'photos/mommy.jpg' },
+    { src: 'photos/mommy-germany.jpg' },
+    { src: 'photos/mommy-germany-2.jpg' },
+    { src: 'photos/alli.jpg' },
+    { src: 'photos/ammorette.jpg' },
+    { src: 'photos/amorette.jpg' },
+    { src: 'photos/becca.jpg' },
+    { src: 'photos/boone.jpg' },
+    { src: 'photos/claudia.jpg' },
+    { src: 'photos/eva.jpg' },
+    { src: 'photos/eva-anska-becca-uli.jpg' },
+    { src: 'photos/gam-gam-and-ga-ga.jpg' },
+    { src: 'photos/grand-dad.jpg' },
+    { src: 'photos/klaus.jpg' },
+    { src: 'photos/klaus-2.jpg' },
+    { src: 'photos/maggie.jpg' },
+    { src: 'photos/opa.jpg' },
+    { src: 'photos/remi-and-scout.jpg' },
+    { src: 'photos/remi-scout-sauce-gigi.jpg' },
+    { src: 'photos/scout-and-opa.jpg' },
+    { src: 'photos/sauce-and-remi.jpg' },
+    { src: 'photos/torren.jpg' },
+    { src: 'photos/uli.jpg' },
+    { src: 'photos/anja-and-baby.jpg' },
+    { src: 'photos/anja-grass.jpg' },
+    { src: 'photos/mommy-and-anja.jpg' },
+    { src: 'photos/anja-tree.jpg' },
+    { src: 'photos/anja-remi-scout.jpg' },
+    { src: 'photos/anja-and-babies.jpg' },
+    { src: 'photos/family-greenhouse.jpg' },
+    { src: 'photos/family-outside.jpg' },
   ];
 
-  // Ground fill
-  grassCtx.fillStyle = '#2E7D32';
-  grassCtx.fillRect(0, h * 0.4, w, h * 0.6);
-
-  // Draw grass blades
-  for (const layer of grassColors) {
-    grassCtx.fillStyle = layer.color;
-    for (let i = 0; i < layer.blades; i++) {
-      const x = (i / layer.blades) * w + (Math.random() - 0.5) * (w / layer.blades);
-      const bladeW = 12 + Math.random() * 16;
-      const bladeH = h * (0.4 + Math.random() * layer.maxH * 0.5);
-      const lean = (Math.random() - 0.5) * 20;
-
-      grassCtx.beginPath();
-      grassCtx.moveTo(x - bladeW/2, h);
-      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + lean * 1.5, h - bladeH);
-      grassCtx.quadraticCurveTo(x + lean, h - bladeH * 0.6, x + bladeW/2, h);
-      grassCtx.fill();
-    }
-  }
-
-  // Add some extra texture / small dots
-  grassCtx.fillStyle = '#1B5E20';
-  for (let i = 0; i < 60; i++) {
-    const x = Math.random() * w;
-    const y = h * 0.35 + Math.random() * h * 0.65;
-    grassCtx.beginPath();
-    grassCtx.arc(x, y, 1 + Math.random() * 3, 0, Math.PI * 2);
-    grassCtx.fill();
-  }
-
-  // Fill top area to ensure full coverage
-  grassCtx.fillStyle = '#388E3C';
-  grassCtx.fillRect(0, 0, w, h * 0.15);
-
-  // More overlapping blades from top
-  for (let i = 0; i < 20; i++) {
-    const x = Math.random() * w;
-    const bladeH = h * (0.3 + Math.random() * 0.5);
-    const lean = (Math.random() - 0.5) * 30;
-    grassCtx.fillStyle = ['#2E7D32', '#388E3C', '#43A047', '#4CAF50'][Math.floor(Math.random() * 4)];
-    grassCtx.beginPath();
-    grassCtx.moveTo(x - 8, 0);
-    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + lean * 1.2, bladeH);
-    grassCtx.quadraticCurveTo(x + lean, bladeH * 0.4, x + 8, 0);
-    grassCtx.fill();
-  }
-
-  // Count opaque pixels for progress tracking
-  grassPixels = grassCtx.getImageData(0, 0, w, h);
-  totalGrassPixels = 0;
-  clearedPixels = 0;
-  for (let i = 3; i < grassPixels.data.length; i += 4) {
-    if (grassPixels.data[i] > 0) totalGrassPixels++;
-  }
-}
-
-// ═══════════════ CUT GRASS ═══════════════
-function cutGrass(x, y) {
-  // Use destination-out compositing to erase grass
-  grassCtx.globalCompositeOperation = 'destination-out';
-  grassCtx.beginPath();
-  grassCtx.arc(x, y, brushRadius, 0, Math.PI * 2);
-  grassCtx.fill();
-  grassCtx.globalCompositeOperation = 'source-over';
-
-  // Spawn leaf particles
-  if (Math.random() > 0.6) {
-    spawnLeaf(x, y);
-  }
-}
-
-function spawnLeaf(x, y) {
-  const leaf = document.createElement('span');
-  leaf.className = 'leaf-particle';
-  leaf.textContent = ['🍃', '🌿', '☘️'][Math.floor(Math.random() * 3)];
-  leaf.style.left = x + 'px';
-  leaf.style.top = y + 'px';
-  leaf.style.setProperty('--lx', ((Math.random() - 0.5) * 80) + 'px');
-  leaf.style.setProperty('--ly', (-20 - Math.random() * 60) + 'px');
-  leaf.style.setProperty('--lr', ((Math.random() - 0.5) * 360) + 'deg');
-  arenaEl.appendChild(leaf);
-  setTimeout(() => leaf.remove(), 700);
-}
-
-function drawTrail(x, y) {
-  trailCtx.strokeStyle = 'rgba(255,255,255,0.5)';
-  trailCtx.lineWidth = 3;
-  trailCtx.lineCap = 'round';
-  trailCtx.lineTo(x, y);
-  trailCtx.stroke();
-}
-
-function calculateClearPercent() {
-  const data = grassCtx.getImageData(0, 0, grassC.width, grassC.height).data;
-  let remaining = 0;
-  for (let i = 3; i < data.length; i += 4) {
-    if (data[i] > 0) remaining++;
-  }
-  return Math.round(((totalGrassPixels - remaining) / totalGrassPixels) * 100);
-}
-
-// ═══════════════ LOAD ANIMAL ═══════════════
-function loadAnimal(index) {
-  revealed = false;
-  moveCount = 0;
-  const animal = animals[index];
-
-  arenaImg.src = animal.img;
-  arenaImg.alt = animal.name;
-  arenaName.textContent = animal.emoji + ' ' + animal.name;
-  arenaName.style.color = animal.color;
-  arenaName.classList.remove('visible');
-  arenaEl.style.background = animal.bg;
-  cutMeter.textContent = '🌿 0%';
-  hint.classList.remove('hidden');
-  flash.classList.remove('flash');
-
-  // Resize canvases
-  const w = arenaEl.offsetWidth;
-  const h = arenaEl.offsetHeight;
-  grassC.width = w;
-  grassC.height = h;
-  trailC.width = w;
-  trailC.height = h;
-  trailCtx.clearRect(0, 0, w, h);
-
-  // Paint fresh grass
-  paintGrass();
-
-  // Update prompt
-  prompt.textContent = `${animal.emoji} Who's hiding? Swipe to find out! (${found + 1}/${total})`;
-}
-
-// ═══════════════ REVEAL ANIMAL ═══════════════
-function revealAnimal() {
-  if (revealed) return;
-  revealed = true;
-  hint.classList.add('hidden');
-
-  // Clear all remaining grass with animation
-  grassCtx.clearRect(0, 0, grassC.width, grassC.height);
-  trailCtx.clearRect(0, 0, trailC.width, trailC.height);
-
-  // Flash effect
-  flash.classList.add('flash');
-
-  // Show name
-  arenaName.classList.add('visible');
-  cutMeter.textContent = '✅ Found!';
-
-  // After a showcase pause, move to carousel and load next
-  setTimeout(() => {
-    fillCarouselSlot(currentIndex);
-    found++;
-
-    if (found >= total) {
-      // All found! Go to celebration
-      setTimeout(() => showCelebration(), 400);
-    } else {
-      currentIndex++;
-      loadAnimal(currentIndex);
-    }
-  }, 1500);
-}
-
-// ═══════════════ CELEBRATION SCREEN ═══════════════
-function showCelebration() {
-  showScreen('celebrate');
-  launchConfetti(document.getElementById('confettiCelebrate'));
-
-  const grid = document.getElementById('allAnimalsGrid');
-  grid.innerHTML = '';
-
-  animals.forEach((animal, i) => {
-    const cell = document.createElement('div');
-    cell.className = 'all-animal-cell';
-    cell.innerHTML = `<img src="${animal.img}" alt="${animal.name}"><span>${animal.emoji} ${animal.name}</span>`;
-    grid.appendChild(cell);
-    setTimeout(() => cell.classList.add('pop-in'), 200 + i * 180);
-  });
-
-  // Show the button after animals pop in
-  setTimeout(() => {
-    document.getElementById('celebrateBtn').classList.add('show');
-  }, 200 + total * 180);
-}
-
-// ═══════════════ START GAME ═══════════════
-function startGame() {
-  currentIndex = 0;
-  found = 0;
-  buildCarousel();
-  setTimeout(() => loadAnimal(0), 300);
-}
-
-// ═══════════════ INPUT HANDLERS ═══════════════
-function getPos(e) {
-  const rect = arenaEl.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return {
-    x: (clientX - rect.left) * (grassC.width / rect.width),
-    y: (clientY - rect.top) * (grassC.height / rect.height)
+  // ─── Settings (remembered on the device) ───
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem('pb_'+k); return v===null?d:JSON.parse(v); } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem('pb_'+k, JSON.stringify(v)); } catch(e){} }
   };
-}
+  let settings = {
+    shuffle: store.get('shuffle', false),
+    linger:  store.get('linger', 6),   // seconds a photo stays locked before you can move on
+  };
 
-function onStart(e) {
-  if (revealed) return;
-  e.preventDefault();
-  isDrawing = true;
-  hint.classList.add('hidden');
-  const pos = getPos(e);
-  trailCtx.beginPath();
-  trailCtx.moveTo(pos.x, pos.y);
-  cutGrass(pos.x, pos.y);
-}
+  // ─── Elements ───
+  const stage    = document.getElementById('stage');
+  const photoImg = document.getElementById('photoImg');
+  const app      = document.getElementById('app');
 
-function onMove(e) {
-  if (!isDrawing || revealed) return;
-  e.preventDefault();
-  const pos = getPos(e);
-  cutGrass(pos.x, pos.y);
-  drawTrail(pos.x, pos.y);
-  moveCount++;
+  // ─── Play order ───
+  let order = PHOTOS.map((_, i) => i);
+  let pos = 0;
+  // state: 'covered' (doors shut) → 'lingering' (open, locked) → 'ready' (can move on)
+  let state = 'covered';
+  let busy = false;
+  let lingerTimer = null;
 
-  // Check progress every few moves (pixel counting is expensive)
-  if (moveCount % 3 === 0) {
-    const pct = calculateClearPercent();
-    cutMeter.textContent = '🌿 ' + pct + '%';
+  function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function buildOrder(){
+    order = PHOTOS.map((_, i) => i);
+    if (settings.shuffle) shuffleArray(order);
+    pos = 0;
   }
 
-  if (moveCount > 6 && calculateClearPercent() >= 20) {
-    revealAnimal();
-  }
-}
+  // Preload images so reveals are instant + offline-ready
+  PHOTOS.forEach(p => { const im = new Image(); im.src = p.src; });
 
-function onEnd(e) {
-  isDrawing = false;
-  // Fade trail
-  setTimeout(() => {
-    if (!revealed) {
-      trailCtx.clearRect(0, 0, trailC.width, trailC.height);
+  function showCurrent(){
+    const item = PHOTOS[order[pos]];
+    photoImg.src = item.src;
+    photoImg.alt = '';
+    stage.classList.remove('open');     // doors closed
+    state = 'covered';
+  }
+
+  function reveal(){
+    if (state !== 'covered' || busy) return;
+    state = 'lingering';                 // locked — a quick tap can't skip ahead
+    stage.classList.add('open');
+    confettiBurst();
+    clearTimeout(lingerTimer);
+    lingerTimer = setTimeout(() => {
+      if (state === 'lingering') state = 'ready';
+    }, settings.linger * 1000);
+  }
+
+  function next(){
+    if (busy) return;
+    busy = true;
+    clearTimeout(lingerTimer);
+    stage.classList.remove('open');      // close doors first
+    pos = (pos + 1) % order.length;
+    if (pos === 0 && settings.shuffle) shuffleArray(order);   // reshuffle each loop
+    setTimeout(() => { showCurrent(); busy = false; }, 540);
+  }
+
+  // ─── The one and only interaction: TAP ───
+  function onTap(e){
+    if (e.target.closest('.panel') || e.target.closest('.gear')) return;
+    if (state === 'covered')        reveal();          // open the doors
+    else if (state === 'lingering') confettiBurst();   // still looking — little sparkle, don't skip
+    else                            next();            // ready — move to the next photo
+  }
+  app.addEventListener('click', onTap);
+
+  // block right-click / long-press menu & double-tap zoom
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  let lastTouch = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouch < 300) e.preventDefault();
+    lastTouch = now;
+  }, { passive: false });
+
+  // ─── Confetti (simple coloured shapes, no sound, no emoji) ───
+  function confettiBurst(){
+    const colors = ['#ffd166','#ef476f','#06d6a0','#4cc9f0','#f78c6b','#ffffff'];
+    const rect = stage.getBoundingClientRect();
+    for (let i = 0; i < 14; i++){
+      const s = document.createElement('span');
+      s.className = 'spark';
+      s.style.background = colors[Math.floor(Math.random()*colors.length)];
+      s.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      s.style.left = (46 + Math.random()*8) + '%';
+      s.style.top  = (44 + Math.random()*12) + '%';
+      s.style.setProperty('--sx', ((Math.random()-0.5)*rect.width*0.95)+'px');
+      s.style.setProperty('--sy', ((Math.random()-0.5)*rect.height*0.95)+'px');
+      s.style.setProperty('--sr', ((Math.random()-0.5)*360)+'deg');
+      stage.appendChild(s);
+      setTimeout(() => s.remove(), 900);
     }
-  }, 300);
-}
-
-// Touch
-arenaEl.addEventListener('touchstart', onStart, { passive: false });
-arenaEl.addEventListener('touchmove', onMove, { passive: false });
-arenaEl.addEventListener('touchend', onEnd);
-
-// Mouse
-arenaEl.addEventListener('mousedown', onStart);
-arenaEl.addEventListener('mousemove', function(e) { if (isDrawing) onMove(e); });
-arenaEl.addEventListener('mouseup', onEnd);
-arenaEl.addEventListener('mouseleave', onEnd);
-
-// Resize
-window.addEventListener('resize', function() {
-  if (document.getElementById('peekaboo').classList.contains('active') && !revealed) {
-    loadAnimal(currentIndex);
   }
-});
 
-// ═══════════════ CONFETTI ═══════════════
-function launchConfetti(layer) {
-  layer = layer || document.getElementById('confettiLayer');
-  const colors = ['#E53935','#FDCB6E','#43A047','#1E88E5','#7B1FA2','#FF8F00','#00BCD4','#F48FB1','#FFD700'];
-  for (let i = 0; i < 100; i++) {
-    const el = document.createElement('div');
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const left = Math.random() * 100;
-    const dur = 2.2 + Math.random() * 2.4;
-    const delay = Math.random() * 1.8;
-    const dx = (Math.random() - 0.5) * 260 + 'px';
-    const spin = (Math.random() * 2 - 1) * 720 + 'deg';
-    const circle = Math.random() > 0.4;
-    const w = 6 + Math.random() * 9;
-    const h = circle ? w : (4 + Math.random() * 10);
-    el.className = 'cf';
-    el.style.cssText = `left:${left}%;width:${w}px;height:${h}px;background:${color};--d:${dur}s;--dl:${delay}s;--dx:${dx};--spin:${spin};--r:${circle ? '50%' : '2px'};`;
-    layer.appendChild(el);
+  /* ─── Hidden grown-up panel: long-press the top-left corner ─── */
+  const gear  = document.getElementById('gear');
+  const panel = document.getElementById('panel');
+  let pressTimer = null;
+  function startPress(){ pressTimer = setTimeout(() => panel.classList.add('show'), 700); }
+  function cancelPress(){ clearTimeout(pressTimer); }
+  gear.addEventListener('touchstart', startPress, {passive:true});
+  gear.addEventListener('touchend', cancelPress);
+  gear.addEventListener('mousedown', startPress);
+  gear.addEventListener('mouseup', cancelPress);
+  gear.addEventListener('mouseleave', cancelPress);
+
+  const tShuffle = document.getElementById('tShuffle');
+  const tLinger  = document.getElementById('tLinger');
+  const LINGER_STEPS = [3, 6, 10, 20];
+  function paintControls(){
+    tShuffle.classList.toggle('on', settings.shuffle);
+    tLinger.textContent = settings.linger + 's';
   }
-  setTimeout(() => layer.innerHTML = '', 6000);
-}
-</script>
+  tLinger.onclick = () => {
+    const i = LINGER_STEPS.indexOf(settings.linger);
+    settings.linger = LINGER_STEPS[(i + 1) % LINGER_STEPS.length];
+    store.set('linger', settings.linger);
+    paintControls();
+  };
+  tShuffle.onclick = () => {
+    settings.shuffle = !settings.shuffle; store.set('shuffle', settings.shuffle);
+    paintControls(); buildOrder(); showCurrent();
+  };
+  paintControls();
+  document.getElementById('restartBtn').onclick = () => { buildOrder(); showCurrent(); panel.classList.remove('show'); };
+  document.getElementById('closeBtn').onclick   = () => panel.classList.remove('show');
+  panel.addEventListener('click', e => { if (e.target === panel) panel.classList.remove('show'); });
+
+  /* ─── Register the service worker for OFFLINE use ─── */
+  if ('serviceWorker' in navigator) {
+    // When a freshly-deployed service worker takes control, reload once so the
+    // newest photos show up without anyone having to clear a cache. The guard
+    // skips the very first install (no previous controller) to avoid a needless reload.
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloadedForUpdate = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloadedForUpdate) return;
+      reloadedForUpdate = true;
+      window.location.reload();
+    });
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+
+  // ─── Go! ───
+  buildOrder();
+  showCurrent();
+  </script>
 </body>
 </html>

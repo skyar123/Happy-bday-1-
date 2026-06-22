@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#fbe6c8"/>
+  <!-- barn body -->
+  <rect x="116" y="232" width="280" height="180" fill="#9e3b2e"/>
+  <!-- roof -->
+  <path d="M96 236 L256 120 L416 236 Z" fill="#7d2c22"/>
+  <path d="M96 236 L256 120 L416 236" fill="none" stroke="#f3ece0" stroke-width="14" stroke-linejoin="round"/>
+  <!-- doors -->
+  <rect x="196" y="288" width="120" height="124" fill="#7d2c22"/>
+  <rect x="196" y="288" width="120" height="124" fill="none" stroke="#f3ece0" stroke-width="10"/>
+  <line x1="256" y1="288" x2="256" y2="412" stroke="#f3ece0" stroke-width="8"/>
+  <!-- X braces -->
+  <path d="M200 292 L312 408 M312 292 L200 408" stroke="#f3ece0" stroke-width="8" fill="none" opacity="0.9"/>
+</svg>
