@@ -195,6 +195,360 @@
     .winddown {
       position: absolute; inset: 0; z-index: 40;
       display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      flex-shrink: 0;
+    }
+    .carousel-slot.filled {
+      border: 3px solid white;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      animation: slotPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .carousel-slot.filled img {
+      width: 100%; height: 100%; object-fit: contain;
+    }
+    @keyframes slotPop {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .peek-prompt {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1rem, 3.2vw, 1.2rem);
+      color: #E8F5E9;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+    }
+
+    /* ─ The grass-cutting arena ─ */
+    .cut-arena {
+      position: relative;
+      width: min(360px, 90vw);
+      height: min(400px, 62vh);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      background: #C8E6C9;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    /* Hidden animal image behind the grass */
+    .arena-animal {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .arena-animal img {
+      max-width: 80%;
+      max-height: 75%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 16px rgba(0,0,0,0.25));
+    }
+    .arena-animal-name {
+      position: absolute;
+      bottom: 12px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.3rem;
+      color: white;
+      text-shadow: 2px 3px 0 rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+    .arena-animal-name.visible { opacity: 1; }
+
+    /* Grass overlay canvas - user cuts through this */
+    .grass-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      cursor: crosshair;
+    }
+
+    /* Slash trail canvas */
+    .trail-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    /* Cut % indicator */
+    .cut-meter {
+      position: absolute;
+      top: 10px; right: 10px;
+      z-index: 10;
+      background: rgba(0,0,0,0.4);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 0.8rem;
+      color: white;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Swipe hint */
+    .arena-hint {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 8;
+      font-size: 2.5rem;
+      animation: hintSwipe 2.2s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    @keyframes hintSwipe {
+      0%   { opacity: 0; transform: translate(-80%, -50%) rotate(-20deg); }
+      15%  { opacity: 0.9; }
+      50%  { opacity: 0.9; transform: translate(30%, -50%) rotate(10deg); }
+      65%  { opacity: 0; }
+      100% { opacity: 0; transform: translate(-80%, -50%) rotate(-20deg); }
+    }
+    .arena-hint.hidden { display: none; }
+
+    /* Leaf particles */
+    .leaf-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 7;
+      font-size: 1rem;
+      animation: leafFly 0.6s ease-out forwards;
+    }
+    @keyframes leafFly {
+      0%   { opacity: 1; transform: translate(0,0) rotate(0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--lx), var(--ly)) rotate(var(--lr)) scale(0.3); }
+    }
+
+    /* Reveal flash */
+    .reveal-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+      z-index: 12;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .reveal-flash.flash { opacity: 1; animation: flashPulse 0.6s ease-out forwards; }
+    @keyframes flashPulse {
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* ═══════════════ ALL-FOUND CELEBRATION ═══════════════ */
+    #celebrate {
+      background: linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 50%, #FFECB3 100%);
+      gap: 0.8rem;
+      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .celebrate-title {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1.6rem, 6vw, 2.8rem);
+      color: var(--brown);
+      text-align: center;
+      text-shadow: 2px 3px 0 rgba(0,0,0,0.08);
+    }
+    .celebrate-sub {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      color: #8D6E63;
+      text-align: center;
+    }
+    .all-animals-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      width: min(380px, 90vw);
+      padding: 0.5rem;
+    }
+    .all-animal-cell {
+      background: white;
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: scale(0.5) translateY(20px);
+      transition: opacity 0.4s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .all-animal-cell.pop-in {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    .all-animal-cell img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+    }
+    .all-animal-cell span {
+      font-family: 'Caveat', cursive;
+      font-size: 0.7rem;
+      color: #888;
+      text-align: center;
+      line-height: 1.1;
+    }
+    .celebrate-btn {
+      background: var(--red); color: white; border: none;
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      padding: 0.8rem 2.4rem; border-radius: 60px;
+      cursor: pointer; letter-spacing: 2px;
+      box-shadow: 0 5px 0 #8B0000, 0 10px 20px rgba(214,48,49,0.25);
+      transition: transform 0.1s, box-shadow 0.1s;
+      animation: btnPulse 2s ease-in-out 2s infinite;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s 2.5s, transform 0.4s 2.5s;
+    }
+    .celebrate-btn.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .celebrate-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #8B0000, 0 14px 24px rgba(214,48,49,0.3); }
+    .celebrate-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8B0000; }
+    .confetti-layer-celebrate {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 998; overflow: hidden;
+    }
+
+    /* ═══════════════ PARTY DETAILS ═══════════════ */
+    #details {
+      background: linear-gradient(160deg, #FFF8F0 0%, #FFF3E0 100%);
+      gap: 1rem;
+      padding: 2rem 1.5rem;
+      animation: screenIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .confetti-layer {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 998; overflow: hidden;
+    }
+    .cf {
+      position: absolute; top: -20px;
+      animation: cfFall var(--d) var(--dl) ease-in forwards;
+      border-radius: var(--r); opacity: 0;
+    }
+    @keyframes cfFall {
+      0%   { top: -20px; transform: translateX(0) rotate(0); opacity: 1; }
+      100% { top: 110vh; transform: translateX(var(--dx)) rotate(var(--spin)); opacity: 0.2; }
+    }
+    .party-card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.8rem 1.6rem 1.6rem;
+      max-width: 420px; width: 100%;
+      box-shadow: 0 0 0 3px var(--brown), 0 12px 40px rgba(139,94,60,0.18);
+      position: relative; overflow: visible;
+      animation: cardBounceIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
+    }
+    @keyframes cardBounceIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .card-bear {
+      position: absolute; top: -42px; left: 50%;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+    .card-bear img { width: 72px; height: auto; }
+    .party-eyebrow {
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      color: #aaa; text-align: center; margin-top: 2rem;
+    }
+    .party-heading {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1.8rem, 7vw, 3rem);
+      text-align: center; line-height: 1.05; color: var(--brown);
+    }
+    .names-rainbow {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(2.4rem, 10vw, 4rem);
+      text-align: center; line-height: 1;
+      background: linear-gradient(120deg, var(--red) 0%, var(--orange) 20%, var(--yellow) 40%, var(--green) 60%, var(--blue) 80%, var(--purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; padding: 0.1rem 0;
+    }
+    .rainbow-rule {
+      height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple));
+      border-radius: 4px; margin: 0.8rem 0 1rem;
+    }
+    .detail-row {
+      display: flex; align-items: flex-start;
+      gap: 0.9rem; padding: 0.75rem 0;
+      border-bottom: 2px dashed #F0E6D6;
+    }
+    .detail-row:last-of-type { border-bottom: none; }
+    .detail-icon { font-size: 1.8rem; flex-shrink: 0; width: 40px; text-align: center; line-height: 1.3; }
+    .detail-label { font-family: 'Caveat', cursive; font-size: 0.78rem; color: #bbb; letter-spacing: 1.5px; text-transform: uppercase; }
+    .detail-value { font-size: 1.05rem; font-weight: 900; color: var(--dark); line-height: 1.3; }
+    .detail-sub { font-size: 0.88rem; font-weight: 400; color: #888; }
+    .book-quote {
+      background: linear-gradient(135deg, #FFF9C4, #FFFDE7);
+      border: 2.5px solid #FDCB6E; border-radius: 16px;
+      padding: 0.9rem 1.1rem; margin-top: 1rem;
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: #6B4226; text-align: center; line-height: 1.5;
+    }
+    .rsvp-btn {
+      display: block; width: 100%;
+      background: var(--red); color: white; border: none;
+      font-family: 'Luckiest Guy', cursive; font-size: 1.2rem;
+      padding: 1rem; border-radius: 60px; cursor: pointer;
+      letter-spacing: 1.5px;
+      box-shadow: 0 5px 0 #8B0000, 0 10px 20px rgba(214,48,49,0.25);
+      transition: transform 0.1s, box-shadow 0.1s; margin-top: 1.2rem;
+    }
+    .rsvp-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 0 #8B0000, 0 14px 24px rgba(214,48,49,0.3); }
+    .rsvp-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8B0000; }
+    .animal-parade {
+      display: flex; justify-content: center;
+      gap: 0.2rem; font-size: 1.5rem; margin: 0.5rem 0;
+    }
+    .parade-animal {
+      display: inline-block;
+      animation: paradeWave 1.4s ease-in-out infinite;
+    }
+    .parade-animal:nth-child(1) { animation-delay: 0.0s; }
+    .parade-animal:nth-child(2) { animation-delay: 0.15s; }
+    .parade-animal:nth-child(3) { animation-delay: 0.3s; }
+    .parade-animal:nth-child(4) { animation-delay: 0.45s; }
+    .parade-animal:nth-child(5) { animation-delay: 0.6s; }
+    .parade-animal:nth-child(6) { animation-delay: 0.75s; }
+    .parade-animal:nth-child(7) { animation-delay: 0.9s; }
+    .parade-animal:nth-child(8) { animation-delay: 1.05s; }
+    .parade-animal:nth-child(9) { animation-delay: 1.2s; }
+    @keyframes paradeWave {
+      0%,60%,100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+    .family-portrait-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; margin-top: 1.2rem; gap: 0.4rem;
+    }
+    .family-portrait-wrap img {
+      width: clamp(180px, 60vw, 260px);
+      height: auto; border-radius: 20px;
+      border: 4px solid var(--yellow);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .family-portrait-label {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem; color: #aaa;
+    }
+    .bear-watermark {
+      position: fixed; bottom: -30px; right: -30px;
+      width: 180px; opacity: 0.06;
+      pointer-events: none; z-index: 0;
       background: radial-gradient(circle at 50% 36%, #41506f 0%, #2b3050 58%, #1b1e30 100%);
       opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
     }
@@ -244,6 +598,86 @@
 </head>
 <body>
 
+<img src="assets/brown-bear-back.png" alt="" class="bear-watermark">
+
+<!-- ═══════ SCREEN 1 · INTRO ═══════ -->
+<div id="intro" class="screen active">
+  <div class="clouds">
+    <div class="cloud cloud-1" style="margin-top:10px"></div>
+    <div class="cloud cloud-2" style="margin-top:30px"></div>
+    <div class="cloud cloud-3" style="margin-top:8px"></div>
+  </div>
+  <div class="intro-portrait">
+    <img src="assets/remi-scout-portrait.png" alt="Remi & Scout">
+  </div>
+  <div class="intro-title">HAPPY 1ST BIRTHDAY</div>
+  <div class="intro-names">Remi & Scout!</div>
+  <div class="intro-subtitle">Brown Bear, Brown Bear, what do you see? 👀<br>We see a party looking at us! 🎉</div>
+  <button class="start-btn" onclick="showScreen('peekaboo'); startGame();">
+    🐾 TAP TO REVEAL THE PARTY!
+  </button>
+</div>
+
+<!-- ═══════ SCREEN 2 · PEEKABOO ═══════ -->
+<div id="peekaboo" class="screen">
+  <!-- Carousel of found animals -->
+  <div class="found-carousel" id="foundCarousel"></div>
+  <div class="peek-prompt" id="peekPrompt">Swipe to cut the grass and find all 8 animals!</div>
+
+  <!-- The arena -->
+  <div class="cut-arena" id="cutArena">
+    <div class="arena-animal" id="arenaAnimal">
+      <img id="arenaImg" src="" alt="">
+      <div class="arena-animal-name" id="arenaName"></div>
+    </div>
+    <canvas class="grass-canvas" id="grassCanvas"></canvas>
+    <canvas class="trail-canvas" id="trailCanvas"></canvas>
+    <div class="cut-meter" id="cutMeter">🌿 0%</div>
+    <div class="arena-hint" id="arenaHint">👆</div>
+    <div class="reveal-flash" id="revealFlash"></div>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 3 · ALL-FOUND CELEBRATION ═══════ -->
+<div id="celebrate" class="screen">
+  <div class="confetti-layer-celebrate" id="confettiCelebrate"></div>
+  <div class="celebrate-title">🎉 YOU FOUND THEM ALL! 🎉</div>
+  <div class="celebrate-sub">Brown Bear, Brown Bear, look what we see!</div>
+  <div class="all-animals-grid" id="allAnimalsGrid"></div>
+  <button class="celebrate-btn" id="celebrateBtn" onclick="showScreen('details'); launchConfetti();">
+    🎂 SEE THE PARTY DETAILS!
+  </button>
+</div>
+
+<!-- ═══════ SCREEN 4 · PARTY DETAILS ═══════ -->
+<div id="details" class="screen">
+  <div class="confetti-layer" id="confettiLayer"></div>
+  <div class="party-card">
+    <div class="card-bear">
+      <img src="assets/brown-bear-front.png" alt="Brown Bear">
+    </div>
+    <div class="party-eyebrow">You found all the animals! 🎉</div>
+    <div class="party-heading">Happy 1st Birthday</div>
+    <div class="names-rainbow">Remi & Scout!</div>
+    <div class="animal-parade">
+      <span class="parade-animal">🐻</span>
+      <span class="parade-animal">🐦</span>
+      <span class="parade-animal">🦆</span>
+      <span class="parade-animal">🐴</span>
+      <span class="parade-animal">🐸</span>
+      <span class="parade-animal">🐱</span>
+      <span class="parade-animal">🐕</span>
+      <span class="parade-animal">🐑</span>
+      <span class="parade-animal">🐟</span>
+      <span class="parade-animal">👨‍👩‍👧‍👦</span>
+    </div>
+    <div class="rainbow-rule"></div>
+    <div class="detail-row">
+      <div class="detail-icon">📅</div>
+      <div>
+        <div class="detail-label">When</div>
+        <div class="detail-value">Saturday, April 11, 2026</div>
+        <div class="detail-sub">12:00 PM – 2:30 PM</div>
   <div id="app">
     <div class="layout">
       <div class="stage" id="stage">
@@ -264,6 +698,83 @@
       <div class="stars" id="stars"></div>
       <div class="moon"></div>
     </div>
+    <div class="detail-row">
+      <div class="detail-icon">🎂</div>
+      <div>
+        <div class="detail-label">Party Features</div>
+        <div class="detail-value">Cake, snacks & exploring!</div>
+        <div class="detail-sub">Then walking around the nature center</div>
+      </div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-icon">📚</div>
+      <div>
+        <div class="detail-label">In lieu of gifts</div>
+        <div class="detail-value">Bring a board book!</div>
+        <div class="detail-sub">Help build Remi & Scout's library 🥹</div>
+      </div>
+    </div>
+    <div class="book-quote">
+      🐻 <em>"Brown Bear, Brown Bear, what do you see?<br>
+      We see <strong>everyone we love</strong> looking at us!"</em>
+    </div>
+    <div class="family-portrait-wrap">
+      <img src="assets/family-portrait.png" alt="Skylar, Anja, Remi & Scout">
+      <div class="family-portrait-label">With love from our family to yours 💛</div>
+    </div>
+    <a class="rsvp-btn" href="https://calendar.app.google/wMHA65rvwggL5osq7" target="_blank" style="text-decoration:none;display:inline-block;">
+      🐾 RSVP
+    </a>
+  </div>
+</div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+const animals = [
+  { name: 'Brown Bear',  img: 'assets/brown-bear-front.png', emoji: '🐻', color: '#8B5E3C', bg: '#D7CCC8' },
+  { name: 'Red Bird',    img: 'assets/red-bird.png',    emoji: '🐦', color: '#E53935', bg: '#FFCDD2' },
+  { name: 'Yellow Duck', img: 'assets/yellow-duck.png', emoji: '🦆', color: '#F57F17', bg: '#FFF9C4' },
+  { name: 'Blue Horse',  img: 'assets/blue-horse.png',  emoji: '🐴', color: '#1565C0', bg: '#BBDEFB' },
+  { name: 'Green Frog',  img: 'assets/green-frog.png',  emoji: '🐸', color: '#2E7D32', bg: '#C8E6C9' },
+  { name: 'Purple Cat',  img: 'assets/purple-cat.png',  emoji: '🐱', color: '#6A1B9A', bg: '#E1BEE7' },
+  { name: 'White Dog',   img: 'assets/white-dog.png',   emoji: '🐕', color: '#5D4037', bg: '#EFEBE9' },
+  { name: 'Black Sheep', img: 'assets/black-sheep.png', emoji: '🐑', color: '#37474F', bg: '#CFD8DC' },
+  { name: 'Goldfish',    img: 'assets/goldfish.png',    emoji: '🐟', color: '#E65100', bg: '#FFE0B2' },
+  { name: 'Our Family',  img: 'assets/family-portrait.png', emoji: '👨‍👩‍👧‍👦', color: '#E91E63', bg: '#FCE4EC' },
+];
+const total = animals.length;
+
+// ═══════════════ STATE ═══════════════
+let currentIndex = 0;
+let found = 0;
+let isDrawing = false;
+let grassPixels = null;   // ImageData of the grass canvas
+let totalGrassPixels = 0;
+let clearedPixels = 0;
+let revealed = false;
+let brushRadius = 60;
+let moveCount = 0;
+
+// ═══════════════ ELEMENTS ═══════════════
+const arenaEl    = document.getElementById('cutArena');
+const grassC     = document.getElementById('grassCanvas');
+const trailC     = document.getElementById('trailCanvas');
+const grassCtx   = grassC.getContext('2d');
+const trailCtx   = trailC.getContext('2d');
+const arenaImg   = document.getElementById('arenaImg');
+const arenaName  = document.getElementById('arenaName');
+const cutMeter   = document.getElementById('cutMeter');
+const hint       = document.getElementById('arenaHint');
+const flash      = document.getElementById('revealFlash');
+const carousel   = document.getElementById('foundCarousel');
+const prompt     = document.getElementById('peekPrompt');
+
+// ═══════════════ SCREENS ═══════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
   </div>
 
   <!-- Hidden parent corner (long-press to open) -->
