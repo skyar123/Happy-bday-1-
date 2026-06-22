@@ -10,21 +10,21 @@ This folder holds the pictures that show up in the peekaboo game.
    - Tip: faces near the **center** of the photo work great, since the
      edges may get cropped on different screens.
 
-2. **List them in the app.** Open `peekaboo/index.html`, find the
+2. **List them in the app.** Open `index.html`, find the
    `PHOTOS` list near the top of the `<script>`, and add one line per photo:
 
    ```js
    const PHOTOS = [
-     { src: 'photos/mama.jpg',    name: 'Mama!' },
-     { src: 'photos/dada.jpg',    name: 'Dada!' },
-     { src: 'photos/grandma.jpg', name: 'Grandma!' },
+     { src: 'photos/mama.jpg' },
+     { src: 'photos/dada.jpg' },
+     { src: 'photos/grandma.jpg' },
    ];
    ```
 
-   - `src`  = the file name (inside this `photos/` folder)
-   - `name` = the big label shown + spoken out loud when revealed
+   - `src` = the file name (inside this `photos/` folder)
+   - No labels — the photo speaks for itself, so just list the file.
 
-3. **Make it work offline too.** Open `peekaboo/sw.js`, add each new file
+3. **Make it work offline too.** Open `sw.js`, add each new file
    to the `PRECACHE` list, and bump `CACHE_VERSION` (e.g. `peekaboo-v1`
    → `peekaboo-v2`). That tells installed iPads to grab the new photos.
 

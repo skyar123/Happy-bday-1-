@@ -129,53 +129,6 @@
     .door.left  .handle { right: clamp(10px, 2.4vmin, 18px); }
     .door.right .handle { left:  clamp(10px, 2.4vmin, 18px); }
 
-    /* Soft "tap me" prompt sits over the doors, fades out on open */
-    .stage-prompt {
-      position: absolute; left: 0; right: 0; bottom: 6%;
-      z-index: 25; text-align: center; pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .stage-prompt span {
-      display: inline-block;
-      background: rgba(0,0,0,0.45); color: #fff;
-      font-weight: 900; letter-spacing: 1px;
-      font-size: clamp(0.9rem, 2.6vmin, 1.4rem);
-      padding: 0.4em 1.1em; border-radius: 40px;
-      backdrop-filter: blur(3px);
-    }
-    .stage.open .stage-prompt { opacity: 0; }
-
-    /* ─── The name, BESIDE the photo (never on top of it) ─── */
-    .caption {
-      flex: 1 1 0; min-width: 0;
-      display: flex; flex-direction: column;
-      align-items: flex-start; justify-content: center;
-      gap: 0.8rem;
-    }
-    .cap-prompt {
-      font-weight: 800; color: #b07a4e;
-      font-size: clamp(1.1rem, 4vmin, 2.1rem);
-      opacity: 1; transition: opacity 0.3s;
-    }
-    .cap-name {
-      font-weight: 900; color: var(--barn);
-      font-size: clamp(2.2rem, 9vmin, 6rem);
-      line-height: 1.04; letter-spacing: 0.5px;
-      opacity: 0; transform: translateX(-24px);
-      transition: opacity 0.5s 0.25s, transform 0.55s cubic-bezier(0.34,1.5,0.5,1) 0.25s;
-    }
-    .stage.open ~ .caption .cap-prompt { opacity: 0; }
-    .stage.open ~ .caption .cap-name   { opacity: 1; transform: none; }
-
-    /* Gentle "you can move on now" cue, under the name */
-    .next-hint {
-      font-weight: 800; color: #b07a4e;
-      font-size: clamp(0.95rem, 3vmin, 1.4rem);
-      opacity: 0; transition: opacity 0.4s;
-    }
-    .next-hint.show { opacity: 1; animation: hintPulse 1.6s ease-in-out infinite; }
-    @keyframes hintPulse { 0%,100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
-
     /* Confetti burst on reveal (simple shapes, no emoji) */
     .spark {
       position: absolute; z-index: 28; pointer-events: none;
@@ -187,13 +140,10 @@
       100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1.2) rotate(var(--sr)); }
     }
 
-    /* ─── Portrait fallback: stack barn over the name ─── */
+    /* ─── Portrait fallback: barn fills more of the screen ─── */
     @media (orientation: portrait) {
       .layout { flex-direction: column; gap: clamp(10px, 3vh, 32px); }
       .stage  { height: min(62vh, 92vw); width: min(62vh, 92vw); }
-      .caption { align-items: center; text-align: center; flex: 0 0 auto; }
-      .cap-name { transform: translateY(16px); }
-      .stage.open ~ .caption .cap-name { transform: none; }
     }
 
     /* ─── Hidden grown-up settings (long-press top-left corner) ─── */
@@ -227,16 +177,6 @@
     }
     .panel-btn.close { background: #c9c9c9; box-shadow: 0 5px 0 #a8a8a8; margin-top: 0.6rem; }
     .panel-hint { color:#bbb; font-size:0.75rem; text-align:center; margin-top:0.8rem; line-height:1.4; }
-
-    /* One-time "add to home screen" tip (browser only) */
-    .install-tip {
-      position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 14px);
-      transform: translateX(-50%); background: rgba(45,30,18,0.93); color: #fff;
-      font-size: 0.82rem; line-height: 1.4; padding: 0.7rem 1rem; border-radius: 16px;
-      max-width: 86vw; text-align: center; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    }
-    .install-tip b { color: #ffd166; }
-    .install-tip .x { margin-left: 8px; opacity: 0.7; font-weight: 900; }
   </style>
 </head>
 <body>
@@ -254,14 +194,6 @@
           <span class="brace a"></span><span class="brace b"></span>
           <span class="handle"></span>
         </div>
-
-        <div class="stage-prompt"><span>Tap the doors!</span></div>
-      </div>
-
-      <div class="caption">
-        <div class="cap-prompt">Who's hiding<br>in the barn?</div>
-        <div class="cap-name" id="nameText">Mommy!</div>
-        <div class="next-hint" id="nextHint">tap for the next one →</div>
       </div>
     </div>
   </div>
@@ -288,18 +220,41 @@
   /* ════════════════════════════════════════════════════════════
      FAMILY PHOTOS — edit this list!
      • Put image files in the  photos/  folder
-     • Add one line per photo:  { src: 'photos/FILE.jpg', name: 'WHO IT IS' }
+     • Add one line per photo:  { src: 'photos/FILE.jpg' }
      • Also add the same filename to the list in  sw.js  for offline use.
      ════════════════════════════════════════════════════════════ */
   const PHOTOS = [
-    { src: 'photos/anja-and-baby.jpg',     name: 'Mommy!' },
-    { src: 'photos/anja-grass.jpg',        name: 'Mommy!' },
-    { src: 'photos/mommy-and-anja.jpg',    name: 'Mommy & Mama!' },
-    { src: 'photos/anja-tree.jpg',         name: 'Mommy!' },
-    { src: 'photos/anja-remi-scout.jpg',   name: 'Mommy, Remi & Scout!' },
-    { src: 'photos/anja-and-babies.jpg',   name: 'Mommy & the babies!' },
-    { src: 'photos/family-greenhouse.jpg', name: 'Our Family!' },
-    { src: 'photos/family-outside.jpg',    name: 'Our Family!' },
+    { src: 'photos/mommy.jpg' },
+    { src: 'photos/mommy-germany.jpg' },
+    { src: 'photos/mommy-germany-2.jpg' },
+    { src: 'photos/alli.jpg' },
+    { src: 'photos/ammorette.jpg' },
+    { src: 'photos/amorette.jpg' },
+    { src: 'photos/becca.jpg' },
+    { src: 'photos/boone.jpg' },
+    { src: 'photos/claudia.jpg' },
+    { src: 'photos/eva.jpg' },
+    { src: 'photos/eva-anska-becca-uli.jpg' },
+    { src: 'photos/gam-gam-and-ga-ga.jpg' },
+    { src: 'photos/grand-dad.jpg' },
+    { src: 'photos/klaus.jpg' },
+    { src: 'photos/klaus-2.jpg' },
+    { src: 'photos/maggie.jpg' },
+    { src: 'photos/opa.jpg' },
+    { src: 'photos/remi-and-scout.jpg' },
+    { src: 'photos/remi-scout-sauce-gigi.jpg' },
+    { src: 'photos/scout-and-opa.jpg' },
+    { src: 'photos/sauce-and-remi.jpg' },
+    { src: 'photos/torren.jpg' },
+    { src: 'photos/uli.jpg' },
+    { src: 'photos/anja-and-baby.jpg' },
+    { src: 'photos/anja-grass.jpg' },
+    { src: 'photos/mommy-and-anja.jpg' },
+    { src: 'photos/anja-tree.jpg' },
+    { src: 'photos/anja-remi-scout.jpg' },
+    { src: 'photos/anja-and-babies.jpg' },
+    { src: 'photos/family-greenhouse.jpg' },
+    { src: 'photos/family-outside.jpg' },
   ];
 
   // ─── Settings (remembered on the device) ───
@@ -315,8 +270,6 @@
   // ─── Elements ───
   const stage    = document.getElementById('stage');
   const photoImg = document.getElementById('photoImg');
-  const nameText = document.getElementById('nameText');
-  const nextHint = document.getElementById('nextHint');
   const app      = document.getElementById('app');
 
   // ─── Play order ───
@@ -340,10 +293,8 @@
   function showCurrent(){
     const item = PHOTOS[order[pos]];
     photoImg.src = item.src;
-    photoImg.alt = item.name;
-    nameText.textContent = item.name;
+    photoImg.alt = '';
     stage.classList.remove('open');     // doors closed
-    nextHint.classList.remove('show');
     state = 'covered';
   }
 
@@ -354,7 +305,7 @@
     confettiBurst();
     clearTimeout(lingerTimer);
     lingerTimer = setTimeout(() => {
-      if (state === 'lingering') { state = 'ready'; nextHint.classList.add('show'); }
+      if (state === 'lingering') state = 'ready';
     }, settings.linger * 1000);
   }
 
@@ -363,7 +314,6 @@
     busy = true;
     clearTimeout(lingerTimer);
     stage.classList.remove('open');      // close doors first
-    nextHint.classList.remove('show');
     pos = (pos + 1) % order.length;
     if (pos === 0 && settings.shuffle) shuffleArray(order);   // reshuffle each loop
     setTimeout(() => { showCurrent(); busy = false; }, 540);
@@ -440,24 +390,6 @@
   document.getElementById('restartBtn').onclick = () => { buildOrder(); showCurrent(); panel.classList.remove('show'); };
   document.getElementById('closeBtn').onclick   = () => panel.classList.remove('show');
   panel.addEventListener('click', e => { if (e.target === panel) panel.classList.remove('show'); });
-
-  /* ─── "Add to Home Screen" tip (only in a browser, shown once) ─── */
-  function isStandalone(){
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.matchMedia('(display-mode: fullscreen)').matches ||
-           window.navigator.standalone === true;
-  }
-  if (!isStandalone() && !store.get('tipDismissed', false)) {
-    const tip = document.createElement('div');
-    tip.className = 'install-tip';
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    tip.innerHTML = ios
-      ? 'Turn your iPad sideways, then tap <b>Share</b> &rarr; <b>“Add to Home Screen”</b> for full-screen, offline play. <span class="x">✕</span>'
-      : 'Install this app from your browser menu for full-screen, offline play. <span class="x">✕</span>';
-    tip.querySelector('.x').onclick = (ev) => { ev.stopPropagation(); store.set('tipDismissed', true); tip.remove(); };
-    setTimeout(() => document.body.appendChild(tip), 1200);
-  }
 
   /* ─── Register the service worker for OFFLINE use ─── */
   if ('serviceWorker' in navigator) {

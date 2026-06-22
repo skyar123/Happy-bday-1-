@@ -1,6 +1,6 @@
 /* Family Peekaboo — offline service worker.
    Bump CACHE_VERSION whenever you change files or add photos. */
-const CACHE_VERSION = 'peekaboo-v4';
+const CACHE_VERSION = 'peekaboo-v5';
 
 /* Everything the app needs to run with NO internet.
    👉 When you add a new family photo, add its path here too. */
@@ -10,6 +10,29 @@ const PRECACHE = [
   './manifest.webmanifest',
   './icon.svg',
   './apple-touch-icon.png',
+  './photos/mommy.jpg',
+  './photos/mommy-germany.jpg',
+  './photos/mommy-germany-2.jpg',
+  './photos/alli.jpg',
+  './photos/ammorette.jpg',
+  './photos/amorette.jpg',
+  './photos/becca.jpg',
+  './photos/boone.jpg',
+  './photos/claudia.jpg',
+  './photos/eva.jpg',
+  './photos/eva-anska-becca-uli.jpg',
+  './photos/gam-gam-and-ga-ga.jpg',
+  './photos/grand-dad.jpg',
+  './photos/klaus.jpg',
+  './photos/klaus-2.jpg',
+  './photos/maggie.jpg',
+  './photos/opa.jpg',
+  './photos/remi-and-scout.jpg',
+  './photos/remi-scout-sauce-gigi.jpg',
+  './photos/scout-and-opa.jpg',
+  './photos/sauce-and-remi.jpg',
+  './photos/torren.jpg',
+  './photos/uli.jpg',
   './photos/anja-and-baby.jpg',
   './photos/anja-grass.jpg',
   './photos/mommy-and-anja.jpg',
