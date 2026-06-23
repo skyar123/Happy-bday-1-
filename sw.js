@@ -42,6 +42,10 @@ const PRECACHE = [
   './photos/anja-and-babies.jpg',
   './photos/family-greenhouse.jpg',
   './photos/family-outside.jpg',
+  './photos/mommy-mama-remi-scout.jpg',
+  './photos/mommy-mama-remi-scout-2.jpg',
+  './photos/scout-face.jpg',
+  './photos/remi-wagon.jpg',
   // close-up face crops (interspersed in the game)
   './photos/mommy-face.jpg',
   './photos/becca-face.jpg',
