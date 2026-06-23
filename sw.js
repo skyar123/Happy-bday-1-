@@ -1,6 +1,6 @@
 /* Family Peekaboo — offline service worker.
    Bump CACHE_VERSION whenever you change files or add photos. */
-const CACHE_VERSION = 'peekaboo-v8';
+const CACHE_VERSION = 'peekaboo-v9';
 
 /* Everything the app needs to run with NO internet.
    👉 When you add a new family photo, add its path here too. */
@@ -36,6 +36,7 @@ const PRECACHE = [
   './photos/anja-and-baby.jpg',
   './photos/anja-grass.jpg',
   './photos/mommy-and-anja.jpg',
+  './photos/mommy-and-babies.jpg',
   './photos/anja-tree.jpg',
   './photos/anja-remi-scout.jpg',
   './photos/anja-and-babies.jpg',
