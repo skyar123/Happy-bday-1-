@@ -80,6 +80,7 @@
     .photo { position: absolute; inset: 0; background: #d8c7b0; }
     .photo img {
       width: 100%; height: 100%; object-fit: cover;
+      image-orientation: from-image;   /* respect EXIF rotation on all browsers */
       transform: scale(1.06);
       transition: transform 0.7s cubic-bezier(0.34,1.4,0.5,1);
     }
@@ -471,7 +472,7 @@
   function onTap(e){
     if (e.target.closest('.panel') || e.target.closest('.gear')) return;
     if (busy) return;
-    if (state === 'winddown')       exitWindDown();    // play again
+    if (state === 'winddown')       return;            // baby-proofed: only adult panel can exit calm mode
     else if (state === 'covered')   reveal();          // open the doors
     else if (state === 'lingering') confettiBurst();   // still looking — little sparkle, don't skip
     else                            next();            // ready — move to the next photo
