@@ -1,6 +1,6 @@
 /* Family Peekaboo — offline service worker.
    Bump CACHE_VERSION whenever you change files or add photos. */
-const CACHE_VERSION = 'peekaboo-v11';
+const CACHE_VERSION = 'peekaboo-v12';
 
 /* Everything the app needs to run with NO internet.
    👉 When you add a new family photo, add its path here too. */
